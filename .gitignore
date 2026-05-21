@@ -1,0 +1,48 @@
+# ──────────────────────────────────────────────────────────────────
+# Fields Driller .gitignore
+# Internal authoring docs and workflow artifacts that should never
+# appear on the public GitHub repo. The app code (engine.js,
+# widgets/, styles.css, index.html, topic_d1_gravitation.js,
+# README.md) IS published — everything else here is private to the
+# authoring workflow.
+# ──────────────────────────────────────────────────────────────────
+
+# Authoring brief and related sub-chat coordination
+AUTHORING_BRIEF.md
+SUBCHAT_*.md
+
+# Internal audit, feedback, and flag docs (any *_FEEDBACK.md, *_AUDIT_*.md,
+# FLAG_*.md). The pattern keeps future docs of this shape auto-ignored.
+*_FEEDBACK.md
+*_AUDIT_*.md
+FLAG_*.md
+
+# Scratch / draft / notes folders, if any appear later
+notes/
+private/
+drafts/
+scratch/
+INTERNAL_*
+
+# ─── OS clutter ───────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+desktop.ini
+ehthumbs.db
+
+# ─── Editor / IDE clutter ─────────────────────────────────────────
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+*.bak
+*.tmp
+.history/
+
+# ─── Node / build tooling (if any of these ever land) ─────────────
+node_modules/
+dist/
+build/
+.cache/
+*.log
