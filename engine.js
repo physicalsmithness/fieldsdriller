@@ -23,7 +23,7 @@
     parentGroups: [
       {
         id: "sl_foundations",
-        name: "SL foundations",
+        name: "SL",
         subtags: [
           { id: "D.1.1", name: "Kepler's laws" },
           { id: "D.1.2", name: "Newton's law of gravitation" },
@@ -1547,16 +1547,20 @@
 
       const isCollapsed = Array.isArray(store.collapsedGroups) && store.collapsedGroups.indexOf(group.id) !== -1;
 
-      // Build the per-atom blob strip for the header. Each atom in this
-      // group with at least one question gets one small swatch coloured by
-      // its band. This gives an at-a-glance read of overall coverage even
-      // when the group is collapsed.
+      // Per-atom blob strip for the header. Dots are GROUPED by subtag —
+      // each subtag's atoms cluster together with a thin border, so the
+      // user can see which subtag within the section is strong vs weak.
+      // Colour lives only at the atom level; subtag and parent group are
+      // aggregators that just display the contained dots.
       const blobStrip = el("span", { class: "cov-group-blobs" });
       group.subtags.forEach(function (st) {
-        atomsForSubtag(st.id).forEach(function (aid) {
-          if ((SUBTAG_COUNTS[aid] || 0) === 0) return;
+        const stAtoms = atomsForSubtag(st.id).filter(function (id) { return (SUBTAG_COUNTS[id] || 0) > 0; });
+        if (stAtoms.length === 0) return;
+        const stBox = el("span", { class: "cov-blob-subtag",
+          title: st.id + " · " + st.name + " · " + stAtoms.length + " atom" + (stAtoms.length === 1 ? "" : "s") });
+        stAtoms.forEach(function (aid) {
           const acov = coverageForSubtag(aid);
-          blobStrip.appendChild(el("span", {
+          stBox.appendChild(el("span", {
             class: "cov-blob",
             title: aid + " · " + (nameForTag(aid) || "") + " · "
               + (acov.attemptCount === 0 ? "untried"
@@ -1564,6 +1568,7 @@
             style: "background:" + acov.fill + ";"
           }));
         });
+        blobStrip.appendChild(stBox);
       });
 
       const groupEl = el("div", { class: "cov-group" + (isCollapsed ? " cov-group-collapsed" : "") });
@@ -1590,25 +1595,33 @@
         const cov = coverageForSubtag(st.id);
         const isActive = (store.activeFilter === st.id);
 
-        // Subtag row: a tile (header) plus atom chips inside.
+        // Subtag row. The tile itself is now neutral — no fill colour from
+        // its average. Per-atom dots live INSIDE the tile bar (right-aligned,
+        // between the name and the count). The colour aggregation lives only
+        // at the atom level; the subtag tile is just a container with dots.
         const subtagRow = el("div", { class: "cov-subtag-row" });
-        const tileStyle =
-          " --tile-fill:" + cov.fill + ";" +
-          " --tile-text:" + cov.text + ";" +
-          " --tile-text-soft:" + cov.textSoft + ";";
+        const stAtoms = atomsForSubtag(st.id).filter(function (id) { return (SUBTAG_COUNTS[id] || 0) > 0; });
+        const tileDots = el("span", { class: "tile-dots" });
+        stAtoms.forEach(function (aid) {
+          const acov = coverageForSubtag(aid);
+          tileDots.appendChild(el("span", {
+            class: "cov-blob",
+            title: aid + " · " + (nameForTag(aid) || "") + " · "
+              + (acov.attemptCount === 0 ? "untried"
+                 : Math.round(acov.avg * 100) + "% (last " + acov.attemptCount + ")"),
+            style: "background:" + acov.fill + ";"
+          }));
+        });
         const headBtn = el("button", {
           class: "tile tile-subtag" + (isActive ? " tile-active" : ""),
           type: "button",
-          title: st.id + " · " + st.name + " · " + count + " questions"
-            + (cov.attemptCount === 0 ? " · untried"
-               : (" · last " + cov.attemptCount + " avg " + Math.round(cov.avg * 100) + "%")),
-          style: tileStyle,
+          title: st.id + " · " + st.name + " · " + count + " question" + (count === 1 ? "" : "s"),
           onClick: function () { setFilter(isActive ? null : st.id); }
         }, [
           el("span", { class: "tile-name", text: st.id + " · " + st.name }),
+          tileDots,
           el("span", { class: "tile-num" }, [
-            el("span", { class: "tile-q", text: String(count) + " q" }),
-            cov.attemptCount > 0 ? el("span", { class: "tile-pct", text: " · " + Math.round(cov.avg * 100) + "%" }) : null
+            el("span", { class: "tile-q", text: String(count) + " q" })
           ])
         ]);
         subtagRow.appendChild(headBtn);

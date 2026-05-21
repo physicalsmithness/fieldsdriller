@@ -306,33 +306,45 @@ body {
 .cov-group-name { font-weight: 700; flex-shrink: 0; }
 .cov-group-count { color: var(--muted); flex-shrink: 0; margin-left: 4px; }
 .cov-group-blobs {
-  display: inline-flex; flex-wrap: wrap; gap: 2px; flex-grow: 1;
+  display: inline-flex; flex-wrap: wrap; gap: 4px; flex-grow: 1;
   align-items: center; margin: 0 4px;
+}
+/* Each subtag's atoms cluster together inside a thin-bordered chip. The
+   border makes the per-subtag grouping legible at a glance — you can see
+   which subtag has many atoms and which has few, and whether any one
+   subtag's mosaic is uniformly green / red. */
+.cov-blob-subtag {
+  display: inline-flex; gap: 1.5px; align-items: center;
+  padding: 2px 3px; border: 1px solid var(--line-2);
+  border-radius: 3px; background: rgba(255, 255, 255, 0.4);
 }
 .cov-blob {
   display: inline-block; width: 8px; height: 8px;
   border-radius: 2px;
   border: 1px solid rgba(0,0,0,0.10);
 }
-/* When the group is collapsed, blobs are the main visual signal — make
-   them slightly larger so the section's overall colour is readable at a
-   glance. When expanded, the rich per-subtag tiles take over and the
-   blobs in the header can fade. */
 .cov-group-collapsed .cov-blob { width: 10px; height: 10px; }
-.cov-group:not(.cov-group-collapsed) .cov-blob { opacity: 0.55; }
+.cov-group-collapsed .cov-blob-subtag { padding: 2px 4px; }
+.cov-group:not(.cov-group-collapsed) .cov-blob { opacity: 0.6; }
 .cov-subtag-row { margin: 4px 0 8px; }
 .tile {
   width: 100%;
   padding: 6px 9px; border-radius: var(--radius-sm);
   border: 1px solid var(--line-2); cursor: pointer; text-align: left;
-  background: var(--tile-fill); color: var(--tile-text);
-  display: flex; flex-direction: row; justify-content: space-between; align-items: center;
+  background: var(--paper); color: var(--ink);
+  display: flex; flex-direction: row; justify-content: flex-start; align-items: center;
+  gap: 8px;
 }
 .tile-subtag { font-weight: 600; }
 .tile:hover { outline: 2px solid var(--accent); outline-offset: -1px; }
 .tile-active { outline: 2px solid var(--accent); outline-offset: -1px; }
-.tile-name { font-size: 11.5px; line-height: 1.2; flex-grow: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.tile-num { font-size: 10px; color: var(--tile-text-soft); flex-shrink: 0; padding-left: 6px; }
+.tile-name { font-size: 11.5px; line-height: 1.2; flex-shrink: 0; max-width: 60%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tile-dots {
+  display: inline-flex; flex-wrap: wrap; gap: 2px;
+  flex-grow: 1; align-items: center;
+  padding: 0 4px;
+}
+.tile-num { font-size: 10px; color: var(--muted); flex-shrink: 0; }
 
 /* Atom chips under each subtag */
 .cov-atom-row {
