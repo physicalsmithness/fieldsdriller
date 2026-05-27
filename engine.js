@@ -1261,6 +1261,11 @@
       setTimeout(function () { inp.focus(); }, 30);
     }
     card.appendChild(inputWrap);
+
+    // Scroll the coverage map (inside the sidebar) to the current atom so
+    // the student sees where in the topic landscape they are. Delayed by
+    // one frame so layout settles after the card finishes rendering.
+    requestAnimationFrame(scrollCoverageToCurrent);
   }
 
   /* ──────────────────────────────────────────────────────────────────────────
@@ -1618,6 +1623,9 @@
     renderCoverage();
     renderMistakes();
     updateProgressLine();
+    // After the coverage repaints with the new attempt's colour, keep the
+    // current atom in view so the student sees the change.
+    requestAnimationFrame(scrollCoverageToCurrent);
   }
 
   /* ──────────────────────────────────────────────────────────────────────────
@@ -1751,6 +1759,43 @@
     root.appendChild(list);
   }
 
+  // Scroll the coverage sidebar so the current question's atom (or, failing
+  // that, its subtag) is visible near the top of the visible area. Scrolls
+  // the sidebar's own overflow container, NOT the page, so this is safe to
+  // call from any render path.
+  function scrollCoverageToCurrent() {
+    if (!current || !current.view) return;
+    const tags = Array.isArray(current.view.tags) ? current.view.tags : [];
+    let target = null;
+    // Prefer atom (more specific). Fall back to subtag.
+    for (const t of tags) {
+      if (ATOMS && ATOMS[t]) {
+        target = document.querySelector('[data-atom-id="' + t.replace(/"/g, "") + '"]');
+        if (target) break;
+      }
+    }
+    if (!target) {
+      for (const t of tags) {
+        if (SUBTAG_INDEX && SUBTAG_INDEX[t]) {
+          target = document.querySelector('[data-subtag-id="' + t.replace(/"/g, "") + '"]');
+          if (target) break;
+        }
+      }
+    }
+    if (!target) return;
+    const side = document.querySelector(".col-side");
+    if (!side) return;
+    const sideRect = side.getBoundingClientRect();
+    const targetRect = target.getBoundingClientRect();
+    // Where the target currently sits inside the sidebar's scroll content.
+    const offsetWithin = targetRect.top - sideRect.top + side.scrollTop;
+    // Park the target ~28% from the top of the visible area so the student
+    // can see what's around it too.
+    const desiredTop = Math.max(0, offsetWithin - side.clientHeight * 0.28);
+    try { side.scrollTo({ top: desiredTop, behavior: "smooth" }); }
+    catch (e) { side.scrollTop = desiredTop; }
+  }
+
   function renderCoverage() {
     const root = document.getElementById("coverage");
     root.innerHTML = "";
@@ -1844,6 +1889,7 @@
         const headBtn = el("button", {
           class: "tile tile-subtag" + (isActive ? " tile-active" : ""),
           type: "button",
+          "data-subtag-id": st.id,
           title: st.id + " · " + st.name + " · " + count + " question" + (count === 1 ? "" : "s"),
           onClick: function () { setFilter(isActive ? null : st.id); }
         }, [
@@ -1871,6 +1917,7 @@
             atomRow.appendChild(el("button", {
               class: "atom-chip" + (aActive ? " atom-chip-active" : ""),
               type: "button",
+              "data-atom-id": aid,
               title: aid + " · " + a.name + " · " + acount + " question" + (acount === 1 ? "" : "s")
                 + (acov.attemptCount === 0 ? " · untried"
                    : (" · last " + acov.attemptCount + " avg " + Math.round(acov.avg * 100) + "%")),
@@ -2648,6 +2695,7 @@
     renderCoverage();
     renderMistakes();
     updateProgressLine();
+    requestAnimationFrame(scrollCoverageToCurrent);
   }
 
   /* ──────────────────────────────────────────────────────────────────────────
