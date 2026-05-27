@@ -132,6 +132,13 @@
     <div class="brand-sub">Question-by-question drill, with interactive widgets for graphs &amp; fields</div>
   </div>
   <div class="header-actions">
+    <button id="identity-pill" class="identity-pill" type="button" hidden>
+      <span class="identity-pill-label">Signed in as</span>
+      <span id="identity-pill-name" class="identity-pill-name"></span>
+      <span id="identity-pill-cohort" class="identity-pill-cohort"></span>
+      <span class="identity-pill-action">Switch</span>
+    </button>
+    <span id="report-status" class="report-status"></span>
     <button id="settings-btn" class="icon-btn" aria-label="Settings">⚙ Settings</button>
   </div>
 </header>
@@ -185,6 +192,54 @@
 <div id="review-overlay" class="review-overlay" aria-hidden="true">
   <div class="review-panel" role="dialog" aria-label="Previous attempt review">
     <div id="review-content"></div>
+  </div>
+</div>
+
+<!-- Sign-in overlay -->
+<div id="signin-overlay" class="signin-overlay" aria-hidden="true">
+  <div class="signin-panel" role="dialog" aria-label="Sign in">
+    <div class="signin-hd">
+      <div class="signin-title">Sign in to Fields Driller</div>
+      <button id="signin-close" class="signin-close-btn" aria-label="Close" hidden>×</button>
+    </div>
+
+    <p class="signin-sub">Your answers go to your teacher's tracking sheet as you work, so they can see how you're getting on. Two ways to sign in. Both fine.</p>
+
+    <div class="signin-tabs">
+      <button id="signin-tab-quick" class="signin-tab is-active" type="button" data-tab="quick">Quick start</button>
+      <button id="signin-tab-google" class="signin-tab" type="button" data-tab="google">School Google</button>
+    </div>
+
+    <!-- Quick path -->
+    <div id="signin-pane-quick" class="signin-pane is-active">
+      <div class="signin-field">
+        <label for="signin-name">Your name</label>
+        <input id="signin-name" class="signin-input" type="text" autocomplete="name" placeholder="e.g. Sam Smith">
+      </div>
+      <div class="signin-field">
+        <label for="signin-cohort">Your cohort</label>
+        <select id="signin-cohort" class="signin-input">
+          <option value="" disabled selected>Pick your IB cohort…</option>
+          <option value="2025-27">2025-27</option>
+          <option value="2026-28">2026-28</option>
+          <option value="2027-29">2027-29</option>
+          <option value="2028-30">2028-30</option>
+          <option value="2029-31">2029-31</option>
+          <option value="other">Other / not sure</option>
+        </select>
+      </div>
+      <button id="signin-quick-go" class="btn btn-primary signin-go" type="button">Start practising</button>
+    </div>
+
+    <!-- Google path -->
+    <div id="signin-pane-google" class="signin-pane">
+      <div class="signin-friction">
+        <div class="signin-friction-h">Heads up</div>
+        <p>Signing in with your school Google account takes about a minute the first time. You'll see two or three security prompts (something like "Continue to Smithics", "Allow access", possibly a verification step). Click through them, it's safe. After this first time it's automatic.</p>
+      </div>
+      <button id="signin-google-go" class="btn btn-primary signin-go" type="button" disabled>Sign in with your school Google</button>
+      <p class="signin-note">Not wired up yet. Use Quick start for now; you'll be able to upgrade later without losing your history.</p>
+    </div>
   </div>
 </div>
 

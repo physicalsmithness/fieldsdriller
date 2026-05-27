@@ -606,8 +606,15 @@
      ────────────────────────────────────────────────────────────────────────── */
 
   const STORAGE_KEY = "smithics_fields_v0_1";
+  const IDENTITY_KEY = "smithics_fields_identity_v1";
+  const SESSION_KEY = "smithics_fields_session_v1";
   const APP_VERSION = "v0.1.0";
   const TYPES = ["mcq", "short", "long", "numeric", "widget", "multi_select"];
+
+  // Teacher reporting endpoint. Deploy teacher-setup.gs as a Google Apps
+  // Script Web App, then paste the /exec URL here. While this stays empty
+  // the Driller still works fully; reporting just silently no-ops.
+  const REPORT_URL = 'https://script.google.com/macros/s/AKfycbw6gPnXyqfUw-UjbJRJKQzxscLR_24vVpMY9WH_FHcfAa1y59dm1ykznr662zTXSZ6n/exec';
 
   function defaultStore() {
     return {
@@ -676,8 +683,137 @@
     } catch (e) { console.warn("Could not write to localStorage:", e); }
   }
 
-  function recordAttempt(rec) { store.attempts.push(rec); persist(); }
+  function recordAttempt(rec) {
+    store.attempts.push(rec);
+    persist();
+    // Fire-and-forget POST to the teacher's sheet. Soft-fails if REPORT_URL
+    // is unset or the network is down; the localStorage record above is the
+    // source of truth either way.
+    try { reportAttempt(rec); } catch (e) { /* never let reporting break the engine */ }
+  }
   function clearProgress()    { store = defaultStore(); persist(); }
+
+  /* ──────────────────────────────────────────────────────────────────────────
+     4b. Student identity, session, and teacher reporting
+     ────────────────────────────────────────────────────────────────────────── */
+
+  function mintUUID() {
+    if (window.crypto && typeof crypto.randomUUID === "function") return crypto.randomUUID();
+    return "anon-" + Date.now() + "-" + Math.random().toString(36).slice(2, 10);
+  }
+
+  function defaultIdentity() {
+    return { anonymous_id: mintUUID(), display_name: "", cohort: "", google_email: "" };
+  }
+
+  function loadIdentity() {
+    try {
+      const raw = localStorage.getItem(IDENTITY_KEY);
+      if (!raw) return defaultIdentity();
+      const p = JSON.parse(raw);
+      return {
+        anonymous_id: typeof p.anonymous_id === "string" && p.anonymous_id ? p.anonymous_id : mintUUID(),
+        display_name: typeof p.display_name === "string" ? p.display_name : "",
+        cohort: typeof p.cohort === "string" ? p.cohort : "",
+        google_email: typeof p.google_email === "string" ? p.google_email : ""
+      };
+    } catch (e) { return defaultIdentity(); }
+  }
+
+  let IDENTITY = loadIdentity();
+
+  function persistIdentity() {
+    try { localStorage.setItem(IDENTITY_KEY, JSON.stringify(IDENTITY)); }
+    catch (e) { /* same fall-back posture as persist() */ }
+  }
+
+  function isSignedIn() {
+    return !!(IDENTITY.display_name && IDENTITY.cohort);
+  }
+
+  function getOrCreateSessionId() {
+    let id = null;
+    try { id = sessionStorage.getItem(SESSION_KEY); } catch (e) {}
+    if (!id) {
+      id = mintUUID();
+      try { sessionStorage.setItem(SESSION_KEY, id); } catch (e) {}
+    }
+    return id;
+  }
+
+  // Build the per-attempt payload and POST it to the teacher's Apps Script
+  // Web App. Uses mode:'no-cors' so the request reaches the script without a
+  // CORS preflight; we can't read the response but the row gets appended.
+  // text/plain content-type is CORS-safelisted, so no preflight is fired.
+  function reportAttempt(rec) {
+    if (!REPORT_URL || REPORT_URL.indexOf("script.google.com") === -1) return;
+    if (!isSignedIn()) return;
+    if (!rec || typeof rec !== "object") return;
+
+    const atomTags = (Array.isArray(rec.subtags) ? rec.subtags : []).filter(function (t) {
+      return ATOMS && Object.prototype.hasOwnProperty.call(ATOMS, t);
+    });
+
+    const payload = {
+      timestamp: rec.timestamp || new Date().toISOString(),
+      anonymous_id: IDENTITY.anonymous_id,
+      display_name: IDENTITY.display_name,
+      cohort: IDENTITY.cohort,
+      google_email: IDENTITY.google_email || "",
+      session_id: getOrCreateSessionId(),
+      question_id: rec.questionId || "",
+      level: rec.level || "",
+      subtag: rec.syllabusCode || "",
+      atoms: atomTags,
+      type: rec.type || "",
+      marks_awarded: rec.marksAwarded,
+      marks_possible: rec.marksPossible,
+      status: rec.status || "",
+      raw_response: rec.rawResponse != null ? String(rec.rawResponse) : "",
+      chosen_index: rec.chosenIndex != null ? rec.chosenIndex : "",
+      hints_used: rec.hintsUsed || 0,
+      peeked: rec.peekedAt ? 1 : 0,
+      misconceptions_fired: Array.isArray(rec.misconceptions) ? rec.misconceptions : []
+    };
+
+    // Full phase breakdown for phased questions.
+    if (Array.isArray(rec.phaseResults) && rec.phaseResults.length) {
+      payload.phases = rec.phaseResults.map(function (pr) {
+        return {
+          kind: pr.kind || "",
+          marks_awarded: pr.marksAwarded,
+          marks_possible: pr.marksPossible,
+          status: pr.status || "",
+          raw_response: pr.raw != null ? String(pr.raw) : "",
+          chosen_index: pr.chosenIndex != null ? pr.chosenIndex : "",
+          misconceptions_fired: Array.isArray(pr.misconceptions) ? pr.misconceptions : []
+        };
+      });
+    }
+
+    try {
+      fetch(REPORT_URL, {
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify(payload),
+        keepalive: true
+      }).then(function () { flashReportStatus("sent ✓", "ok"); })
+        .catch(function () { flashReportStatus("offline", "bad"); });
+    } catch (e) {
+      flashReportStatus("offline", "bad");
+    }
+  }
+
+  function flashReportStatus(text, cls) {
+    const el = document.getElementById("report-status");
+    if (!el) return;
+    el.textContent = text;
+    el.className = "report-status " + (cls || "");
+    if (cls === "ok") setTimeout(function () {
+      if (el.textContent === text) { el.textContent = ""; el.className = "report-status"; }
+    }, 1400);
+  }
 
   /* ──────────────────────────────────────────────────────────────────────────
      5. Question pool
@@ -2027,6 +2163,120 @@
 
   function openSettings()  { document.getElementById("settings-overlay").classList.add("open"); }
   function closeSettings() { document.getElementById("settings-overlay").classList.remove("open"); }
+
+  /* ── Sign-in modal ───────────────────────────────────────────────────── */
+  function openSignIn() {
+    const overlay = document.getElementById("signin-overlay");
+    if (!overlay) return;
+    overlay.classList.add("open");
+    overlay.setAttribute("aria-hidden", "false");
+    const nameEl = document.getElementById("signin-name");
+    const cohortEl = document.getElementById("signin-cohort");
+    if (nameEl) nameEl.value = IDENTITY.display_name || "";
+    if (cohortEl && IDENTITY.cohort) cohortEl.value = IDENTITY.cohort;
+    // The close button is only available if the student is already signed
+    // in (i.e., they opened this via "Switch"). First-time sign-in is a
+    // hard gate.
+    const closeBtn = document.getElementById("signin-close");
+    if (closeBtn) closeBtn.hidden = !isSignedIn();
+    setTimeout(function () { if (nameEl && !nameEl.value) nameEl.focus(); }, 30);
+  }
+
+  function closeSignIn() {
+    if (!isSignedIn()) return;
+    const overlay = document.getElementById("signin-overlay");
+    if (!overlay) return;
+    overlay.classList.remove("open");
+    overlay.setAttribute("aria-hidden", "true");
+  }
+
+  function attachSignInHandlers() {
+    const tabQuick  = document.getElementById("signin-tab-quick");
+    const tabGoogle = document.getElementById("signin-tab-google");
+    const paneQuick  = document.getElementById("signin-pane-quick");
+    const paneGoogle = document.getElementById("signin-pane-google");
+    if (!tabQuick || !tabGoogle || !paneQuick || !paneGoogle) return;
+
+    function selectTab(which) {
+      tabQuick.classList.toggle("is-active", which === "quick");
+      tabGoogle.classList.toggle("is-active", which === "google");
+      paneQuick.classList.toggle("is-active", which === "quick");
+      paneGoogle.classList.toggle("is-active", which === "google");
+    }
+    tabQuick.addEventListener("click", function () { selectTab("quick"); });
+    tabGoogle.addEventListener("click", function () { selectTab("google"); });
+
+    const goBtn = document.getElementById("signin-quick-go");
+    if (goBtn) goBtn.addEventListener("click", submitQuickSignIn);
+
+    // Allow Enter to submit when name or cohort is focused.
+    const nameEl = document.getElementById("signin-name");
+    const cohortEl = document.getElementById("signin-cohort");
+    function onEnter(e) { if (e.key === "Enter") { e.preventDefault(); submitQuickSignIn(); } }
+    if (nameEl) nameEl.addEventListener("keydown", onEnter);
+    if (cohortEl) cohortEl.addEventListener("keydown", onEnter);
+
+    const closeBtn = document.getElementById("signin-close");
+    if (closeBtn) closeBtn.addEventListener("click", closeSignIn);
+
+    // Click outside the panel only closes if already signed in.
+    const overlay = document.getElementById("signin-overlay");
+    if (overlay) overlay.addEventListener("click", function (e) {
+      if (e.target.id === "signin-overlay" && isSignedIn()) closeSignIn();
+    });
+
+    // Identity pill in the header opens the modal as a switch action.
+    const pill = document.getElementById("identity-pill");
+    if (pill) pill.addEventListener("click", openSignIn);
+  }
+
+  function submitQuickSignIn() {
+    const nameEl = document.getElementById("signin-name");
+    const cohortEl = document.getElementById("signin-cohort");
+    const name = (nameEl && nameEl.value || "").trim();
+    const cohort = (cohortEl && cohortEl.value || "").trim();
+    if (!name || !cohort) {
+      if (!name && nameEl) { nameEl.classList.add("ans-empty-flash"); setTimeout(function () { nameEl.classList.remove("ans-empty-flash"); }, 350); }
+      if (!cohort && cohortEl) { cohortEl.classList.add("ans-empty-flash"); setTimeout(function () { cohortEl.classList.remove("ans-empty-flash"); }, 350); }
+      return;
+    }
+    const wasSignedIn = isSignedIn();
+    IDENTITY.display_name = name;
+    IDENTITY.cohort = cohort;
+    // anonymous_id stays the same across sign-in changes so history is preserved.
+    persistIdentity();
+    closeSignInAlways();
+    renderIdentityPill();
+    if (!wasSignedIn) {
+      // First sign-in this session: refresh the question card so any
+      // "(no question)" placeholder gets replaced with a real question.
+      renderQuestion();
+      renderCoverage();
+      renderMistakes();
+      updateProgressLine();
+    }
+  }
+
+  // Same as closeSignIn but doesn't require isSignedIn (used after a fresh
+  // sign-in submission where isSignedIn() has just become true).
+  function closeSignInAlways() {
+    const overlay = document.getElementById("signin-overlay");
+    if (!overlay) return;
+    overlay.classList.remove("open");
+    overlay.setAttribute("aria-hidden", "true");
+  }
+
+  function renderIdentityPill() {
+    const pill = document.getElementById("identity-pill");
+    if (!pill) return;
+    if (!isSignedIn()) { pill.hidden = true; return; }
+    pill.hidden = false;
+    const nameSpan = document.getElementById("identity-pill-name");
+    const cohortSpan = document.getElementById("identity-pill-cohort");
+    if (nameSpan) nameSpan.textContent = IDENTITY.display_name;
+    if (cohortSpan) cohortSpan.textContent = "(" + IDENTITY.cohort + ")";
+  }
+
   function resetProgressFlow() {
     if (!confirm("Delete every logged attempt? This can't be undone.")) return;
     if (!confirm("Really sure? Permanent.")) return;
@@ -2719,14 +2969,23 @@
       if (e.key !== "Escape") return;
       const rv = document.getElementById("review-overlay");
       const stg = document.getElementById("settings-overlay");
+      const si  = document.getElementById("signin-overlay");
       if (rv && rv.classList.contains("open"))      closeReview();
       else if (stg && stg.classList.contains("open")) closeSettings();
+      else if (si && si.classList.contains("open") && isSignedIn()) closeSignIn();
     });
     const reviewOverlay = document.getElementById("review-overlay");
     if (reviewOverlay) reviewOverlay.addEventListener("click", function (e) {
       if (e.target.id === "review-overlay") closeReview();
     });
     document.getElementById("settings-version").textContent = APP_VERSION;
+
+    // Sign-in setup: bind handlers once, then either show the pill (if
+    // returning student) or hard-gate with the modal (if first time).
+    attachSignInHandlers();
+    renderIdentityPill();
+    if (!isSignedIn()) openSignIn();
+
     renderLevelStrip();
     renderFilterBanner();
     renderQuestion();
