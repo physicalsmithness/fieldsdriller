@@ -675,6 +675,18 @@
   }
 
   let store = loadStore();
+  // Visible startup signal so anyone (you, me, a future debugger) can confirm
+  // at a glance how many attempts were loaded from localStorage. Cheap and
+  // useful; the only sane way to spot a load-failure regression.
+  try {
+    console.info(
+      "Fields Driller: loaded",
+      Array.isArray(store.attempts) ? store.attempts.length : 0,
+      "saved attempts,",
+      Array.isArray(store.errors) ? store.errors.length : 0,
+      "saved errors."
+    );
+  } catch (e) { /* no console available, fine */ }
 
   function persist() {
     try {
@@ -978,7 +990,11 @@
     }
     if (!q) return null;
     store.deck.lastServedId = q.id;
-    persist();
+    // Deliberately do NOT persist here. Deck state lives in memory until a
+    // real attempt is recorded (recordAttempt → persist), which removes the
+    // load-glitch → empty-persist → wipe path. Worst case if the student
+    // reloads mid-question: the deck reshuffles or repeats the question.
+    // History is never at risk.
     return pickInstance(q);
   }
 
@@ -2071,6 +2087,10 @@
         const atomIds = atomsForSubtag(st.id).filter(function (id) { return (SUBTAG_COUNTS[id] || 0) > 0; });
         if (atomIds.length) {
           const atomRow = el("div", { class: "cov-atom-row" });
+          // Track the theme letter of the previous atom so we can draw a
+          // small visual separator between theme groups (A → B → C ...),
+          // letting the student scan group-level coverage at a glance.
+          let prevThemeLetter = null;
           atomIds.forEach(function (aid) {
             const a = ATOMS[aid];
             const acount = SUBTAG_COUNTS[aid] || 0;
@@ -2080,8 +2100,14 @@
               " --tile-fill:" + acov.fill + ";" +
               " --tile-text:" + acov.text + ";" +
               " --tile-text-soft:" + acov.textSoft + ";";
+            const atomCode = aid.split(/[-.]/).slice(-1)[0]; // e.g. "A1"
+            const themeLetter = (atomCode.match(/^[A-Z]/) || [""])[0];
+            const isGroupStart = prevThemeLetter !== null && themeLetter && themeLetter !== prevThemeLetter;
+            prevThemeLetter = themeLetter;
             atomRow.appendChild(el("button", {
-              class: "atom-chip" + (aActive ? " atom-chip-active" : ""),
+              class: "atom-chip"
+                + (aActive ? " atom-chip-active" : "")
+                + (isGroupStart ? " atom-chip-group-start" : ""),
               type: "button",
               "data-atom-id": aid,
               title: aid + " · " + a.name + " · " + acount + " question" + (acount === 1 ? "" : "s")
@@ -2090,7 +2116,7 @@
               style: aStyle,
               onClick: function () { setFilter(aActive ? null : aid); }
             }, [
-              el("span", { class: "atom-code", text: aid.split(/[-.]/).slice(-1)[0] }),
+              el("span", { class: "atom-code", text: atomCode }),
               el("span", { class: "atom-name", text: a.name }),
               acov.attemptCount > 0
                 ? el("span", { class: "atom-pct", text: Math.round(acov.avg * 100) + "%" })
