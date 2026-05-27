@@ -207,13 +207,13 @@ window.FIELDS_D1_QUESTIONS = [
         yLabel: "V", yUnits: "J kg⁻¹"
       }
     },
-    expectedNumeric: -2.656e7,
+    expectedNumeric: -2.66e7,
     tolerance: 4e5,
     misconceptions: [
       {
         id: "missed_negative_sign",
         label: "You submitted the positive magnitude. Gravitational potential is negative for a bound system — V is defined as zero at infinity, so it's negative everywhere closer.",
-        expectedNumeric: 2.656e7,
+        expectedNumeric: 2.66e7,
         tolerance: 4e5,
         severity: "common"
       }
@@ -242,7 +242,7 @@ window.FIELDS_D1_QUESTIONS = [
         yLabel: "V", yUnits: "J kg⁻¹"
       }
     },
-    expectedNumeric: -5.976e10,
+    expectedNumeric: -5.98e10,
     tolerance: 6e8,
     unitHint: "J",
     explanation: "At r = 1.0 × 10⁷ m, V = -GM/r ≈ -3.98 × 10⁷ J kg⁻¹. Ep = mV = 1500 × (-3.98 × 10⁷) ≈ -5.98 × 10¹⁰ J. Negative because the satellite is bound.",
@@ -269,7 +269,7 @@ window.FIELDS_D1_QUESTIONS = [
         yLabel: "V", yUnits: "J kg⁻¹"
       }
     },
-    expectedNumeric: 2.988e10,
+    expectedNumeric: 2.99e10,
     tolerance: 3e9,
     unitHint: "J",
     misconceptions: [
@@ -316,8 +316,8 @@ window.FIELDS_D1_QUESTIONS = [
         yLabel: "|g|", yUnits: "N kg⁻¹"
       }
     },
-    expectedNumeric: 3.46e8,
-    tolerance: 1.0e7,
+    expectedNumeric: 3.5e8,
+    tolerance: 1.5e7,
     unitHint: "m",
     explanation: "Setting the two contributions equal in magnitude: $GM_E/x^2 = GM_M/(D-x)^2$.\nRearranging gives $x/(D-x) = \\sqrt{M_E/M_M}$, so $x = D\\,\\sqrt{M_E}/(\\sqrt{M_E} + \\sqrt{M_M}) \\approx 3.46 \\times 10^8$ m. That's about 90% of the way to the Moon, because Earth is roughly 81 times more massive than the Moon.",
     examinerNote: "The widget computes $|g_{\\text{net},x}| = |GM_E/x^2 - GM_M/(D-x)^2|$ from the physics, so the curve is smooth. The dip approaches zero at the equilibrium x and rises again as the Moon's pull begins to dominate."
@@ -417,7 +417,7 @@ window.FIELDS_D1_QUESTIONS = [
         yLabel: "y", yUnits: "m"
       }
     },
-    expectedNumeric: -3.984e7,
+    expectedNumeric: -3.98e7,
     tolerance: 1e6,
     unitHint: "J kg⁻¹",
     misconceptions: [
@@ -1918,8 +1918,8 @@ window.FIELDS_D1_QUESTIONS = [
     type: "numeric",
     marks: 3,
     prompt: "Earth orbits the Sun with a period of $3.156 \\times 10^7$ s at an orbital radius of $1.496 \\times 10^{11}$ m. Calculate the mass of the Sun, in kg, to 3 s.f.\n\n$G = 6.674 \\times 10^{-11}$ N m² kg⁻².",
-    expectedNumeric: 1.988e30,
-    tolerance: 5e27,
+    expectedNumeric: 1.99e30,
+    tolerance: 1e28,
     unitHint: "kg",
     explanation: "Kepler's third law: $T^2 = \\dfrac{4\\pi^2 r^3}{GM}$. Rearranging for $M$:\n\n$M = \\dfrac{4\\pi^2 r^3}{GT^2} = \\dfrac{4\\pi^2 (1.496\\times10^{11})^3}{(6.674\\times10^{-11})(3.156\\times10^{7})^2} \\approx 1.99 \\times 10^{30}$ kg.\n\nThis is how Newton (in effect) showed that the Sun must be vastly more massive than Earth: given the radius and period of Earth's orbit, $M_{\\text{Sun}}$ is the only unknown in Kepler 3, and the answer comes out massive.",
     examinerNote: "Common slips: forgetting one of the $4$, $\\pi$, or $r$ factors. Sanity: $r^3 \\sim 3\\times 10^{33}$, $T^2 \\sim 10^{15}$, $4\\pi^2 \\sim 40$, $G \\sim 7\\times 10^{-11}$. So $M \\sim 40 \\times 3\\times 10^{33} / (7\\times 10^{-11} \\times 10^{15}) = 1.2\\times 10^{35} / 7\\times 10^4 \\sim 2\\times 10^{30}$ kg. Right exponent.",
@@ -1940,8 +1940,8 @@ window.FIELDS_D1_QUESTIONS = [
       "Set the two expressions equal: $\\dfrac{GMm}{r^2} = \\dfrac{mv^2}{r}$, where $M$ is Earth's mass and $m$ is the Moon's. Notice anything?",
       "$m$ cancels from both sides, giving $v = \\sqrt{GM/r}$. Now just plug in the numbers."
     ],
-    expectedNumeric: 1019,
-    tolerance: 5,
+    expectedNumeric: 1020,
+    tolerance: 10,
     unitHint: "m s⁻¹",
     explanation: "Setting gravity equal to centripetal force: $\\dfrac{GM_Em}{r^2} = \\dfrac{mv^2}{r}$. The Moon's mass $m$ cancels, so $v = \\sqrt{GM_E/r}$.\n\nNumerically: $v = \\sqrt{(6.674\\times10^{-11})(5.97\\times10^{24})/(3.84\\times10^8)} \\approx 1019$ m s⁻¹ $\\approx 1.02$ km s⁻¹.\n\nFor context: the orbital period is $T = 2\\pi r/v \\approx 2.37 \\times 10^6$ s $\\approx 27.4$ days — close to the real lunar sidereal month of 27.3 days.",
     examinerNote: "This is essentially the same physics as D.1.H.9-A1 derivation, applied to the Moon. Common slips: confusing the Moon's mass with Earth's mass (the orbiting body's mass cancels; what enters is the CENTRAL body's mass); forgetting the square root.",
@@ -2037,8 +2037,8 @@ window.FIELDS_D1_QUESTIONS = [
     type: "numeric",
     marks: 2,
     prompt: "A satellite is in a circular orbit at $r = 7.0 \\times 10^6$ m from Earth's centre. At that radius, Earth's gravitational field strength is $g = 8.13$ N kg⁻¹. Using $g = v^2/r$ (the centripetal-acceleration form), calculate the satellite's orbital speed, in m s⁻¹, to 3 s.f.",
-    expectedNumeric: 7544,
-    tolerance: 10,
+    expectedNumeric: 7540,
+    tolerance: 15,
     unitHint: "m s⁻¹",
     explanation: "In a circular orbit, gravity provides the centripetal acceleration: $g = v^2/r$, so $v = \\sqrt{gr}$.\n\nNumerically: $v = \\sqrt{(8.13)(7.0\\times10^6)} = \\sqrt{5.69\\times10^7} \\approx 7544$ m s⁻¹.\n\nCross-check using $v = \\sqrt{GM/r}$ directly: $\\sqrt{(6.674\\times10^{-11})(5.97\\times10^{24})/(7\\times10^6)} \\approx 7544$ m s⁻¹. ✓\n\nThis is the SAME physics, expressed two ways. Once you have $g$ at the orbital radius, $v = \\sqrt{gr}$ is the fastest path to orbital speed.",
     examinerNote: "The $g = v^2/r$ form is useful when $g$ at the orbit is known (e.g., given by a graph or by surface-gravity-scaled-down). The $v = \\sqrt{GM/r}$ form is useful when the central mass is known directly. Both give the same answer.\n\nCommon slip: writing $v = gr$ instead of $\\sqrt{gr}$ (forgetting the square root). Gives $5.69 \\times 10^7$ m/s, faster than light — obviously wrong.",
@@ -2084,8 +2084,8 @@ window.FIELDS_D1_QUESTIONS = [
     type: "numeric",
     marks: 3,
     prompt: "A satellite of mass $1000$ kg is in a circular orbit at $r = 2R$ from Earth's centre, where $R$ is Earth's radius ($R = 6.37 \\times 10^6$ m). Earth's mass is $M = 5.97 \\times 10^{24}$ kg.\n\nCalculate the gravitational potential energy of the satellite-Earth system at this orbit, in joules, to 3 s.f. (Express your answer as a negative number.)\n\n$G = 6.674 \\times 10^{-11}$ N m² kg⁻².",
-    expectedNumeric: -3.128e10,
-    tolerance: 5e7,
+    expectedNumeric: -3.13e10,
+    tolerance: 1e8,
     unitHint: "J",
     explanation: "At $r = 2R$: $E_p = -GMm/r = -GMm/(2R)$.\n\nNumerically: $E_p = -(6.674\\times10^{-11})(5.97\\times10^{24})(1000)/(2 \\times 6.37\\times10^6) \\approx -3.13 \\times 10^{10}$ J.\n\nNote the relationship between weight and $E_p$ at this orbit:\n• Weight = $mg(2R) = m \\cdot GM/(2R)^2 = GMm/(4R^2) \\approx 2455$ N (a quarter of the satellite's surface weight).\n• $|E_p| = GMm/(2R) \\approx 3.13\\times10^{10}$ J (half the magnitude of $|E_p|$ at the surface).\n\nThe weight scales as $1/r^2$ (so at $2R$ it's $1/4$ of surface), but the PE scales as $1/r$ (so at $2R$ it's $1/2$ of surface). The factor-of-2 difference between weight scaling and PE scaling is exactly the one-power-of-$r$ shift.",
     examinerNote: "Common slips: using $r = R$ (giving twice the magnitude); using $r = 2$ (forgetting to multiply by $R$); confusing PE with PE/mass (potential $V$).\n\nThe deeper point: this question is testing the recognition that as you go further away, weight drops faster than PE magnitude. Students who claim 'both halve' or 'both quarter' have applied the wrong scaling to one of them.",
@@ -2425,8 +2425,8 @@ window.FIELDS_D1_QUESTIONS = [
     type: "numeric",
     marks: 2,
     prompt: "A satellite is at an altitude of $h = 2.0\\times10^7$ m above Earth's surface. Earth's radius is $R = 6.37\\times10^6$ m. State the distance $r$ from the satellite to the centre of Earth that you would use in the formula $F = GMm/r^2$, in metres, to 3 s.f.\n\n(The answer is NOT $h$.)",
-    expectedNumeric: 2.637e7,
-    tolerance: 1e4,
+    expectedNumeric: 2.64e7,
+    tolerance: 5e4,
     unitHint: "m",
     explanation: "Newton's law of gravitation uses the centre-to-centre distance between two point-mass-like bodies, not the height above the surface. So $r = R + h = 6.37\\times10^6 + 2.0\\times10^7 \\approx 2.64\\times10^7$ m.\n\nThe atom D.1.3-B (use centre-to-centre separation) is critical for orbital problems, where 'altitude' and 'orbital radius' differ by exactly $R$. Mixing them is the most common single error in $g$-at-altitude problems.",
     examinerNote: "Trivial if you remember the rule, easy to mess up if you don't. The pedagogical purpose is to drill the substitution $r = R + h$ explicitly, separate from any numerical calculation, so the student internalises the distinction.\n\nSanity: $r$ should be larger than $R$, and much larger than $R$ for high altitudes. $2.64\\times10^7$ is about $4R$ — checks out for $h = R + 3R \\approx 4R$ from centre.",
@@ -2701,8 +2701,8 @@ window.FIELDS_D1_QUESTIONS = [
         kind: "numeric",
         marks: 1,
         prompt: "Using your value of $g$ at the orbital radius, find the satellite's orbital speed, in m s⁻¹, to 3 s.f.",
-        expectedNumeric: 7561,
-        tolerance: 15,
+        expectedNumeric: 7560,
+        tolerance: 20,
         unitHint: "m s⁻¹"
       },
       {
@@ -2808,8 +2808,8 @@ window.FIELDS_D1_QUESTIONS = [
       "$V = -GM/r$, so $rV = -GM$. The $r$ cancels out — the value doesn't depend on where you measure.",
       "$rV = -GM \\approx -(6.674\\times10^{-11})(5.97\\times10^{24})$. Compute that."
     ],
-    expectedNumeric: -3.984e14,
-    tolerance: 5e11,
+    expectedNumeric: -3.98e14,
+    tolerance: 1e12,
     unitHint: "J m kg⁻¹",
     explanation: "$V = -GM/r$, so $rV = -GM$, independent of $r$.\n\nNumerically: $rV = -(6.674\\times10^{-11})(5.97\\times10^{24}) \\approx -3.98 \\times 10^{14}$ J m kg⁻¹.\n\nThis means if you measure $V$ at the surface ($r = R_E$), at LEO altitude, at the Moon's orbital radius, or at any other external point, $rV$ comes out to the same constant. The constancy is a stringent test of point-mass behaviour: if you measured $rV$ in real data and found it constant across orders of magnitude in $r$, that's strong evidence that the source is well approximated as a point.\n\nThis links to D.1.3-C1 (data consistent with point-mass behaviour): observed constancy of $rV$ is exactly the test you'd perform.",
     examinerNote: "Common slips: getting the sign wrong (writing $+GM$ instead of $-GM$); using $r$ in km instead of m; multiplying $G$ and $M$ but forgetting to negate.\n\nThe units (J m kg⁻¹) are a hybrid of $r$'s (m) and $V$'s (J kg⁻¹), which often confuses students. Either keep them or drop them; they don't affect marking but they're informative.",
@@ -2896,8 +2896,8 @@ window.FIELDS_D1_QUESTIONS = [
     type: "numeric",
     marks: 2,
     prompt: "A $1500$ kg satellite is moved from a circular orbit at radius $r = R_E$ (i.e., just skimming Earth's surface, ignoring atmosphere) to a circular orbit at radius $2R_E$. Calculate the work that must be done by an external agent on the satellite for this orbit change. Express as a positive number in joules to 3 s.f.\n\nEarth's mass $M = 5.97\\times10^{24}$ kg, $R_E = 6.37\\times10^6$ m. $G = 6.674\\times10^{-11}$ N m² kg⁻².",
-    expectedNumeric: 2.345e10,
-    tolerance: 3e8,
+    expectedNumeric: 2.35e10,
+    tolerance: 5e8,
     unitHint: "J",
     misconceptions: [
       {
@@ -2944,8 +2944,8 @@ window.FIELDS_D1_QUESTIONS = [
     type: "numeric",
     marks: 3,
     prompt: "A spacecraft is in a circular orbit at altitude $800$ km above Earth's surface, moving at its orbital speed. The crew wants to escape Earth's gravity from this orbit. By how much must the spacecraft's speed increase (the velocity boost $\\Delta v$ applied along the direction of motion) to just reach Earth-escape speed at this radius? Give $\\Delta v$ in m s⁻¹, to 3 s.f.\n\nEarth's mass $M = 5.97\\times10^{24}$ kg, radius $R = 6.37\\times10^6$ m. $G = 6.674\\times10^{-11}$ N m² kg⁻².",
-    expectedNumeric: 3088,
-    tolerance: 10,
+    expectedNumeric: 3090,
+    tolerance: 15,
     unitHint: "m s⁻¹",
     misconceptions: [
       {
@@ -2969,8 +2969,8 @@ window.FIELDS_D1_QUESTIONS = [
     type: "numeric",
     marks: 1,
     prompt: "A satellite in a circular orbit has orbital speed $v = 7000$ m s⁻¹ at orbital radius $r = 8.0\\times10^6$ m. Calculate its orbital period in seconds, to 3 s.f.",
-    expectedNumeric: 7181,
-    tolerance: 10,
+    expectedNumeric: 7180,
+    tolerance: 15,
     unitHint: "s",
     explanation: "In a circular orbit, the satellite travels a distance $2\\pi r$ per orbit at constant speed $v$, so the period is $T = 2\\pi r/v$.\n\n$T = 2\\pi (8.0\\times10^6)/7000 \\approx 7181$ s $\\approx 120$ minutes $\\approx 2.0$ hours.\n\nThis is a slightly higher orbit than LEO (which is typically 90-100 min). The 8 × 10⁶ m radius corresponds to an altitude of about 1630 km, somewhere between LEO and medium Earth orbit (MEO) territory.",
     examinerNote: "Trivial geometry. Common slip: forgetting the factor of $2\\pi$ (gives $T = r/v$ — way too small). Sanity: any orbit takes longer than a few minutes and less than a day (except GEO at exactly 24 h), so anything outside the 60-300 minute range for LEO/MEO is suspect.",
@@ -3006,8 +3006,8 @@ window.FIELDS_D1_QUESTIONS = [
     type: "numeric",
     marks: 2,
     prompt: "A $1000$ kg satellite is in a circular orbit at $r = 1.0\\times10^7$ m from Earth's centre. Earth's mass $M = 5.97\\times10^{24}$ kg. $G = 6.674\\times10^{-11}$ N m² kg⁻².\n\nCalculate the satellite's kinetic energy, in joules, to 3 s.f.",
-    expectedNumeric: 1.992e10,
-    tolerance: 3e7,
+    expectedNumeric: 1.99e10,
+    tolerance: 5e7,
     unitHint: "J",
     misconceptions: [
       {
