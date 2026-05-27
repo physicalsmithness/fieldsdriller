@@ -190,6 +190,39 @@
     return out;
   }
 
+  // The theme letter of an atom id (e.g. "D.1.1-A2" → "A"). Empty if the
+  // id doesn't follow the expected pattern.
+  function themeLetterOf(aid) {
+    const tail = (aid || "").split("-").pop() || "";
+    const m = tail.match(/^[A-Z]/);
+    return m ? m[0] : "";
+  }
+  // Stable, numeric-aware sort by the bit after the final dash: A1, A2, ...
+  // A10, B1, B2, ... Late-added atoms (A4, A5) end up in their natural
+  // place rather than at the end of the insertion order.
+  function sortAtomsByCode(atomIds) {
+    return atomIds.slice().sort(function (a, b) {
+      const aSuf = a.split("-").pop() || "";
+      const bSuf = b.split("-").pop() || "";
+      return aSuf.localeCompare(bSuf, undefined, { numeric: true, sensitivity: "base" });
+    });
+  }
+  // Group sorted atomIds into contiguous runs of the same theme letter.
+  // Returns [{letter, ids}, ...] in atom-code order.
+  function groupAtomsByTheme(atomIds) {
+    const groups = [];
+    let cur = null;
+    atomIds.forEach(function (aid) {
+      const letter = themeLetterOf(aid);
+      if (!cur || cur.letter !== letter) {
+        cur = { letter: letter, ids: [] };
+        groups.push(cur);
+      }
+      cur.ids.push(aid);
+    });
+    return groups;
+  }
+
   // Resolve a tag id to a human label. Works for subtags, atoms, or returns
   // null if the id isn't a tracked coverage tag.
   function nameForTag(t) {
@@ -608,7 +641,7 @@
   const STORAGE_KEY = "smithics_fields_v0_1";
   const IDENTITY_KEY = "smithics_fields_identity_v1";
   const SESSION_KEY = "smithics_fields_session_v1";
-  const APP_VERSION = "v0.1.0";
+  const APP_VERSION = "v0.2.0";
   const TYPES = ["mcq", "short", "long", "numeric", "widget", "multi_select"];
 
   // Teacher reporting endpoint. Deploy teacher-setup.gs as a Google Apps
@@ -2010,19 +2043,28 @@
       // aggregators that just display the contained dots.
       const blobStrip = el("span", { class: "cov-group-blobs" });
       group.subtags.forEach(function (st) {
-        const stAtoms = atomsForSubtag(st.id).filter(function (id) { return (SUBTAG_COUNTS[id] || 0) > 0; });
+        const stAtoms = sortAtomsByCode(
+          atomsForSubtag(st.id).filter(function (id) { return (SUBTAG_COUNTS[id] || 0) > 0; })
+        );
         if (stAtoms.length === 0) return;
         const stBox = el("span", { class: "cov-blob-subtag",
           title: st.id + " · " + st.name + " · " + stAtoms.length + " atom" + (stAtoms.length === 1 ? "" : "s") });
-        stAtoms.forEach(function (aid) {
-          const acov = coverageForSubtag(aid);
-          stBox.appendChild(el("span", {
-            class: "cov-blob",
-            title: aid + " · " + (nameForTag(aid) || "") + " · "
-              + (acov.attemptCount === 0 ? "untried"
-                 : Math.round(acov.avg * 100) + "% (last " + acov.attemptCount + ")"),
-            style: "background:" + acov.fill + ";"
-          }));
+        // Cluster dots inside the subtag box by theme letter, with a small
+        // gap between theme groups. Reads as "A A A | B B | C C C" so the
+        // user can spot uneven coverage within a subtag at a glance.
+        groupAtomsByTheme(stAtoms).forEach(function (tg) {
+          const themeBox = el("span", { class: "cov-blob-theme" });
+          tg.ids.forEach(function (aid) {
+            const acov = coverageForSubtag(aid);
+            themeBox.appendChild(el("span", {
+              class: "cov-blob",
+              title: aid + " · " + (nameForTag(aid) || "") + " · "
+                + (acov.attemptCount === 0 ? "untried"
+                   : Math.round(acov.avg * 100) + "% (last " + acov.attemptCount + ")"),
+              style: "background:" + acov.fill + ";"
+            }));
+          });
+          stBox.appendChild(themeBox);
         });
         blobStrip.appendChild(stBox);
       });
@@ -2056,17 +2098,24 @@
         // between the name and the count). The colour aggregation lives only
         // at the atom level; the subtag tile is just a container with dots.
         const subtagRow = el("div", { class: "cov-subtag-row" });
-        const stAtoms = atomsForSubtag(st.id).filter(function (id) { return (SUBTAG_COUNTS[id] || 0) > 0; });
+        const stAtoms = sortAtomsByCode(
+          atomsForSubtag(st.id).filter(function (id) { return (SUBTAG_COUNTS[id] || 0) > 0; })
+        );
         const tileDots = el("span", { class: "tile-dots" });
-        stAtoms.forEach(function (aid) {
-          const acov = coverageForSubtag(aid);
-          tileDots.appendChild(el("span", {
-            class: "cov-blob",
-            title: aid + " · " + (nameForTag(aid) || "") + " · "
-              + (acov.attemptCount === 0 ? "untried"
-                 : Math.round(acov.avg * 100) + "% (last " + acov.attemptCount + ")"),
-            style: "background:" + acov.fill + ";"
-          }));
+        // Same theme-letter clustering as the parent-header dots.
+        groupAtomsByTheme(stAtoms).forEach(function (tg) {
+          const themeBox = el("span", { class: "cov-blob-theme" });
+          tg.ids.forEach(function (aid) {
+            const acov = coverageForSubtag(aid);
+            themeBox.appendChild(el("span", {
+              class: "cov-blob",
+              title: aid + " · " + (nameForTag(aid) || "") + " · "
+                + (acov.attemptCount === 0 ? "untried"
+                   : Math.round(acov.avg * 100) + "% (last " + acov.attemptCount + ")"),
+              style: "background:" + acov.fill + ";"
+            }));
+          });
+          tileDots.appendChild(themeBox);
         });
         const headBtn = el("button", {
           class: "tile tile-subtag" + (isActive ? " tile-active" : ""),
@@ -2083,45 +2132,44 @@
         ]);
         subtagRow.appendChild(headBtn);
 
-        // Atom chips inside this subtag.
-        const atomIds = atomsForSubtag(st.id).filter(function (id) { return (SUBTAG_COUNTS[id] || 0) > 0; });
+        // Atom chips inside this subtag. Sorted by atom code (A1, A2, ...
+        // A10, B1, ...) and grouped onto a fresh row per theme letter so
+        // the student can scan theme-group coverage at a glance.
+        const atomIds = sortAtomsByCode(
+          atomsForSubtag(st.id).filter(function (id) { return (SUBTAG_COUNTS[id] || 0) > 0; })
+        );
         if (atomIds.length) {
           const atomRow = el("div", { class: "cov-atom-row" });
-          // Track the theme letter of the previous atom so we can draw a
-          // small visual separator between theme groups (A → B → C ...),
-          // letting the student scan group-level coverage at a glance.
-          let prevThemeLetter = null;
-          atomIds.forEach(function (aid) {
-            const a = ATOMS[aid];
-            const acount = SUBTAG_COUNTS[aid] || 0;
-            const acov = coverageForSubtag(aid);
-            const aActive = (store.activeFilter === aid);
-            const aStyle =
-              " --tile-fill:" + acov.fill + ";" +
-              " --tile-text:" + acov.text + ";" +
-              " --tile-text-soft:" + acov.textSoft + ";";
-            const atomCode = aid.split(/[-.]/).slice(-1)[0]; // e.g. "A1"
-            const themeLetter = (atomCode.match(/^[A-Z]/) || [""])[0];
-            const isGroupStart = prevThemeLetter !== null && themeLetter && themeLetter !== prevThemeLetter;
-            prevThemeLetter = themeLetter;
-            atomRow.appendChild(el("button", {
-              class: "atom-chip"
-                + (aActive ? " atom-chip-active" : "")
-                + (isGroupStart ? " atom-chip-group-start" : ""),
-              type: "button",
-              "data-atom-id": aid,
-              title: aid + " · " + a.name + " · " + acount + " question" + (acount === 1 ? "" : "s")
-                + (acov.attemptCount === 0 ? " · untried"
-                   : (" · last " + acov.attemptCount + " avg " + Math.round(acov.avg * 100) + "%")),
-              style: aStyle,
-              onClick: function () { setFilter(aActive ? null : aid); }
-            }, [
-              el("span", { class: "atom-code", text: atomCode }),
-              el("span", { class: "atom-name", text: a.name }),
-              acov.attemptCount > 0
-                ? el("span", { class: "atom-pct", text: Math.round(acov.avg * 100) + "%" })
-                : null
-            ]));
+          groupAtomsByTheme(atomIds).forEach(function (tg) {
+            const groupRow = el("div", { class: "cov-atom-group" });
+            tg.ids.forEach(function (aid) {
+              const a = ATOMS[aid];
+              const acount = SUBTAG_COUNTS[aid] || 0;
+              const acov = coverageForSubtag(aid);
+              const aActive = (store.activeFilter === aid);
+              const aStyle =
+                " --tile-fill:" + acov.fill + ";" +
+                " --tile-text:" + acov.text + ";" +
+                " --tile-text-soft:" + acov.textSoft + ";";
+              const atomCode = aid.split(/[-.]/).slice(-1)[0]; // e.g. "A1"
+              groupRow.appendChild(el("button", {
+                class: "atom-chip" + (aActive ? " atom-chip-active" : ""),
+                type: "button",
+                "data-atom-id": aid,
+                title: aid + " · " + a.name + " · " + acount + " question" + (acount === 1 ? "" : "s")
+                  + (acov.attemptCount === 0 ? " · untried"
+                     : (" · last " + acov.attemptCount + " avg " + Math.round(acov.avg * 100) + "%")),
+                style: aStyle,
+                onClick: function () { setFilter(aActive ? null : aid); }
+              }, [
+                el("span", { class: "atom-code", text: atomCode }),
+                el("span", { class: "atom-name", text: a.name }),
+                acov.attemptCount > 0
+                  ? el("span", { class: "atom-pct", text: Math.round(acov.avg * 100) + "%" })
+                  : null
+              ]));
+            });
+            atomRow.appendChild(groupRow);
           });
           subtagRow.appendChild(atomRow);
         }
@@ -3035,6 +3083,8 @@
       if (e.target.id === "review-overlay") closeReview();
     });
     document.getElementById("settings-version").textContent = APP_VERSION;
+    const hdrVer = document.getElementById("header-version");
+    if (hdrVer) hdrVer.textContent = APP_VERSION;
 
     // Sign-in setup: bind handlers once, then either show the pill (if
     // returning student) or hard-gate with the modal (if first time).

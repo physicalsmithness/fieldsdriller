@@ -379,9 +379,15 @@ body {
    which subtag has many atoms and which has few, and whether any one
    subtag's mosaic is uniformly green / red. */
 .cov-blob-subtag {
-  display: inline-flex; gap: 1.5px; align-items: center;
+  /* Now contains .cov-blob-theme children (one per theme letter), not raw
+     dots. The gap here separates theme groups; dots within a group are
+     tightly packed via .cov-blob-theme. */
+  display: inline-flex; gap: 4px; align-items: center;
   padding: 2px 3px; border: 1px solid var(--line-2);
   border-radius: 3px; background: rgba(255, 255, 255, 0.4);
+}
+.cov-blob-theme {
+  display: inline-flex; gap: 1.5px; align-items: center;
 }
 .cov-blob {
   display: inline-block; width: 8px; height: 8px;
@@ -405,7 +411,9 @@ body {
 .tile-active { outline: 2px solid var(--accent); outline-offset: -1px; }
 .tile-name { font-size: 11.5px; line-height: 1.2; flex-shrink: 0; max-width: 60%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .tile-dots {
-  display: inline-flex; flex-wrap: wrap; gap: 2px;
+  /* Now contains .cov-blob-theme children. The gap separates theme
+     groups; dots within a group are tight (see .cov-blob-theme). */
+  display: inline-flex; flex-wrap: wrap; gap: 5px;
   flex-grow: 1; align-items: center;
   padding: 0 4px;
 }
@@ -413,10 +421,16 @@ body {
 
 /* Atom chips under each subtag */
 .cov-atom-row {
-  display: flex; flex-wrap: wrap; gap: 3px;
+  /* Vertical stack of theme-group rows. Each row inside is its own flex
+     wrap of atom chips. A small extra gap between theme groups gives the
+     student a quick visual sense of A / B / C clusters without parsing
+     the codes. */
+  display: flex; flex-direction: column;
   margin: 3px 0 0 10px; padding-left: 6px;
   border-left: 2px solid var(--line);
 }
+.cov-atom-group { display: flex; flex-wrap: wrap; gap: 3px; }
+.cov-atom-group + .cov-atom-group { margin-top: 5px; }
 .atom-chip {
   display: inline-flex; align-items: center; gap: 4px;
   padding: 3px 7px; border-radius: 999px;
@@ -428,21 +442,6 @@ body {
 }
 .atom-chip:hover { outline: 2px solid var(--accent); outline-offset: -1px; }
 .atom-chip-active { outline: 2px solid var(--accent); outline-offset: -1px; font-weight: 700; }
-/* Theme-group separator. Drawn before the first atom chip of each new
-   theme letter (A → B, B → C, etc.), so the student can scan group-level
-   coverage at a glance without parsing the atom codes. */
-.atom-chip-group-start {
-  position: relative;
-  margin-left: 10px;
-}
-.atom-chip-group-start::before {
-  content: "";
-  position: absolute;
-  left: -7px; top: 3px; bottom: 3px;
-  width: 2px;
-  background: var(--line-2);
-  border-radius: 1px;
-}
 .atom-code {
   font-family: ui-monospace, "SF Mono", Consolas, monospace;
   font-size: 9.5px; opacity: 0.7;
@@ -635,6 +634,16 @@ body {
 }
 .signin-friction p { margin: 0; font-size: 13px; color: var(--ink-2); line-height: 1.5; }
 .signin-note { margin: 10px 0 0; font-size: 12.5px; color: var(--muted); }
+
+/* Tiny engine-version label, sits to the left of the identity pill so a
+   refresh after a deploy is visible at a glance. */
+.header-version {
+  font-size: 10px;
+  color: var(--muted);
+  font-family: ui-monospace, "SF Mono", Consolas, monospace;
+  margin-right: 4px;
+  opacity: 0.75;
+}
 
 /* Identity pill in the header */
 .identity-pill {
