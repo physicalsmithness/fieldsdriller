@@ -271,6 +271,43 @@
     };
   }
 
+  // Multi-select: "check all that apply."
+  // Scoring: each correctly-ticked true statement = +1, each wrongly-ticked
+  // false statement = -1, floor at 0. Unticked statements neither earn nor
+  // deduct (we don't credit "didn't engage with a false"). Result is scaled
+  // to fit q.marks if that overrides the natural total.
+  function markMultiSelect(q, selected) {
+    const statements = Array.isArray(q.statements) ? q.statements : [];
+    const sel = Array.isArray(selected) ? selected : [];
+    const trueCount = statements.filter(function (s) { return s && s.correct; }).length;
+    const possible = (typeof q.marks === "number" && q.marks > 0) ? q.marks : Math.max(1, trueCount);
+    let trueTicked = 0, falseTicked = 0;
+    const statementResults = statements.map(function (s, i) {
+      const ticked = sel.indexOf(i) !== -1;
+      let status;
+      if (s && s.correct && ticked) { trueTicked += 1; status = "correct_tick"; }
+      else if (s && !s.correct && ticked) { falseTicked += 1; status = "wrong_tick"; }
+      else if (s && s.correct && !ticked) { status = "missed_true"; }
+      else { status = "correct_skip"; }
+      return { index: i, correct: !!(s && s.correct), ticked: ticked, status: status,
+               text: s ? s.text : "", rationale: s ? s.rationale : null };
+    });
+    const netRaw = Math.max(0, trueTicked - falseTicked);
+    const scale = trueCount > 0 ? (possible / trueCount) : 0;
+    let awarded = Math.round(netRaw * scale * 2) / 2;
+    if (awarded > possible) awarded = possible;
+    if (awarded < 0) awarded = 0;
+    return {
+      marksAwarded: awarded,
+      marksPossible: possible,
+      status: statusFromFraction(awarded, possible),
+      statementResults: statementResults,
+      trueTicked: trueTicked,
+      falseTicked: falseTicked,
+      trueCount: trueCount
+    };
+  }
+
   function markShortLong(q, raw) {
     const possible = q.marks || 1;
     const points = Array.isArray(q.markPoints) ? q.markPoints : [];
@@ -382,6 +419,35 @@
   // one DOES get flagged with the misconception assigned to that choice.
   function detectMisconceptions(q, payload) {
     const out = [];
+
+    // Multi-select questions carry misconceptions per-statement rather than
+    // in a question-level list. Fire when a false statement was ticked (the
+    // student endorsed a misconception) OR a true statement was missed (the
+    // student didn't recognise it). The misconception field on a statement
+    // can be a plain id string or a full object. This block covers both
+    // top-level multi-select questions (q.type) and multi-select phases
+    // (where the kind lives on q.kind instead).
+    const isMultiSelect = (q.type === "multi_select") || (q.kind === "multi_select")
+                          || Array.isArray(q.statements);
+    if (isMultiSelect && Array.isArray(q.statements) && Array.isArray(payload.selected)) {
+      const sel = payload.selected;
+      q.statements.forEach(function (s, i) {
+        if (!s || !s.misconception) return;
+        const ticked = sel.indexOf(i) !== -1;
+        const fires = (!s.correct && ticked) || (s.correct && !ticked);
+        if (!fires) return;
+        const mc = (typeof s.misconception === "string") ? { id: s.misconception } : s.misconception;
+        const id = mc.id;
+        if (!id) return;
+        out.push({
+          id: id,
+          category: mc.category || DEFAULT_CATEGORIES[id] || "other_error",
+          label: mc.label || s.rationale || id,
+          severity: mc.severity || "noted"
+        });
+      });
+    }
+
     const list = Array.isArray(q.misconceptions) ? q.misconceptions : null;
     if (!list) return out;
     for (const m of list) {
@@ -541,7 +607,7 @@
 
   const STORAGE_KEY = "smithics_fields_v0_1";
   const APP_VERSION = "v0.1.0";
-  const TYPES = ["mcq", "short", "long", "numeric", "widget"];
+  const TYPES = ["mcq", "short", "long", "numeric", "widget", "multi_select"];
 
   function defaultStore() {
     return {
@@ -556,7 +622,15 @@
       studyLevel: "HL",
       // Parent-group ids the user has collapsed in the coverage map. The
       // collapsed-state is persisted across sessions.
-      collapsedGroups: []
+      collapsedGroups: [],
+      // Shuffled-deck question picker state. `filterKey` captures the pool
+      // scope (level + activeFilter + excludedTypes) so we can detect when
+      // the deck is no longer valid and re-shuffle. `ids` is the remaining
+      // question ids in play order. Pop from the front; refill when empty.
+      // `lastServedId` is what we just dealt — used to avoid the obvious
+      // boundary case where the last card of an old deck would be the
+      // first card of the new one.
+      deck: { filterKey: "", ids: [], lastServedId: null }
     };
   }
 
@@ -576,7 +650,16 @@
           : [],
         coverageWindow: (typeof p.coverageWindow === "number" && p.coverageWindow > 0) ? p.coverageWindow : 2,
         studyLevel: (p.studyLevel === "SL" || p.studyLevel === "HL") ? p.studyLevel : "HL",
-        collapsedGroups: Array.isArray(p.collapsedGroups) ? p.collapsedGroups : []
+        collapsedGroups: Array.isArray(p.collapsedGroups) ? p.collapsedGroups : [],
+        deck: (function () {
+          const d = p.deck;
+          if (!d || typeof d !== "object") return { filterKey: "", ids: [], lastServedId: null };
+          return {
+            filterKey: typeof d.filterKey === "string" ? d.filterKey : "",
+            ids: Array.isArray(d.ids) ? d.ids.filter(function (x) { return typeof x === "string"; }) : [],
+            lastServedId: typeof d.lastServedId === "string" ? d.lastServedId : null
+          };
+        })()
       };
     } catch (e) {
       console.warn("Storage corrupt, resetting:", e);
@@ -650,20 +733,86 @@
     return { question: q, instanceIndex: idx - 1, view: Object.assign({}, q, inst) };
   }
 
-  let lastQuestionId = null;
+  // Build a stable, comparable key for the current pool scope. When this
+  // changes (level toggle, filter set/cleared, type filter changed), the
+  // deck is no longer valid and gets re-shuffled on the next pick.
+  function currentFilterKey(filter) {
+    const f = filter || "(none)";
+    const lvl = store.studyLevel || "HL";
+    const exTypes = Array.isArray(store.excludedTypes) ? store.excludedTypes.slice().sort().join(",") : "";
+    return lvl + "|" + f + "|" + exTypes;
+  }
+
+  // Fisher-Yates in place. Returns the same array.
+  function shuffleInPlace(arr) {
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      const t = arr[i]; arr[i] = arr[j]; arr[j] = t;
+    }
+    return arr;
+  }
+
+  // Shuffled-deck picker. We maintain `store.deck = { filterKey, ids, lastServedId }`:
+  // - When the deck is empty OR the scope key has changed, we reshuffle the
+  //   eligible pool into `ids`.
+  // - To avoid the obvious boundary repeat (last card of old deck = first
+  //   card of new deck), we move `lastServedId` to the back of the new deck
+  //   if it lands in the front half. Cheap and effective.
+  // - We pop the front of `ids` and look the question up by id, skipping
+  //   any id that's no longer in the eligible pool (e.g., parked since the
+  //   deck was last shuffled, or the pool was filtered tighter).
+  // - State is persisted on every pick so the deck survives reload.
   function pickNextQuestion(filter) {
     const pool = poolForFilter(filter);
     if (pool.length === 0) return null;
-    if (pool.length === 1) {
-      lastQuestionId = pool[0].id;
-      return pickInstance(pool[0]);
+
+    const poolIds = pool.map(function (q) { return q.id; });
+    const poolIdSet = {};
+    poolIds.forEach(function (id) { poolIdSet[id] = true; });
+
+    if (!store.deck || typeof store.deck !== "object") {
+      store.deck = { filterKey: "", ids: [], lastServedId: null };
     }
-    let q, tries = 0;
-    do {
-      q = pool[Math.floor(Math.random() * pool.length)];
-      tries++;
-    } while (q.id === lastQuestionId && tries < 8);
-    lastQuestionId = q.id;
+    const wantKey = currentFilterKey(filter);
+
+    function reshuffle() {
+      const fresh = shuffleInPlace(poolIds.slice());
+      const lastId = store.deck.lastServedId;
+      if (lastId && fresh.length > 1) {
+        const idx = fresh.indexOf(lastId);
+        // If the just-served card landed in the front half of the new deck,
+        // move it to the very back. Avoids "you just saw this" repeats at
+        // the boundary without making the picker deterministic.
+        if (idx !== -1 && idx < Math.floor(fresh.length / 2)) {
+          fresh.splice(idx, 1);
+          fresh.push(lastId);
+        }
+      }
+      store.deck.filterKey = wantKey;
+      store.deck.ids = fresh;
+    }
+
+    if (store.deck.filterKey !== wantKey || !Array.isArray(store.deck.ids) || store.deck.ids.length === 0) {
+      reshuffle();
+    }
+
+    // Pop ids until we find one still in the eligible pool. If the deck
+    // somehow drains entirely without yielding a live id, reshuffle once
+    // and try again. After that, give up and return null.
+    let q = null, tries = 0;
+    while (!q && tries < 2) {
+      while (store.deck.ids.length) {
+        const id = store.deck.ids.shift();
+        if (poolIdSet[id]) {
+          q = pool.find(function (qq) { return qq.id === id; }) || null;
+          if (q) break;
+        }
+      }
+      if (!q) { reshuffle(); tries++; }
+    }
+    if (!q) return null;
+    store.deck.lastServedId = q.id;
+    persist();
     return pickInstance(q);
   }
 
@@ -1010,6 +1159,8 @@
     let brokenReason = null;
     if (!type) brokenReason = "Question has no type field.";
     else if (type === "mcq" && (!Array.isArray(v.choices) || v.choices.length === 0)) brokenReason = "MCQ question has no choices.";
+    else if (type === "multi_select" && (!Array.isArray(v.statements) || v.statements.length === 0)) brokenReason = "Multi-select question has no statements.";
+    else if (type === "multi_select" && !v.statements.some(function (s) { return s && s.correct; })) brokenReason = "Multi-select question has no true statements.";
     else if (type === "numeric" && typeof v.expectedNumeric !== "number" && typeof v.answer !== "number") brokenReason = "Numeric question has no expected answer.";
     else if (type === "widget") {
       if (!v.widget) brokenReason = "Widget question has no `widget` name.";
@@ -1042,6 +1193,22 @@
         choices.appendChild(btn);
       });
       inputWrap.appendChild(choices);
+    } else if (type === "multi_select") {
+      const list = el("div", { class: "qmulti", id: "qmulti-list" });
+      (v.statements || []).forEach(function (s, i) {
+        if (!s) return;
+        const row = el("label", { class: "ms-row" });
+        const cb = el("input", { type: "checkbox", class: "ms-cb",
+          "data-ms-idx": String(i), id: "ms-cb-" + i });
+        const txt = el("span", { class: "ms-txt" });
+        renderPromptText(s.text || "", txt);
+        row.appendChild(cb);
+        row.appendChild(txt);
+        list.appendChild(row);
+      });
+      inputWrap.appendChild(list);
+      inputWrap.appendChild(el("button", { class: "btn btn-primary submit-btn",
+        onClick: submitMultiSelect, text: "Check answer" }));
     } else if (type === "long") {
       const ta = el("textarea", { class: "ans-textarea", rows: "4",
                                   placeholder: "Type your answer…", id: "ans-input" });
@@ -1106,6 +1273,33 @@
     const misconceptions = detectMisconceptions(current.view, { rawResponse: null, chosenIndex: chosenIndex });
     showFeedback(result, { rawResponse: null, chosenIndex: chosenIndex, widgetAnswer: null,
                             toolState: captureToolState(), misconceptions: misconceptions });
+  }
+
+  function readMultiSelectChecked(rootEl) {
+    if (!rootEl) return [];
+    const out = [];
+    const cbs = rootEl.querySelectorAll('input[type="checkbox"][data-ms-idx]');
+    for (let i = 0; i < cbs.length; i++) {
+      if (cbs[i].checked) out.push(parseInt(cbs[i].getAttribute("data-ms-idx"), 10));
+    }
+    return out;
+  }
+
+  function submitMultiSelect() {
+    if (phase !== "answering") return;
+    const v = current.view;
+    const list = document.getElementById("qmulti-list");
+    const selected = readMultiSelectChecked(list);
+    const result = markMultiSelect(v, selected);
+    const misconceptions = detectMisconceptions(v, { rawResponse: null, chosenIndex: null, selected: selected });
+    showFeedback(result, {
+      rawResponse: JSON.stringify(selected),
+      chosenIndex: null,
+      widgetAnswer: null,
+      selected: selected,
+      toolState: captureToolState(),
+      misconceptions: misconceptions
+    });
   }
 
   function submitText() {
@@ -1291,6 +1485,41 @@
           })()
         ]));
       }
+    } else if (v.type === "multi_select") {
+      const msList = el("div", { class: "fb-multi-list" });
+      (result.statementResults || []).forEach(function (sr) {
+        const row = el("div", { class: "fb-multi-row fb-multi-" + sr.status });
+        const mark = el("span", { class: "fb-multi-mark" });
+        // Glyph: ✓ for correct decisions (correct_tick, correct_skip),
+        // ✗ for wrong_tick, … for missed_true (you should have ticked).
+        if (sr.status === "correct_tick" || sr.status === "correct_skip") mark.textContent = "✓";
+        else if (sr.status === "wrong_tick") mark.textContent = "✗";
+        else if (sr.status === "missed_true") mark.textContent = "·";
+        row.appendChild(mark);
+        const body = el("div", { class: "fb-multi-body" });
+        const t = el("div", { class: "fb-multi-text" });
+        renderPromptText(sr.text || "", t);
+        body.appendChild(t);
+        // Show rationale on wrong_tick or missed_true so the student sees
+        // the diagnosis. Always show the truth-state of the statement.
+        const tag = el("div", { class: "fb-multi-tag" });
+        if (sr.status === "correct_tick") tag.textContent = "True, and you ticked it.";
+        else if (sr.status === "correct_skip") tag.textContent = "False, and you correctly didn't tick it.";
+        else if (sr.status === "wrong_tick") tag.textContent = "False, but you ticked it.";
+        else if (sr.status === "missed_true") tag.textContent = "True, but you didn't tick it.";
+        body.appendChild(tag);
+        if ((sr.status === "wrong_tick" || sr.status === "missed_true") && sr.rationale) {
+          const rEl = el("div", { class: "fb-multi-rationale" });
+          renderPromptText(sr.rationale, rEl);
+          body.appendChild(rEl);
+        }
+        row.appendChild(body);
+        msList.appendChild(row);
+      });
+      fb.appendChild(el("div", { class: "fb-block" }, [
+        el("div", { class: "fb-h", text: "Your selections" }),
+        msList
+      ]));
     } else if (v.type === "widget") {
       fb.appendChild(el("div", { class: "fb-block" }, [
         el("div", { class: "fb-h", text: "Your answer (from the widget)" }),
@@ -1886,6 +2115,44 @@
       }
     }
 
+    // Multi-select replay: parse the JSON-serialised selection and re-render
+    // the per-statement breakdown.
+    if (q && q.type === "multi_select" && typeof a.rawResponse === "string") {
+      let sel = [];
+      try { sel = JSON.parse(a.rawResponse) || []; } catch (e) { sel = []; }
+      const rerun = markMultiSelect(q, sel);
+      const msList = el("div", { class: "fb-multi-list" });
+      (rerun.statementResults || []).forEach(function (sr) {
+        const row = el("div", { class: "fb-multi-row fb-multi-" + sr.status });
+        const mark = el("span", { class: "fb-multi-mark" });
+        if (sr.status === "correct_tick" || sr.status === "correct_skip") mark.textContent = "✓";
+        else if (sr.status === "wrong_tick") mark.textContent = "✗";
+        else if (sr.status === "missed_true") mark.textContent = "·";
+        row.appendChild(mark);
+        const body = el("div", { class: "fb-multi-body" });
+        const t = el("div", { class: "fb-multi-text" });
+        renderPromptText(sr.text || "", t);
+        body.appendChild(t);
+        const tag = el("div", { class: "fb-multi-tag" });
+        if (sr.status === "correct_tick") tag.textContent = "True, and you ticked it.";
+        else if (sr.status === "correct_skip") tag.textContent = "False, correctly skipped.";
+        else if (sr.status === "wrong_tick") tag.textContent = "False, but you ticked it.";
+        else if (sr.status === "missed_true") tag.textContent = "True, but you didn't tick it.";
+        body.appendChild(tag);
+        if ((sr.status === "wrong_tick" || sr.status === "missed_true") && sr.rationale) {
+          const rEl = el("div", { class: "fb-multi-rationale" });
+          renderPromptText(sr.rationale, rEl);
+          body.appendChild(rEl);
+        }
+        row.appendChild(body);
+        msList.appendChild(row);
+      });
+      content.appendChild(el("div", { class: "review-block" }, [
+        el("div", { class: "review-h", text: "Per-statement breakdown" }),
+        msList
+      ]));
+    }
+
     // Mark-point breakdown for short/long: re-run the marker on the recorded
     // answer so the student sees which points fired and which didn't.
     if (q && (q.type === "short" || q.type === "long") && typeof a.rawResponse === "string") {
@@ -2029,6 +2296,34 @@
           correctEl
         ]));
       }
+    } else if (ph.kind === "multi_select") {
+      const msList = el("div", { class: "fb-multi-list phase-multi-list" });
+      (r.statementResults || []).forEach(function (sr) {
+        const row = el("div", { class: "fb-multi-row fb-multi-" + sr.status });
+        const mark = el("span", { class: "fb-multi-mark" });
+        if (sr.status === "correct_tick" || sr.status === "correct_skip") mark.textContent = "✓";
+        else if (sr.status === "wrong_tick") mark.textContent = "✗";
+        else if (sr.status === "missed_true") mark.textContent = "·";
+        row.appendChild(mark);
+        const body = el("div", { class: "fb-multi-body" });
+        const t = el("div", { class: "fb-multi-text" });
+        renderPromptText(sr.text || "", t);
+        body.appendChild(t);
+        const tag = el("div", { class: "fb-multi-tag" });
+        if (sr.status === "correct_tick") tag.textContent = "True, and you ticked it.";
+        else if (sr.status === "correct_skip") tag.textContent = "False, correctly skipped.";
+        else if (sr.status === "wrong_tick") tag.textContent = "False, but you ticked it.";
+        else if (sr.status === "missed_true") tag.textContent = "True, but you didn't tick it.";
+        body.appendChild(tag);
+        if ((sr.status === "wrong_tick" || sr.status === "missed_true") && sr.rationale) {
+          const rEl = el("div", { class: "fb-multi-rationale" });
+          renderPromptText(sr.rationale, rEl);
+          body.appendChild(rEl);
+        }
+        row.appendChild(body);
+        msList.appendChild(row);
+      });
+      summary.appendChild(msList);
     } else if (ph.kind === "numeric") {
       summary.appendChild(el("div", { class: "phase-done-row" }, [
         el("span", { class: "phase-done-key", text: "Your answer: " }),
@@ -2089,6 +2384,26 @@
         choices.appendChild(btn);
       });
       input.appendChild(choices);
+    } else if (ph.kind === "multi_select") {
+      const list = el("div", { class: "qmulti", id: "phase-multi-list" });
+      (ph.statements || []).forEach(function (s, i) {
+        if (!s) return;
+        const row = el("label", { class: "ms-row" });
+        const cb = el("input", { type: "checkbox", class: "ms-cb",
+          "data-ms-idx": String(i), id: "phase-ms-cb-" + idx + "-" + i });
+        const txt = el("span", { class: "ms-txt" });
+        renderPromptText(s.text || "", txt);
+        row.appendChild(cb);
+        row.appendChild(txt);
+        list.appendChild(row);
+      });
+      input.appendChild(list);
+      input.appendChild(el("button", { class: "btn btn-primary submit-btn",
+        text: "Check this part",
+        onClick: function () {
+          const sel = readMultiSelectChecked(list);
+          submitPhase(idx, { selected: sel });
+        } }));
     } else if (ph.kind === "long") {
       const ta = el("textarea", { class: "ans-textarea", rows: "3",
         placeholder: "Type your answer…", id: "phase-input" });
@@ -2147,22 +2462,31 @@
     } else if (ph.kind === "numeric") {
       if (!payload.raw || !payload.raw.trim()) return;
       result = markNumeric(ph, payload.raw);
+    } else if (ph.kind === "multi_select") {
+      // Allow submitting with zero selections (the student might genuinely
+      // believe no statement is true). The marker handles it.
+      result = markMultiSelect(ph, Array.isArray(payload.selected) ? payload.selected : []);
     } else {
       if (!payload.raw || !payload.raw.trim()) return;
       result = markShortLong(ph, payload.raw);
     }
     // Detect misconceptions on this phase. The phase carries its own
-    // `misconceptions: [...]` array (independent of the question's). Fired
-    // misconceptions are stored per-phase, surfaced in the phase-done
-    // summary, and rolled up into the attempt log at the end.
+    // `misconceptions: [...]` array (independent of the question's). For
+    // multi-select phases the misconceptions live on each statement (via
+    // ph.statements[i].misconception); detectMisconceptions handles that
+    // branch when we pass `selected`. Fired misconceptions are stored
+    // per-phase, surfaced in the phase-done summary, and rolled up into the
+    // attempt log at the end.
     const fired = detectMisconceptions(ph, {
       rawResponse: payload.raw || null,
-      chosenIndex: typeof payload.chosenIndex === "number" ? payload.chosenIndex : null
+      chosenIndex: typeof payload.chosenIndex === "number" ? payload.chosenIndex : null,
+      selected: Array.isArray(payload.selected) ? payload.selected : null
     });
     phaseResults[idx] = {
       kind: ph.kind,
       raw: payload.raw || null,
       chosenIndex: typeof payload.chosenIndex === "number" ? payload.chosenIndex : null,
+      selected: Array.isArray(payload.selected) ? payload.selected : null,
       result: result,
       misconceptions: fired
     };

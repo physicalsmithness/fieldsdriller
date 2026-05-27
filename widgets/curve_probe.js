@@ -124,6 +124,41 @@
     return v.toPrecision(sig);
   }
 
+  // ── Fixed-exponent readout helpers ──
+  // The student reads numbers that drift across many orders of magnitude as
+  // they drag the probe. If we format with toExponential() the exponent
+  // changes every few pixels, which is disorienting. Instead, pick a single
+  // "natural" exponent per readout type at mount time (based on the data's
+  // magnitude) and format every value as `mantissa × 10ᴺ` with that exponent
+  // locked. The mantissa may go below 1 or above 10 if the value is far from
+  // the axis's typical scale — that's intentional, it makes very small or
+  // very large values visually obvious.
+  const SUP_MAP = { "0":"⁰","1":"¹","2":"²","3":"³","4":"⁴","5":"⁵",
+                    "6":"⁶","7":"⁷","8":"⁸","9":"⁹","-":"⁻","+":"⁺" };
+  function toSuperscript(n) {
+    return String(n).split("").map(function (c) { return SUP_MAP[c] || c; }).join("");
+  }
+  // Pick an exponent so a typical value's mantissa lands in [1, 10).
+  function pickExp(typicalMagnitude) {
+    if (!isFinite(typicalMagnitude) || typicalMagnitude === 0) return 0;
+    return Math.floor(Math.log10(Math.abs(typicalMagnitude)));
+  }
+  // Format a number with a locked exponent. If `exp` is 0 (small magnitudes),
+  // we fall back to plain toPrecision. Very-near-zero values render as "0".
+  function formatFixed(v, exp, sig) {
+    sig = sig || 3;
+    if (!isFinite(v)) return "—";
+    if (v === 0) return "0";
+    if (!exp || exp === 0) {
+      const abs = Math.abs(v);
+      if (abs >= 1e4) return v.toPrecision(sig);
+      return v.toPrecision(sig);
+    }
+    const mantissa = v / Math.pow(10, exp);
+    if (Math.abs(mantissa) < 1e-6) return "0";
+    return mantissa.toPrecision(sig) + " × 10" + toSuperscript(exp);
+  }
+
   // ── Factory ────────────────────────────────────────────────────────────────
   function curveProbe(host, config) {
     if (!window.d3) {
@@ -213,6 +248,19 @@
     const span = yMax - yMin || Math.max(1, Math.abs(yMax) || 1);
     yMin -= span * 0.08; yMax += span * 0.08;
     if (Array.isArray(config.yDomain)) { yMin = config.yDomain[0]; yMax = config.yDomain[1]; }
+
+    // Pick fixed exponents for the readout panel.
+    // - xExp:     scale of the x-axis (radius, distance, etc.)
+    // - yExp:     scale of the y-axis (V, g, energy, etc.)
+    // - slopeExp: scale of dy/dx (yExp - xExp)
+    // - areaExp:  scale of ∫y dx (yExp + xExp), used in showArea mode
+    // Authors can override via config.xExp / config.yExp etc.
+    const xMagn = Math.max(Math.abs(xDomain[0]), Math.abs(xDomain[1]));
+    const yMagn = Math.max(Math.abs(yMin), Math.abs(yMax));
+    const xExp = (typeof config.xExp === "number") ? config.xExp : pickExp(xMagn);
+    const yExp = (typeof config.yExp === "number") ? config.yExp : pickExp(yMagn);
+    const slopeExp = (typeof config.slopeExp === "number") ? config.slopeExp : (yExp - xExp);
+    const areaExp  = (typeof config.areaExp  === "number") ? config.areaExp  : (yExp + xExp);
 
     // Probe state. By default a random position in the domain — the student
     // has to actually navigate to the point the question asks about. Numeric
@@ -305,17 +353,20 @@
     // Area shading (between probe and probe2 when in read-area mode)
     const areaPath = g.append("path").attr("class", "cp-area").attr("d", "");
 
-    // Tangent group at probe
+    // Tangent group at probe. Crosshairs are drawn first (under the curve in
+    // z-order), then the tangent, then the dot on top.
     const tg = g.append("g").attr("class", "cp-tangent-group");
-    const tangentLine = tg.append("line").attr("class", "cp-tangent");
+    const probeLineH  = tg.append("line").attr("class", "cp-probeline cp-probeline-h");
     const probeLine   = tg.append("line").attr("class", "cp-probeline");
+    const tangentLine = tg.append("line").attr("class", "cp-tangent");
     const probeDot    = tg.append("circle").attr("class", "cp-probedot").attr("r", 6);
 
     // Second probe (only visible when the question wants ΔV / area readouts).
     const showSecondProbe = !!config.showArea;
     const tg2 = g.append("g").attr("class", "cp-tangent-group cp-tg2");
-    const probeLine2 = tg2.append("line").attr("class", "cp-probeline cp-probeline2");
-    const probeDot2  = tg2.append("circle").attr("class", "cp-probedot cp-probedot2").attr("r", 6);
+    const probeLine2H = tg2.append("line").attr("class", "cp-probeline cp-probeline2 cp-probeline-h");
+    const probeLine2  = tg2.append("line").attr("class", "cp-probeline cp-probeline2");
+    const probeDot2   = tg2.append("circle").attr("class", "cp-probedot cp-probedot2").attr("r", 6);
     if (!showSecondProbe) tg2.style("display", "none");
 
     // Drag handlers
@@ -371,6 +422,11 @@
       const v = f(probeR);
       probeLine.attr("x1", xScale(probeR)).attr("x2", xScale(probeR))
                .attr("y1", 0).attr("y2", innerH);
+      // Horizontal crosshair from the y-axis out to the probe dot, so the
+      // student can read the y-value from the line's height as well as from
+      // the readout panel.
+      probeLineH.attr("x1", 0).attr("x2", xScale(probeR))
+                .attr("y1", yScale(v)).attr("y2", yScale(v));
       probeDot.attr("cx", xScale(probeR)).attr("cy", yScale(v));
 
       // Tangent: length spans ~ 24% of inner width centred on probe
@@ -386,9 +442,12 @@
         .attr("x2", xScale(xR)).attr("y2", yScale(yR));
 
       if (showSecondProbe) {
+        const v2here = f(probe2R);
         probeLine2.attr("x1", xScale(probe2R)).attr("x2", xScale(probe2R))
                   .attr("y1", 0).attr("y2", innerH);
-        probeDot2.attr("cx", xScale(probe2R)).attr("cy", yScale(f(probe2R)));
+        probeLine2H.attr("x1", 0).attr("x2", xScale(probe2R))
+                   .attr("y1", yScale(v2here)).attr("y2", yScale(v2here));
+        probeDot2.attr("cx", xScale(probe2R)).attr("cy", yScale(v2here));
         const a = Math.min(probeR, probe2R), b = Math.max(probeR, probe2R);
         const polyPts = [[xScale(a), yScale(0)]];
         for (let i = 0; i <= 60; i++) {
@@ -417,14 +476,15 @@
              + "<span class='cp-key'>" + key + "</span>"
              + "<span class='cp-val'>" + val + " " + units + "</span></div>";
       }
+      const isMulti = !!contribFns;
       html += "<div class='cp-readout-h'>At probe 1</div>";
-      html += row(xLabel,      formatSI(probeR), xUnits);
-      html += row(yLabel + " (net)", formatSI(v), yUnits);
-      html += row("d" + yLabel + "/d" + xLabel, formatSI(slope), slopeUnits, "cp-row-grad");
+      html += row(xLabel,                       formatFixed(probeR, xExp), xUnits);
+      html += row(yLabel + (isMulti ? " (net)" : ""), formatFixed(v, yExp),    yUnits);
+      html += row("d" + yLabel + "/d" + xLabel, formatFixed(slope, slopeExp), slopeUnits, "cp-row-grad");
 
       if (contribFns) {
         contribFns.forEach(function (c) {
-          html += row(c.label, formatSI(c.fn(probeR)), yUnits);
+          html += row(c.label, formatFixed(c.fn(probeR), yExp), yUnits);
         });
       }
 
@@ -434,11 +494,11 @@
         const dV = v2 - v;
         const areaUnits = (yUnits && xUnits) ? (yUnits + " · " + xUnits) : "";
         html += "<div class='cp-readout-h'>At probe 2</div>";
-        html += row(xLabel,    formatSI(probe2R), xUnits);
-        html += row(yLabel,    formatSI(v2),      yUnits);
+        html += row(xLabel,    formatFixed(probe2R, xExp), xUnits);
+        html += row(yLabel,    formatFixed(v2, yExp),      yUnits);
         html += "<div class='cp-readout-h'>Between the two probes</div>";
-        html += row("Δ" + yLabel, formatSI(dV),  yUnits, "cp-row-grad");
-        html += row("Area",       formatSI(A),   areaUnits);
+        html += row("Δ" + yLabel, formatFixed(dV, yExp),  yUnits, "cp-row-grad");
+        html += row("Area",       formatFixed(A, areaExp), areaUnits);
       }
       readout.innerHTML = html;
     }

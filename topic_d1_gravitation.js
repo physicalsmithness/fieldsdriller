@@ -600,30 +600,33 @@ window.FIELDS_D1_QUESTIONS = [
   {
     id: "D.1.3-A1.001",
     level: "SL",
-    tags: ["D.1.3", "D.1.3-A1", "definition"],
-    type: "short",
-    marks: 2,
-    prompt: "When we compute the gravitational force between two planets using $F = Gm_1m_2/r^2$, we treat each planet as a single point mass at its centre. State two conditions under which this is justified.",
-    markPoints: [
-      { any: [
-        "size is negligible compared", "sizes are negligible compared",
-        "size is small compared", "sizes are small compared",
-        "radius is negligible compared", "radius is small compared",
-        "separation is much greater than", "separation is much larger than",
-        "distance between them is much greater", "distance is much larger than",
-        "distance is much greater than the radius", "separation much greater than their radii",
-        "separation >> radius", "r >> radius", "much larger than the radii"
-      ], credit: 1 },
-      { any: [
-        "spherical symmetry", "spherically symmetric", "spherically symmetrical",
-        "uniform spherical", "uniform sphere", "uniform density sphere",
-        "uniform density", "constant density", "mass concentrated at the centre",
-        "behave as if the mass were at the centre", "behaves as if all mass at centre",
-        "as if their mass is at the centre", "as if all the mass is concentrated at the centre"
-      ], credit: 1 }
+    tags: ["D.1.3", "D.1.3-A1"],
+    type: "multi_select",
+    marks: 4,
+    prompt: "When we compute the gravitational force between two planets using $F = Gm_1m_2/r^2$, we treat each planet as a single point mass at its centre. Which of the following conditions are sufficient to justify this treatment? Tick all that apply.",
+    statements: [
+      { text: "The sizes of the bodies are negligible compared with the separation between their centres.",
+        correct: true,
+        rationale: "When the bodies look small from each other's perspective, the angular extent each subtends at the other is negligible — and the point-mass approximation works well." },
+      { text: "Each body has spherical symmetry (concentric shells of uniform density).",
+        correct: true,
+        rationale: "By the shell theorem, the EXTERNAL field of any spherically symmetric mass distribution is identical to a point mass at its centre. So spherical symmetry alone is sufficient even for nearby spherical bodies." },
+      { text: "The two bodies are far apart in absolute terms.",
+        correct: false,
+        rationale: "What matters is the RELATIVE size — separation compared with body size — not the absolute distance. Two galaxies are far apart in absolute terms but extended; two contacting marbles are close but small relative to their separation. The latter case is fine for point-mass treatment.",
+        misconception: "absolute_vs_relative_distance" },
+      { text: "Both bodies have the same density.",
+        correct: false,
+        rationale: "Same-density is irrelevant. The relevant material property is spherical symmetry, which is independent of how dense the body is.",
+        misconception: "irrelevant_property_invoked" },
+      { text: "The bodies are not rotating.",
+        correct: false,
+        rationale: "Rotation can deform a body (oblateness), which would break spherical symmetry — but rotation per se is not the condition. Earth rotates and is slightly oblate; for D.1 purposes we still treat Earth as a point mass.",
+        misconception: "rotation_red_herring" }
     ],
-    explanation: "Two sufficient conditions are:\n\n• The bodies' sizes are small compared with their separation, so the angular extent each subtends at the other is negligible.\n\n• The bodies have spherical symmetry (uniform density on each spherical shell), so the external gravitational field of each behaves exactly as if all the mass were concentrated at its centre. This is the shell theorem; it is what lets us use $r$ as the centre-to-centre distance even for nearby spherical bodies.",
-    examinerNote: "IB accepts either of these on its own as one mark; both for the second mark. A common wrong answer is 'they are far apart' without a comparison — far compared with what? The comparison is between separation and body size, not absolute distance."
+    explanation: "Two sufficient conditions for treating an extended body as a point mass at its centre:\n\n• Sizes are small compared with separation (angular size negligible).\n• Spherical symmetry (the shell theorem makes the external field identical to a centred point mass).\n\nEither alone is sufficient. Both Earth and the Sun satisfy BOTH — they're approximately spherical, AND much smaller than the AU separation. The point-mass approximation in Newton's law is excellent for them.",
+    examinerNote: "Note: the conditions are SUFFICIENT, not necessary. Two bodies in contact could still be treated as point masses if they're both spherical (e.g., two contacting marbles). The shell theorem is doing the heavy lifting.",
+    sourcePack: "Refactored from short to multi_select per v2 brief rule 3."
   },
 
   // ── D.1.3-A2: MCQ on the point-mass condition ────────────────────────────
@@ -916,47 +919,91 @@ window.FIELDS_D1_QUESTIONS = [
     examinerNote: "Common slips: using $h$ instead of $r = R + h$ (gives an absurdly large speed); using $\\sqrt{2GM/r}$ — that's the escape speed at this radius, $\\sim 10.5$ km/s, exactly $\\sqrt{2}$ times the orbital speed; forgetting that 800 km = $8\\times10^5$ m. Sanity: any LEO speed should be in the 7–8 km/s ballpark."
   },
 
-  // ── D.1.H.10-A1: explain why drag causes speed to increase ───────────────
+  // ── D.1.H.10-A1: drag paradox (PHASED) ──────────────────────────────────
   {
-    id: "D.1.H.10-A1.001",
+    id: "D.1.H.10-A1.PHASED.001",
     level: "HL",
     tags: ["D.1.H.10", "D.1.H.10-A1"],
-    type: "long",
-    marks: 3,
-    prompt: "A satellite in low Earth orbit passes through the very thin upper atmosphere and experiences a small viscous drag force. Over many orbits the satellite is observed to speed up. Explain how a force that opposes motion can lead to an increase in orbital speed.",
-    markPoints: [
-      { any: [
-        "drag does negative work", "drag is doing negative work",
-        "drag removes energy", "drag dissipates energy",
-        "total energy decreases", "mechanical energy decreases",
-        "total energy of the satellite decreases", "satellite loses energy",
-        "loses mechanical energy", "satellite's total energy decreases",
-        "energy becomes more negative", "total energy becomes more negative",
-        "satellite's energy is reduced", "satellite's energy reduces",
-        "the satellite loses total mechanical energy"
-      ], credit: 1 },
-      { any: [
-        "orbit radius decreases", "orbital radius decreases", "r decreases",
-        "satellite drops to a lower orbit", "satellite moves to a lower orbit",
-        "orbit shrinks", "spirals inward", "spirals inwards", "spirals in",
-        "moves closer to earth", "moves closer to the planet",
-        "r gets smaller", "smaller radius", "lower orbit",
-        "lower altitude", "altitude decreases", "altitude reduces",
-        "drops to a lower altitude", "falls to a lower orbit"
-      ], credit: 1 },
-      { any: [
-        "v = √(gm/r)", "v = sqrt(gm/r)", "v² = gm/r",
-        "speed increases as r decreases", "speed increases when r decreases",
-        "smaller r means larger v", "smaller orbit means higher speed",
-        "lower orbit means higher speed", "lower orbits are faster",
-        "lower orbits have a higher speed", "lower orbit has higher speed",
-        "speed at lower orbit is higher", "speed in a lower orbit is higher",
-        "v increases as r decreases", "v rises as r falls",
-        "as r decreases v increases", "as the orbit gets lower the speed gets higher"
-      ], credit: 1 }
+    marks: 4,
+    prompt: "A satellite in low Earth orbit passes through the very thin upper atmosphere and experiences a small viscous drag force. Over many orbits the satellite is observed to speed UP.",
+    phases: [
+      {
+        kind: "mcq",
+        marks: 1,
+        prompt: "What does the drag force do to the satellite's total mechanical energy $E$ over time?",
+        choices: [
+          "$E$ stays constant; drag only redistributes energy between KE and PE.",
+          "$E$ increases (becomes less negative) because drag transfers energy to the satellite.",
+          "$E$ decreases (becomes more negative) because drag dissipates the satellite's mechanical energy as heat.",
+          "$E$ remains zero throughout — orbits always have total energy zero."
+        ],
+        answerIndex: 2,
+        distractorRationales: {
+          "0": "Drag is a dissipative force, not a conservative one. It removes energy from the satellite-plus-atmosphere system as heat. $E$ is not conserved here.",
+          "1": "Wrong direction. Drag REMOVES energy from the satellite; it doesn't add it. The atmosphere isn't pushing the satellite forward.",
+          "3": "Bound orbits have $E < 0$, not $E = 0$. $E = 0$ would mean the satellite has just enough energy to escape; orbits are bound and have $E < 0$ throughout."
+        }
+      },
+      {
+        kind: "mcq",
+        marks: 1,
+        prompt: "Given that the satellite's total energy decreases over time, what happens to its orbital radius $r$? (Recall: for a circular orbit, $E = -GMm/(2r)$.)",
+        choices: [
+          "$r$ increases — lower energy means the satellite drifts outward.",
+          "$r$ decreases — to make $E$ more negative, the denominator $2r$ must shrink.",
+          "$r$ stays constant — drag affects speed but not orbital radius.",
+          "$r$ first decreases, then increases as the satellite stabilises."
+        ],
+        answerIndex: 1,
+        distractorRationales: {
+          "0": "Wrong direction. The relation $E = -GMm/(2r)$ means smaller $r$ gives more negative $E$. So as $E$ falls, $r$ falls.",
+          "2": "If $E$ depended only on speed, this would work. But $E$ depends on $r$ too (and on $r$ alone for circular orbits). Energy change → radius change.",
+          "3": "Drag doesn't have a stable equilibrium orbit. The decay continues all the way down to re-entry."
+        }
+      },
+      {
+        kind: "mcq",
+        marks: 1,
+        prompt: "Given that the orbital radius decreases, what happens to the orbital speed $v$? (Recall: for a circular orbit, $v = \\sqrt{GM/r}$.)",
+        choices: [
+          "$v$ decreases — drag continuously opposes motion, so the satellite slows down.",
+          "$v$ stays the same — the satellite is in equilibrium.",
+          "$v$ increases — smaller $r$ in $v = \\sqrt{GM/r}$ means larger $v$.",
+          "$v$ is undefined — once drag starts, the orbit is no longer circular."
+        ],
+        answerIndex: 2,
+        distractorRationales: {
+          "0": "The intuitive answer, but wrong. Drag does decelerate the satellite locally at each point, but the net effect over many orbits is to drop into a lower orbit whose required speed is HIGHER. The lower orbit's faster speed wins.",
+          "1": "Equilibrium would require no net energy change, which would require no drag. Drag exists, so the system isn't in equilibrium.",
+          "3": "The orbit stays approximately circular as it shrinks (small drag, slow decay). It's not 'broken'."
+        },
+        misconceptions: [
+          { id: "drag_decelerates_in_orbit",
+            chosenIndex: 0,
+            label: "You treated drag like friction on the ground — opposing motion, so slowing it. In orbit the rule is different: drag → energy out → smaller r → faster orbital speed." }
+        ]
+      },
+      {
+        kind: "mcq",
+        marks: 1,
+        prompt: "Which is the BEST one-line summary of the chain that resolves the paradox?",
+        choices: [
+          "Drag stops the satellite from escaping, so it speeds up to maintain orbit.",
+          "Drag removes mechanical energy; this forces a smaller orbit, whose required speed (set by $v = \\sqrt{GM/r}$) is higher.",
+          "Drag transfers KE into PE, which then converts back to faster KE.",
+          "Drag is too small to slow the satellite, but it warms up the atmosphere."
+        ],
+        answerIndex: 1,
+        distractorRationales: {
+          "0": "'Stops escape' isn't relevant. The satellite isn't trying to escape; it's in orbit.",
+          "2": "PE doesn't 'convert back' into KE; both go DOWN in magnitude as the orbit shrinks, but PE drops by more, which is why total E goes down. The net of all that is captured by 'smaller r, higher v'.",
+          "3": "Drag IS too small to slow the satellite, but that's not because the atmosphere absorbs it 'instead'. The right resolution is the chain in option 1."
+        }
+      }
     ],
-    explanation: "The paradox resolves like this:\n\nStep 1: drag does negative work on the satellite, so the satellite's total mechanical energy $E = -\\dfrac{GMm}{2r}$ decreases (becomes more negative).\n\nStep 2: since $E$ becomes more negative, $r$ in $E = -GMm/(2r)$ must decrease. The satellite drops to a lower orbit.\n\nStep 3: orbital speed obeys $v = \\sqrt{GM/r}$. As $r$ decreases, $v$ increases. So even though the satellite has less total energy, it is moving faster.\n\nWhere does the kinetic energy come from? The drop in $r$ liberates potential energy: $\\Delta E_p$ is large and negative, while $\\Delta E_k$ is positive (the satellite speeds up). The drag removes $|\\Delta E_k|$ worth of energy plus more besides, with the rest accounting for the net loss of total $E$.",
-    examinerNote: "Three discrete steps, three marks. A common partial answer just notes 'lower orbit means higher speed' without explaining why the orbit dropped in the first place. The crucial chain is: drag → energy out → smaller r → higher v. Markpoint 1 specifically rewards the link to energy (not just 'drag opposes motion')."
+    explanation: "The paradox: drag opposes motion at each instant, yet over many orbits the satellite speeds up. Resolution in three steps:\n\n1. Drag does negative work → satellite's total mechanical energy $E$ decreases (becomes more negative).\n2. For a circular orbit, $E = -GMm/(2r)$. More negative $E$ means smaller $r$.\n3. For a circular orbit, $v = \\sqrt{GM/r}$. Smaller $r$ means larger $v$.\n\nNet: drag → energy out → smaller orbit → higher speed.\n\nWhere does the extra KE come from? The drop in $r$ liberates potential energy — $\\Delta E_p < 0$ — and that drop is bigger than what drag removes, so KE rises by the difference.",
+    examinerNote: "Four phases of diagnostic feedback. A student who passes phases 1 and 2 but fails phase 3 has the energy logic but stumbles on the (intuitively wrong) speed direction — the most important misconception to surface. A student who passes phase 4 (summary) without passing phase 3 may have memorised the result without understanding the chain.",
+    sourcePack: "Refactored from long to phased per v2 brief rule 3."
   },
 
   // ── D.1.H.10-A3: MCQ on the drag paradox ─────────────────────────────────
@@ -1239,39 +1286,69 @@ window.FIELDS_D1_QUESTIONS = [
     sourcePack: "original (plausible — new syllabus emphasis)"
   },
 
-  // ── D.1.H.1-B1: why GPE is negative for a bound system (short) ───────────
+  // ── D.1.H.1-B1: why GPE is negative for a bound system (PHASED) ──────────
   {
-    id: "D.1.H.1-B1.001",
+    id: "D.1.H.1-B1.PHASED.001",
     level: "HL",
-    tags: ["D.1.H.1", "D.1.H.1-B1", "extended_writing"],
-    type: "long",
+    tags: ["D.1.H.1", "D.1.H.1-B1"],
     marks: 3,
-    prompt: "Gravitational potential energy is conventionally taken to be zero at infinite separation. Explain why this convention forces the GPE of any bound system (e.g., Earth and the Moon) to be negative.",
-    markPoints: [
-      { any: [
-        "zero at infinity", "zero at infinite separation",
-        "ep = 0 at infinity", "ep at infinity is zero", "v = 0 at infinity",
-        "reference point at infinity", "infinity is the reference",
-        "infinity as the zero", "convention zero at infinity"
-      ], credit: 1 },
-      { any: [
-        "gravity does positive work", "gravitational force does positive work",
-        "gravity is attractive", "attractive force", "gravitational attraction",
-        "masses are attracted", "as the masses come together",
-        "as they approach each other", "approaching reduces", "approach decreases"
-      ], credit: 1 },
-      { any: [
-        "ep decreases below zero", "ep becomes negative", "ep is less than zero",
-        "energy is now less than zero", "ep less than the value at infinity",
-        "ep is below the infinity value", "ep is negative for bound",
-        "ep negative for any finite separation",
-        "must be negative", "is therefore negative", "thus negative",
-        "below zero for any finite", "value of ep is negative"
-      ], credit: 1 }
+    prompt: "Gravitational potential energy of a bound two-body system (e.g., Earth and the Moon) is conventionally a NEGATIVE quantity. The chain of reasoning that establishes this sign is the focus of this question.",
+    phases: [
+      {
+        kind: "mcq",
+        marks: 1,
+        prompt: "What is the conventional value of the gravitational potential energy $E_p$ when the two masses are infinitely far apart?",
+        choices: [
+          "Equal to the sum of their kinetic energies.",
+          "Zero, by convention.",
+          "Infinite, because the distance is infinite.",
+          "Negative infinity, because the masses are unbound."
+        ],
+        answerIndex: 1,
+        distractorRationales: {
+          "0": "PE doesn't depend on KE. They're independent quantities.",
+          "2": "$E_p = -Gm_1m_2/r$. As $r \\to \\infty$, $E_p \\to 0$, not infinity. The convention chooses this limit as zero exactly because it makes the bookkeeping clean.",
+          "3": "PE approaches zero from below, not minus infinity. Minus infinity would correspond to $r \\to 0$, not $r \\to \\infty$."
+        }
+      },
+      {
+        kind: "mcq",
+        marks: 1,
+        prompt: "If you slowly bring the two masses together (from infinity to some finite separation $r$), what kind of work does GRAVITY do?",
+        choices: [
+          "Positive work — gravity is attractive, so it pulls the masses in the direction they're moving.",
+          "Negative work — gravity opposes the motion.",
+          "Zero work — the masses are moved slowly, so there's no force.",
+          "Undefined — work has no meaning at infinity."
+        ],
+        answerIndex: 0,
+        distractorRationales: {
+          "1": "Gravity is ATTRACTIVE: it pulls the masses toward each other. As they move toward each other (which is what 'bringing together' means), the force and the displacement point in the same direction, so the work is positive.",
+          "2": "Slow motion doesn't imply zero force — gravity acts regardless of speed. (To 'move slowly' you'd actually need an external agent doing NEGATIVE work to oppose gravity and keep KE near zero. But gravity itself does positive work.)",
+          "3": "Work is well-defined here, and the integral $\\int F \\cdot dr$ from infinity to $r$ converges to a finite value: $+Gm_1m_2/r$ (positive)."
+        }
+      },
+      {
+        kind: "mcq",
+        marks: 1,
+        prompt: "Combine the previous two facts. As the masses come together, the system's $E_p$ goes from zero (at infinity) to a value at separation $r$. What sign is that value?",
+        choices: [
+          "Positive, because gravity does positive work to bring them in.",
+          "Zero, because energy is conserved.",
+          "Negative, because the system has 'fallen' below the reference level.",
+          "Depends on the masses involved."
+        ],
+        answerIndex: 2,
+        distractorRationales: {
+          "0": "Sign-flip trap. Positive WORK by gravity decreases the system's POTENTIAL ENERGY (because $\\Delta E_p = -W_{\\text{gravity}}$). So $E_p$ falls; starting from zero, it becomes negative.",
+          "1": "Energy is conserved overall (kinetic + potential), but $E_p$ alone changes. The KE that gravity creates is exactly $-\\Delta E_p$.",
+          "3": "The SIGN doesn't depend on the masses — it's always negative for a bound system. The MAGNITUDE does depend on the masses ($E_p = -Gm_1m_2/r$)."
+        }
+      }
     ],
-    explanation: "Take $E_p = 0$ when the two masses are infinitely far apart (the convention).\n\nNow bring the masses together. Gravity is attractive, so as the masses approach, the gravitational force does positive work on each. By the work-energy theorem this positive work either increases their KE (if released) or appears as negative external work (if the masses are moved slowly and carefully).\n\nEither way, the GPE of the system has decreased from its starting value (zero at infinity) to some smaller value. Smaller than zero means negative. So for any finite separation, $E_p < 0$, confirmed by the formula $E_p = -Gm_1m_2/r$ which is negative for all real positive $r$.\n\nThe sign is not just bookkeeping: it tells you the system is bound. To unbind it (separate to infinity again) you would have to supply $|E_p|$ of external energy, which is exactly the escape-energy condition.",
-    examinerNote: "Three markpoints: (i) the convention $E_p = 0$ at infinity, (ii) why attractive gravity reduces $E_p$ as the masses approach, (iii) the conclusion that $E_p < 0$ for any bound (finite-separation) system.\n\nA common partial answer just cites the formula '$E_p = -Gm_1m_2/r$ is negative' without the convention or the work argument. That gets the third mark by reasoning, but misses (i) and (ii). IB would award one of three for that.",
-    sourcePack: "original (plausible — new syllabus emphasis)"
+    explanation: "The chain that establishes the negative sign of GPE:\n\n1. Convention: $E_p = 0$ at infinite separation.\n2. Gravity is attractive: as masses approach, gravity does POSITIVE work.\n3. Positive work by gravity decreases $E_p$: $\\Delta E_p = -W_{\\text{gravity}}$. Starting at zero and decreasing gives negative.\n\nFormally: $E_p = -Gm_1m_2/r$, which is negative for all real positive $r$.\n\nThe sign is physically meaningful: it tells you the system is BOUND. To unbind it (separate to infinity) you'd have to supply $|E_p|$ of external energy. This is the escape-energy condition.",
+    examinerNote: "Refactored from a substring-matched long-form explanation. The phased version surfaces exactly which link of the chain a student is missing: do they know the convention? Do they get the work direction? Do they then read the sign correctly?",
+    sourcePack: "Refactored from long to phased per v2 brief rule 3."
   },
 
   // ── D.1.H.1-B2: numeric — work to separate to infinity ───────────────────
@@ -1538,33 +1615,36 @@ window.FIELDS_D1_QUESTIONS = [
     sourcePack: "Pack D (asteroid-strike-style Q)"
   },
 
-  // ── D.1.H.10-C1: atmospheric spiral inward (short) ────────────────────────
+  // ── D.1.H.10-C1: atmospheric spiral inward (multi_select) ─────────────────
   {
     id: "D.1.H.10-C1.001",
     level: "HL",
     tags: ["D.1.H.10", "D.1.H.10-C1"],
-    type: "short",
-    marks: 2,
-    prompt: "A low-orbit satellite experiences very small but continuous atmospheric drag. Describe what happens to its orbital altitude and its orbital speed over many revolutions, and state the eventual fate of the satellite.",
-    markPoints: [
-      { any: [
-        "altitude decreases", "altitude reduces", "altitude drops",
-        "orbit spirals inward", "spirals inwards", "spirals in",
-        "orbital radius decreases", "orbit radius decreases", "r decreases",
-        "orbit shrinks", "satellite drops to a lower orbit", "satellite gradually descends",
-        "satellite gets closer to earth", "moves closer to earth"
-      ], credit: 1 },
-      { any: [
-        "speed increases", "orbital speed increases", "v increases",
-        "speed rises", "speed gets faster", "satellite moves faster",
-        "speeds up", "speed up", "satellite speeds up",
-        "speed increases as the orbit gets lower",
-        "lower orbit means higher speed", "moves faster"
-      ], credit: 1 }
+    type: "multi_select",
+    marks: 5,
+    prompt: "A low-orbit satellite experiences very small but continuous atmospheric drag over many revolutions. Which of the following statements describe the long-term behaviour of the satellite correctly? Tick all that apply.",
+    statements: [
+      { text: "The orbital altitude gradually decreases.",
+        correct: true,
+        rationale: "Drag removes mechanical energy, so $E = -GMm/(2r)$ becomes more negative, which requires $r$ to decrease." },
+      { text: "The orbital speed gradually increases.",
+        correct: true,
+        rationale: "Even though drag opposes motion, the spiral inward reduces $r$. Since $v = \\sqrt{GM/r}$, smaller $r$ means larger $v$." },
+      { text: "Eventually the satellite re-enters the denser atmosphere and burns up or fragments reach the surface.",
+        correct: true,
+        rationale: "As the orbit drops, atmospheric density rises rapidly, drag grows, and the decay accelerates. The satellite is destroyed at re-entry (small) or reaches the ground in pieces (large)." },
+      { text: "The orbital speed gradually decreases because drag opposes motion.",
+        correct: false,
+        rationale: "Intuitively reasonable but wrong. Drag DOES oppose motion at each instant, but the net effect over many orbits is to lower the orbit, and the lower orbit's required orbital speed is HIGHER. The two effects produce a counter-intuitive net speed increase.",
+        misconception: "drag_decelerates_in_orbit" },
+      { text: "The orbital period gradually increases as the orbit decays.",
+        correct: false,
+        rationale: "Period $T = 2\\pi r/v$; the orbit drops AND speeds up, so $T$ DECREASES (shorter orbits). The ISS at lower altitude orbits faster than satellites at higher orbits — shorter period.",
+        misconception: "period_grows_with_decay" }
     ],
-    explanation: "Drag continuously removes mechanical energy. Total energy $E = -GMm/(2r)$ becomes more negative, so $r$ decreases: the orbit spirals inward. As $r$ decreases, orbital speed $v = \\sqrt{GM/r}$ increases.\n\nEventual fate: as the satellite drops into progressively denser atmosphere, drag grows rapidly. The orbit decays faster and faster until the satellite re-enters the atmosphere, heats up due to dissipation of its kinetic energy, and either burns up (small satellites) or has surviving fragments reach the surface (the ISS-class case). This is why the ISS needs periodic reboosts to fight the drag.",
-    examinerNote: "Two markpoints. Strictly there's a third part (state the fate) but IB rarely awards a mark for 'and then it falls back to Earth' as a discrete point. The big two are: orbit shrinks, speed rises.",
-    sourcePack: "original (plausible — atmospheric decay)"
+    explanation: "Drag continuously removes mechanical energy. Total energy $E = -GMm/(2r)$ becomes more negative, so $r$ decreases: the orbit spirals inward. As $r$ decreases:\n• Orbital speed $v = \\sqrt{GM/r}$ INCREASES.\n• Orbital period $T = 2\\pi r/v$ DECREASES.\n• Atmospheric density rises sharply at lower altitude, so drag grows.\n\nEventual fate: re-entry. Small satellites burn up; large ones reach the surface as debris. This is why the ISS needs periodic reboosts.",
+    examinerNote: "The two counter-intuitive parts: drag-induced SPEED UP, and orbital period SHRINKING during decay. Students often expect the opposite of both.",
+    sourcePack: "Refactored from short to multi_select per v2 brief rule 3."
   },
 
   // ── D.1.H.10-C2: numeric speed increase from drag-induced altitude drop ──
@@ -2060,49 +2140,98 @@ window.FIELDS_D1_QUESTIONS = [
     sourcePack: "Pack questions on Jupiter-Io combined fields"
   },
 
-  // ── D.1.H.9-D3: weightlessness in orbit (short) ─────────────────────────
+  // ── D.1.H.9-D3: weightlessness in orbit (PHASED, per v2 brief canonical) ─
   {
-    id: "D.1.H.9-D3.001",
+    id: "D.1.H.9-D3.PHASED.001",
     level: "HL",
     tags: ["D.1.H.9", "D.1.H.9-D3"],
-    type: "long",
-    marks: 3,
-    prompt: "An astronaut on board the International Space Station (ISS) reports feeling weightless. The ISS orbits at $\\sim 400$ km altitude, where Earth's gravitational field strength is still about $8.7$ N kg⁻¹ (only about 12% less than at the surface). Explain why the astronaut feels weightless despite being in a strong gravitational field.",
-    markPoints: [
-      { any: [
-        "gravity is still present", "gravity still acts on the astronaut",
-        "gravitational field is still strong", "still a strong gravitational field",
-        "still experiences a gravitational force", "gravity has not vanished",
-        "earth's gravity still acts", "still in earth's gravitational field",
-        "not because there is no gravity", "gravity is not zero",
-        "is not gravity-free", "is not a gravity-free environment"
-      ], credit: 1 },
-      { any: [
-        "both fall together", "astronaut and station fall together",
-        "both have the same acceleration", "both experience the same g",
-        "same gravitational acceleration", "same acceleration as the station",
-        "astronaut accelerates with the station",
-        "iss and astronaut have the same g", "iss and astronaut both freely fall",
-        "share the same gravitational acceleration",
-        "astronaut is in free fall", "astronaut is in free-fall",
-        "astronaut is freely falling", "in free fall with the station",
-        "everything inside is in free fall"
-      ], credit: 1 },
-      { any: [
-        "no normal force", "no contact force",
-        "no normal reaction", "no reaction force from the floor",
-        "no force from the floor", "no force from the seat",
-        "no force pressing on them",
-        "no support force", "no contact with the seat",
-        "feels no contact force", "experiences no contact force",
-        "feels no floor reaction", "doesn't feel any contact force",
-        "feels no normal force", "doesn't feel weight",
-        "feels no reaction force"
-      ], credit: 1 }
+    marks: 4,
+    prompt: "An astronaut on board the International Space Station (ISS) reports feeling weightless. The ISS orbits at about $400$ km altitude.",
+    phases: [
+      {
+        kind: "mcq",
+        marks: 1,
+        prompt: "Earth's surface gravitational field strength is $9.81$ N kg⁻¹. At ISS altitude (about $400$ km), what is the gravitational field strength most nearly equal to?",
+        choices: [
+          "approximately zero",
+          "about $1$ N kg⁻¹ (one tenth of surface)",
+          "about $8.7$ N kg⁻¹ (close to surface)",
+          "the same as at the surface, $9.81$ N kg⁻¹"
+        ],
+        answerIndex: 2,
+        distractorRationales: {
+          "0": "The most common everyday misconception about astronauts. Gravity at $400$ km altitude is only ~12% smaller than at the surface — far from zero. If gravity were zero, the ISS would coast off in a straight line, not orbit.",
+          "1": "An order of magnitude wrong. $g = GM/(R+h)^2$ at $h = 400$ km gives about $8.7$, not $1$.",
+          "3": "Roughly right magnitude but not exact. Field DOES weaken with altitude; just very gradually for LEO."
+        },
+        misconceptions: [
+          { id: "gravity_negligible_in_orbit",
+            chosenIndex: 0,
+            label: "You believed gravity at ISS altitude is approximately zero. It's actually about $8.7$ N kg⁻¹ — close to surface. The astronaut feeling weightless is not because gravity is gone." }
+        ]
+      },
+      {
+        kind: "mcq",
+        marks: 1,
+        prompt: "On Earth's surface, standing still, what physical interaction is responsible for the everyday sensation of HAVING weight?",
+        choices: [
+          "Gravity pulling the body down",
+          "Atmospheric pressure pressing down on the body",
+          "The contact (normal) force from the ground pushing UP on the body",
+          "The body's inertia resisting gravitational acceleration"
+        ],
+        answerIndex: 2,
+        distractorRationales: {
+          "0": "Gravity is the force doing the pulling, but you don't directly sense the gravitational force itself. What you sense is the EQUAL-AND-OPPOSITE reaction force from the ground that prevents you from falling. Take away the ground and gravity still acts — but the sensation of weight vanishes.",
+          "1": "Atmospheric pressure does exist (about 100 kPa) but you don't feel it because it acts equally in all directions. It's not the sensation of weight.",
+          "3": "Inertia (Newton's first law: things resist acceleration) is a real concept, but it's not 'felt'. It's a property of mass, not a force you sense."
+        }
+      },
+      {
+        kind: "multi_select",
+        marks: 1,
+        prompt: "Which of the following statements about the astronaut on the ISS are TRUE? Tick all that apply.",
+        statements: [
+          { text: "The astronaut is in continuous free-fall around the Earth.",
+            correct: true,
+            rationale: "Both the astronaut and the ISS accelerate toward Earth's centre at $g \\approx 8.7$ m s⁻². Falling continuously with horizontal velocity gives an orbit." },
+          { text: "The astronaut and the ISS share the same gravitational acceleration.",
+            correct: true,
+            rationale: "By the equivalence principle (or simply because $g$ depends only on Earth's mass and the position $r$), all objects at the same location accelerate at the same $g$ under gravity alone." },
+          { text: "There is no contact force between the astronaut and the station's walls (in free flight).",
+            correct: true,
+            rationale: "Both falling at the same rate means no relative acceleration, so no contact needed. Hence no force." },
+          { text: "The astronaut has no weight in the Newtonian-gravity sense ($W = mg$).",
+            correct: false,
+            rationale: "$W = mg$ with $g \\approx 8.7$ N kg⁻¹ gives a Newtonian weight that's about 88% of the surface value. The sensation of weight is what's missing, not the gravitational weight.",
+            misconception: "weight_vs_apparent_weight" },
+          { text: "There is no gravity in space.",
+            correct: false,
+            rationale: "Gravity is exactly what keeps the ISS in orbit. Without gravity it would fly off in a straight line. 'No gravity in space' is wrong about the physics; it's the apparent-weight sensation that's missing.",
+            misconception: "gravity_negligible_in_orbit" }
+        ]
+      },
+      {
+        kind: "mcq",
+        marks: 1,
+        prompt: "Which is the BEST one-line summary of why the astronaut feels weightless?",
+        choices: [
+          "Gravity is too weak at $400$ km altitude to be noticeable.",
+          "The astronaut and the station are both in free-fall at the same rate, so there is no contact force on the astronaut.",
+          "Earth's gravity is cancelled by the centrifugal effect of the orbit.",
+          "The astronaut's mass is reduced in orbit."
+        ],
+        answerIndex: 1,
+        distractorRationales: {
+          "0": "Gravity at ISS altitude is about 88% of the surface value — definitely noticeable, definitely not the reason for weightlessness.",
+          "2": "There's no separate 'centrifugal force' that cancels gravity. In the ground frame, gravity IS the centripetal force keeping the ISS in orbit. The astronaut feels weightless because the astronaut shares the orbit, not because of a force balance.",
+          "3": "Mass is invariant. The astronaut's mass is the same on Earth, on the ISS, and on the Moon."
+        }
+      }
     ],
-    explanation: "Weight in the everyday sense is the contact force (normal force from a chair, floor, etc.) that opposes gravity and gives you the sensation of 'pressure' on your feet or seat. In orbit, gravity is still strong — but the ISS and everyone inside are all in free-fall toward Earth at the same rate ($g \\approx 8.7$ N kg⁻¹). The station is moving sideways fast enough that it 'falls past' Earth indefinitely (that's what an orbit is).\n\nBecause the astronaut and the station share the same gravitational acceleration, the astronaut doesn't push against any surface and no surface pushes back. The contact force is zero. No contact force = no sensation of weight, even though the gravitational force is still doing its thing.\n\nThis is the equivalence-principle insight: gravity and uniformly accelerating reference frames are locally indistinguishable. An astronaut in orbit IS in a freely-falling frame, where gravity's effect appears (locally) cancelled.",
-    examinerNote: "Three markpoints: (i) gravity is still present (rejects the common 'no gravity in space' misconception); (ii) astronaut and station fall together with the same acceleration; (iii) no contact force, so no sensation of weight.\n\nThe key is teasing apart 'weight as gravitational force' (which is still present) from 'sensation of weight as the normal reaction force' (which is what's actually being felt and what's missing). Students who write 'there is no gravity in space' have a misconception — gravity is exactly what's keeping the ISS in orbit in the first place.",
-    sourcePack: "original (textbook concept)"
+    explanation: "Weight in the everyday sense is the contact force (normal force from a chair, floor, etc.) that opposes gravity. In orbit, gravity is still strong — but the ISS and everyone inside are all in free-fall toward Earth at the same rate. The station is moving sideways fast enough that it 'falls past' Earth indefinitely; that's what an orbit is.\n\nBecause the astronaut and the station share the same gravitational acceleration, the astronaut doesn't push against any surface and no surface pushes back. The contact force is zero. No contact force, no sensation of weight — even though the gravitational force is still doing its thing.\n\nThis is the equivalence principle: gravity and uniformly accelerating reference frames are locally indistinguishable.",
+    examinerNote: "The brief's canonical example for the new 'no free-form explanations' rule. Four phases, four pieces of diagnostic feedback: (1) gravity is NOT zero at LEO altitude; (2) everyday weight sensation is the contact/normal force; (3) what's true and what's not for the astronaut; (4) the one-line summary.\n\nA student who fails the multi-select but passes the rest knows the conceptual chain but tripped on one definition. A student who passes the value-range MCQ but bombs the summary knows the numbers without understanding the principle. The diagnostic richness is the point.",
+    sourcePack: "Refactored from long to phased per v2 brief rule 3 (canonical example)."
   },
 
   // ════════════════════════════════════════════════════════════════════════
@@ -2190,36 +2319,29 @@ window.FIELDS_D1_QUESTIONS = [
     sourcePack: "original (foundational drill)"
   },
 
-  // ── D.1.3-C1: data consistent with point-mass behaviour (short) ──────────
+  // ── D.1.3-C1: data consistent with point-mass behaviour (MCQ pick-best) ──
   {
     id: "D.1.3-C1.001",
     level: "SL",
     tags: ["D.1.3", "D.1.3-C1"],
-    type: "short",
-    marks: 2,
-    prompt: "Astronomers measure the gravitational potential $V$ at many distances $r$ from Earth's centre (outside Earth's surface) and find that the product $rV$ is constant across all measurements. Explain how this observation supports the claim that Earth behaves as a point mass for external observers, even though Earth is an extended body.",
-    markPoints: [
-      { any: [
-        "v = -gm/r", "v is -gm/r", "v equals -gm/r",
-        "point mass produces v = -gm/r", "point mass would give v = -gm/r",
-        "for a point mass v ∝ -1/r", "for a point mass v ∝ 1/r",
-        "v ∝ -1/r", "v inversely proportional to r",
-        "potential of a point mass is -gm/r", "potential of a point mass varies as -1/r"
-      ], credit: 1 },
-      { any: [
-        "rv is constant", "rv = constant", "rv = -gm",
-        "product rv is the same", "rv stays constant",
-        "rv being constant confirms", "constant rv is consistent with",
-        "constant value of rv", "rv stays at the same value",
-        "rv equals -gm", "rv equal to a constant",
-        "matches the v = -gm/r form", "matches point-mass behaviour",
-        "this is consistent with point mass", "consistent with a point mass",
-        "what a point mass would produce", "what a point mass gives"
-      ], credit: 1 }
+    type: "mcq",
+    marks: 1,
+    prompt: "Astronomers measure the gravitational potential $V$ at many distances $r$ from Earth's centre (outside Earth's surface) and find that the product $rV$ is constant across all measurements. Which statement BEST explains why this observation supports the claim that Earth behaves as a point mass for external observers?",
+    choices: [
+      "It shows that Earth's mass is concentrated at a single point.",
+      "It matches the form $V = -GM/r$, since rearranging gives $rV = -GM$ — a constant that depends only on Earth's mass.",
+      "It shows that $V$ is the same at every $r$, which means the gravitational field outside Earth is uniform.",
+      "It shows that the gravitational field outside Earth is zero, which is what a point mass would produce."
     ],
-    explanation: "A point mass produces gravitational potential $V = -GM/r$ at distance $r$. Rearranging: $rV = -GM$, a constant that depends only on the central mass.\n\nIf measurements outside Earth give $rV = $ constant, then Earth's gravitational potential field matches the $-GM/r$ form exactly — even though Earth is an extended sphere, not a point. The shell theorem (any spherically symmetric mass distribution produces the same EXTERNAL field as a point mass at the centre) is the reason this works.\n\nFor Earth $rV = -GM = -3.98\\times10^{14}$ J m kg⁻¹, the same value whether you measure $V$ at the surface, at LEO altitude, or at the Moon's orbital radius.",
-    examinerNote: "Two markpoints: (i) recognise $V = -GM/r$ as the point-mass form; (ii) interpret $rV = $ constant as consistent with that form (and therefore with point-mass behaviour).\n\nThis question is observed in Pack D. The deeper physical insight: any spherically symmetric mass distribution looks identical to a point mass from outside. So 'Earth IS a point mass' externally — not just an approximation.",
-    sourcePack: "Pack D (rV evidence)"
+    answerIndex: 1,
+    distractorRationales: {
+      "0": "Earth is NOT concentrated at a single point — it's a real extended body with mass distributed throughout. The observation shows that EXTERNALLY the body BEHAVES like a point mass; it doesn't say the body IS one.",
+      "2": "Misreads the data. $V$ is NOT the same at every $r$ — only the product $rV$ is constant. $V$ itself varies as $-1/r$, getting less negative as you move further away.",
+      "3": "The gravitational field outside Earth is not zero — it's $g = GM/r^2$, which is small but nonzero at large distances. A point mass also doesn't have zero external field."
+    },
+    explanation: "A point mass produces gravitational potential $V = -GM/r$ at external distance $r$. Rearranging: $rV = -GM$, a constant that depends only on the central mass.\n\nObserving $rV = $ constant for Earth, across many $r$, is exactly the signature of point-mass behaviour. The shell theorem (any spherically symmetric mass distribution looks like a point mass externally) is the underlying reason.\n\nFor Earth, $rV = -GM \\approx -3.98 \\times 10^{14}$ J m kg⁻¹, the same value whether you measure $V$ at the surface or at the Moon's orbit.",
+    examinerNote: "Common confusion (option a): students think the observation proves Earth is literally a point mass. It doesn't. It proves Earth EXTERNALLY produces the same field as a point mass — which is what the shell theorem guarantees for a sphere.",
+    sourcePack: "Pack D (rV evidence). Refactored from short to mcq pick-best per v2 brief rule 3."
   },
 
   // ── D.1.4-B2: g in m s⁻² (MCQ) ───────────────────────────────────────────
@@ -2379,33 +2501,37 @@ window.FIELDS_D1_QUESTIONS = [
     sourcePack: "Pack textbook (near-surface uniform)"
   },
 
-  // ── D.1.5-C2: contrast uniform near-surface with radial (short) ─────────
+  // ── D.1.5-C2: contrast uniform near-surface with radial (multi_select) ──
   {
     id: "D.1.5-C2.001",
     level: "SL",
     tags: ["D.1.5", "D.1.5-C2"],
-    type: "short",
-    marks: 2,
-    prompt: "Sketch verbally (or describe in words) the two different ways gravitational field lines are commonly drawn for Earth: (i) on the large scale, in space; and (ii) on the small scale, near the surface in a laboratory room. State both the SHAPE of the lines and their relative SPACING in each case.",
-    markPoints: [
-      { any: [
-        "radial", "radial pointing inward", "radial toward the centre",
-        "radiating inward", "lines point toward earth", "lines converge",
-        "converging toward earth", "converge on earth", "converge at the centre",
-        "pointing radially inwards", "radial inward"
-      ], credit: 1 },
-      { any: [
-        "parallel and equally spaced", "parallel equally spaced",
-        "parallel lines equally spaced", "uniform and parallel",
-        "approximately parallel", "approximately uniform",
-        "parallel pointing down", "parallel with uniform spacing",
-        "equally spaced parallel lines", "uniform field with parallel lines",
-        "evenly spaced parallel lines"
-      ], credit: 1 }
+    type: "multi_select",
+    marks: 4,
+    prompt: "Earth's gravitational field is depicted on two different spatial scales: (a) zoomed out to show Earth as a sphere in space, and (b) zoomed in to a small region near the surface, much smaller than Earth's radius. Which of the following statements about how the field lines are drawn at each scale are correct? Tick all that apply.",
+    statements: [
+      { text: "At the large scale, the lines are radial and point inward toward Earth's centre.",
+        correct: true,
+        rationale: "Gravity pulls toward Earth's centre. Field arrows point inward; the lines converge at the centre." },
+      { text: "At the small scale, the lines are approximately parallel and equally spaced.",
+        correct: true,
+        rationale: "Near a single point on Earth, both the direction and magnitude of $g$ vary negligibly across the region, giving a near-uniform field." },
+      { text: "At the large scale, the lines are equally spaced.",
+        correct: false,
+        rationale: "Line density represents field strength. Since $g \\propto 1/r^2$, the lines bunch up close to Earth and spread out far away. Not equally spaced.",
+        misconception: "uniform_spacing_in_radial_field" },
+      { text: "At the small scale, the lines diverge slightly because they're really radial.",
+        correct: false,
+        rationale: "Strictly true (the lines ARE radial at all scales), but the deviation is negligible across a region small compared with Earth's radius. The whole point of the small-scale picture is that we treat the field as uniform there.",
+        misconception: "over_literal_radial_field" },
+      { text: "At the large scale, the lines point outward (away from Earth's centre).",
+        correct: false,
+        rationale: "Gravity is attractive. Arrows point inward, not outward. Outward arrows would describe a repulsive field, like positive electric charge.",
+        misconception: "wrong_field_direction" }
     ],
-    explanation: "(i) Large scale: gravitational field lines around Earth are RADIAL, pointing inward from infinity to Earth's centre, with lines getting more closely bunched as you approach Earth. The bunching reflects $g \\propto 1/r^2$: closer to Earth = stronger field = more lines per unit area.\n\n(ii) Small scale (laboratory): on a scale much smaller than Earth's radius, the field lines appear PARALLEL and EQUALLY SPACED, pointing straight down. This is the local-uniform approximation. It's an excellent approximation for short-distance experiments but breaks down as soon as you span height differences comparable to Earth's radius (about 6400 km).\n\nThe two pictures aren't contradictory: the small-scale parallel lines are just a zoomed-in patch of the large-scale radial picture, near the surface where the field's direction varies negligibly across the region of interest.",
-    examinerNote: "Two markpoints: (i) recognise radial inward for the large scale; (ii) recognise parallel and equally spaced for the small scale. Both shape descriptors are needed.\n\nA bonus point in some IB markschemes: explicitly state that the small-scale uniform is an APPROXIMATION, valid only because the region is much smaller than Earth's radius. We don't deduct for omitting this, but it's a useful observation.",
-    sourcePack: "Pack textbook (contrasting field maps)"
+    explanation: "Two complementary pictures of Earth's gravitational field:\n\n• **Large scale**: radial lines pointing toward Earth's centre, with density falling as $1/r^2$ (so lines spread out as you move away).\n\n• **Small scale**: a zoomed-in patch near the surface, where the field is approximately uniform — lines parallel, equally spaced, pointing 'down'. This is the local-uniform approximation that justifies using $mgh$ for PE changes near the surface.\n\nNeither picture is wrong; they're the same field at different scales. The small-scale parallel pattern is what you get if you zoom in far enough that the radial divergence is invisible.",
+    examinerNote: "Common confusion: students try to reconcile 'radial' and 'uniform' as if they're contradictory. They're not — they're descriptions at different magnifications.",
+    sourcePack: "Refactored from short to multi_select per v2 brief rule 3."
   },
 
   // ── D.1.5-D2: map field-line pattern from equipotentials (short) ────────
@@ -2482,37 +2608,29 @@ window.FIELDS_D1_QUESTIONS = [
   // E_orbit curve for D.1.H.2-D2.
   // ════════════════════════════════════════════════════════════════════════
 
-  // ── D.1.H.2-B2: less negative at larger r (short) ────────────────────────
+  // ── D.1.H.2-B2: less negative at larger r (MCQ pick-best) ────────────────
   {
     id: "D.1.H.2-B2.001",
     level: "HL",
     tags: ["D.1.H.2", "D.1.H.2-B2"],
-    type: "short",
-    marks: 2,
-    prompt: "A satellite is moved from a circular orbit at radius $r$ to a higher circular orbit at radius $2r$. Describe what happens to the gravitational potential energy $E_p$ of the satellite-Earth system, both in terms of magnitude and sign.",
-    markPoints: [
-      { any: [
-        "magnitude decreases", "magnitude of ep decreases", "|ep| decreases",
-        "magnitude halves", "magnitude of ep halves", "|ep| halves",
-        "halves in magnitude", "halves the magnitude",
-        "magnitude is halved", "ep magnitude halves",
-        "magnitude reduces to half", "magnitude is half",
-        "|ep| at 2r is half", "|ep| becomes half", "ep magnitude is halved"
-      ], credit: 1 },
-      { any: [
-        "less negative", "becomes less negative",
-        "ep is less negative", "ep becomes less negative",
-        "ep is still negative but smaller in magnitude",
-        "remains negative but less so", "stays negative but less negative",
-        "moves closer to zero", "approaches zero from below",
-        "ep increases (towards zero)", "ep increases but is still negative",
-        "ep increases toward zero", "ep becomes closer to zero",
-        "still negative but closer to zero", "increases (less negative)"
-      ], credit: 1 }
+    type: "mcq",
+    marks: 1,
+    prompt: "A satellite is moved from a circular orbit at radius $r$ to a higher circular orbit at radius $2r$. Which of the following best describes what happens to the gravitational potential energy $E_p$ of the satellite-Earth system?",
+    choices: [
+      "Magnitude halves; $E_p$ becomes less negative (closer to zero).",
+      "Magnitude doubles; $E_p$ becomes more negative.",
+      "Magnitude halves; $E_p$ becomes more negative.",
+      "Magnitude doubles; $E_p$ becomes less negative."
     ],
-    explanation: "$E_p = -GMm/r$ scales as $-1/r$. So when $r$ doubles:\n• Magnitude $|E_p| = GMm/r$ HALVES (from $GMm/r$ to $GMm/(2r)$).\n• Sign stays negative (the system is still bound), but the value moves closer to zero.\n\nEquivalently: $E_p$ INCREASES (becomes less negative) by $GMm/(2r)$, because moving to a higher orbit requires positive work against gravity.\n\nThe distinction between 'magnitude decreases' and 'value increases (toward zero)' is the standard sign-convention trap in HL gravitation. The same number $E_p$ can be described as 'becoming smaller in magnitude' OR 'becoming larger as a signed number' — both are correct.",
-    examinerNote: "Two markpoints: (i) magnitude halves (or equivalently, $|E_p|$ decreases by factor 2); (ii) becomes less negative (or equivalently, $E_p$ increases toward zero).\n\nCommon wrong answer: 'magnitude doubles' (wrong direction; the student is thinking of force, which scales as $1/r^2$ and would change differently). Common confusion: stating 'EP decreases' without specifying magnitude or signed value (ambiguous — could mean either becomes-more-negative OR magnitude-shrinks, depending on convention).",
-    sourcePack: "Pack D (Ep at larger r)"
+    answerIndex: 0,
+    distractorRationales: {
+      "1": "Wrong scaling. $E_p \\propto -1/r$, not $-r$, so doubling $r$ HALVES the magnitude, not doubles it. You may have confused the scaling of $E_p$ with that of $E_k$ relative to $r$ — but $E_k$ ALSO scales as $1/r$, so it falls too.",
+      "2": "Magnitude direction is right, sign direction is wrong. Moving to a higher orbit means less-bound, so $E_p$ moves TOWARD zero (less negative), not away from it.",
+      "3": "Both wrong. Magnitude halves (not doubles), and direction is toward zero (less negative)."
+    },
+    explanation: "$E_p = -GMm/r$. Doubling $r$:\n• $|E_p|$ halves (from $GMm/r$ to $GMm/(2r)$).\n• $E_p$ becomes less negative (e.g. from $-10$ J to $-5$ J), which is the same as saying $E_p$ INCREASES (as a signed number).\n\nThe two ways of saying it ('magnitude halves' / 'becomes less negative') are equivalent. Both correct.",
+    examinerNote: "The standard sign-convention trap: 'Ep decreases' is ambiguous in everyday English (more negative? smaller in magnitude?). Asking about magnitude and sign separately disambiguates.",
+    sourcePack: "Refactored from short to mcq pick-best per v2 brief rule 3."
   },
 
   // ── D.1.H.2-C1: ΔEp between orbits (numeric) ─────────────────────────────
@@ -2614,39 +2732,43 @@ window.FIELDS_D1_QUESTIONS = [
     sourcePack: "Pack D (g from ΔV/Δr)"
   },
 
-  // ── D.1.H.5-C1: zero work in a full circular orbit (short) ──────────────
+  // ── D.1.H.5-C1: zero work in a full circular orbit (PHASED) ─────────────
   {
-    id: "D.1.H.5-C1.001",
+    id: "D.1.H.5-C1.PHASED.001",
     level: "HL",
     tags: ["D.1.H.5", "D.1.H.5-C1"],
-    type: "short",
     marks: 2,
-    prompt: "A satellite completes one full circular orbit around Earth. Calculate the work done BY GRAVITY on the satellite over one full orbit, and give the physical reason for your answer.",
-    markPoints: [
-      { any: [
-        "zero", "0", "no work", "no work is done",
-        "work done is zero", "work done is 0",
-        "w = 0", "w=0", "work = 0", "work equals zero",
-        "the work is zero", "work done by gravity is zero",
-        "zero work", "0 j",  "0 joules"
-      ], credit: 1 },
-      { any: [
-        "force perpendicular to motion", "force is perpendicular to the motion",
-        "force perpendicular to velocity", "force is perpendicular to velocity",
-        "force is always perpendicular to the motion",
-        "perpendicular to the displacement", "force is perpendicular to displacement",
-        "perpendicular to the velocity",
-        "starts and ends at the same point", "returns to the same point",
-        "displacement is zero", "net displacement is zero",
-        "back to the same place", "same potential at start and end",
-        "delta v = 0", "δv = 0", "δv is zero", "potential is the same",
-        "potential is constant around a circular orbit",
-        "circular orbit is an equipotential", "moves along an equipotential"
-      ], credit: 1 }
+    prompt: "A satellite completes one full circular orbit around Earth, returning to its starting position.",
+    phases: [
+      {
+        kind: "numeric",
+        marks: 1,
+        prompt: "What is the work done by gravity on the satellite over one full orbit, in joules?",
+        expectedNumeric: 0,
+        tolerance: 0.001,
+        unitHint: "J"
+      },
+      {
+        kind: "mcq",
+        marks: 1,
+        prompt: "Which is the BEST single-sentence reason for that answer?",
+        choices: [
+          "The gravitational force is always perpendicular to the satellite's velocity in a circular orbit, so the instantaneous power $\\vec F \\cdot \\vec v$ is zero at every point.",
+          "The satellite travels a long path, so the work cancels out by symmetry.",
+          "Gravity does no work because the satellite is in vacuum.",
+          "Work depends on displacement only when the force is constant; here the force varies in direction so work is undefined."
+        ],
+        answerIndex: 0,
+        distractorRationales: {
+          "1": "'Cancels by symmetry' is hand-waving. The right argument is more concrete: force perpendicular to motion at every point gives zero power, integrated to zero over any path. (Or equivalently: gravity is conservative and the path is closed.)",
+          "2": "Vacuum is irrelevant. Drag (a friction-like force) requires a medium and acts opposite to motion. Gravity acts in vacuum just fine; the reason it does no work over a full orbit is force-perpendicular-to-velocity.",
+          "3": "Force varies in direction but $W = \\int \\vec F \\cdot d\\vec s$ is perfectly well-defined for any force field along any path. Gravity is conservative, so over a closed loop $W = 0$ regardless."
+        }
+      }
     ],
-    explanation: "Two equivalent ways to see that the work done by gravity over a full circular orbit is zero:\n\n1. Force perpendicular to motion. In a circular orbit, gravity points radially inward (toward Earth's centre) and the satellite's velocity is tangential (perpendicular to the radius). $W = \\vec F \\cdot \\vec s$, and the force is always perpendicular to the motion, so the instantaneous power $\\vec F \\cdot \\vec v = 0$ at every point. Integrating zero over a full orbit gives zero.\n\n2. Closed loop. The satellite returns to its starting position. Gravity is a conservative force, so $W = -\\Delta E_p = 0$ for any closed loop. The circular orbit is also exactly an equipotential surface around a point mass, so $\\Delta V = 0$ over the whole loop.\n\nBoth arguments give $W = 0$. Either constitutes a valid reason.",
-    examinerNote: "Two markpoints: (i) work is zero; (ii) the reason. Either reason (perpendicular force or closed-loop / equipotential) scores the second mark.\n\nA common partial answer: 'the satellite ends up where it started, so the work is zero'. That conflates displacement with path length and skips the conservative-force argument, but the conclusion is right. Markers usually credit it because the underlying intuition is correct.",
-    sourcePack: "Pack E (full orbit, zero work)"
+    explanation: "Two equivalent ways to see that gravity does no work over a full circular orbit:\n\n1. **Force perpendicular to motion**. In a circular orbit, gravity points radially inward and the satellite's velocity is tangential. $\\vec F \\cdot \\vec v = 0$ at every point, so the instantaneous power is zero. Integrating gives total work zero.\n\n2. **Closed loop, conservative force**. Gravity is conservative, so $W = -\\Delta E_p$. A full orbit returns the satellite to its starting position, so $\\Delta E_p = 0$, and therefore $W = 0$. (Equivalently: a circular orbit lies on an equipotential surface, so $\\Delta V = 0$.)\n\nBoth arguments are valid; the first is the more elementary one.",
+    examinerNote: "Refactored from short to phased (numeric + mcq pick-best). The numeric phase forces an unambiguous answer for the work value; the MCQ phase tests the reasoning. A student who gets the numeric right but picks distractor (b) knows the answer but not why.",
+    sourcePack: "Refactored from short to phased per v2 brief rule 3."
   },
 
   // ── D.1.H.5-D2: work to move from r to 2r (numeric) ─────────────────────

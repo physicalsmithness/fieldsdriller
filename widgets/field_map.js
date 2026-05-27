@@ -331,6 +331,60 @@
       return v.toPrecision(sig);
     }
 
+    // ── Fixed-exponent readout, matched to curve_probe ──
+    // The student drags the test point and the readout values change quickly.
+    // Locking an exponent per quantity (x, y, V, |g|) keeps the displayed
+    // magnitudes legible across the drag, instead of the exponent jumping
+    // every few pixels. We pick exponents from the configured domain (for
+    // x/y) and from a 3×3 sample of V and |g| across the plane.
+    const SUP_MAP_FM = { "0":"⁰","1":"¹","2":"²","3":"³","4":"⁴","5":"⁵",
+                        "6":"⁶","7":"⁷","8":"⁸","9":"⁹","-":"⁻","+":"⁺" };
+    function fmToSuperscript(n) {
+      return String(n).split("").map(function (c) { return SUP_MAP_FM[c] || c; }).join("");
+    }
+    function fmPickExp(typicalMagnitude) {
+      if (!isFinite(typicalMagnitude) || typicalMagnitude === 0) return 0;
+      return Math.floor(Math.log10(Math.abs(typicalMagnitude)));
+    }
+    function formatFixed(v, exp, sig) {
+      sig = sig || 3;
+      if (!isFinite(v)) return "—";
+      if (v === 0) return "0";
+      if (!exp || exp === 0) return v.toPrecision(sig);
+      const mantissa = v / Math.pow(10, exp);
+      if (Math.abs(mantissa) < 1e-6) return "0";
+      return mantissa.toPrecision(sig) + " × 10" + fmToSuperscript(exp);
+    }
+    // Sample V and |g| across a coarse grid to find typical magnitudes.
+    // Skip points within 5% of a body (singularity).
+    const fmSampleVs = [];
+    const fmSampleGs = [];
+    for (let si = 0; si <= 4; si++) {
+      for (let sj = 0; sj <= 4; sj++) {
+        const sx = xDomain[0] + (xDomain[1] - xDomain[0]) * (si / 4);
+        const sy = yDomain[0] + (yDomain[1] - yDomain[0]) * (sj / 4);
+        let nearBody = false;
+        for (let bi = 0; bi < bodies.length; bi++) {
+          const dx = sx - bodies[bi].x, dy = sy - bodies[bi].y;
+          const span = Math.max(xDomain[1] - xDomain[0], yDomain[1] - yDomain[0]);
+          if (Math.sqrt(dx*dx + dy*dy) < span * 0.05) { nearBody = true; break; }
+        }
+        if (nearBody) continue;
+        const sv = V(sx, sy);
+        const sg = gVec(sx, sy);
+        if (isFinite(sv)) fmSampleVs.push(Math.abs(sv));
+        if (isFinite(sg.gMag)) fmSampleGs.push(sg.gMag);
+      }
+    }
+    const fmXExp = (typeof config.xExp === "number") ? config.xExp
+                 : fmPickExp(Math.max(Math.abs(xDomain[0]), Math.abs(xDomain[1])));
+    const fmYExp = (typeof config.yExp === "number") ? config.yExp
+                 : fmPickExp(Math.max(Math.abs(yDomain[0]), Math.abs(yDomain[1])));
+    const fmVExp = (typeof config.vExp === "number") ? config.vExp
+                 : fmPickExp(fmSampleVs.length ? d3.max(fmSampleVs) : 1);
+    const fmGExp = (typeof config.gExp === "number") ? config.gExp
+                 : fmPickExp(fmSampleGs.length ? d3.max(fmSampleGs) : 1);
+
     // ── Sketch-mode buttons (Undo / Clear) ──
     if (sketchMode) {
       const btnRow = document.createElement("div");
@@ -385,13 +439,13 @@
       const yUnits = config.yUnits || "";
       let html = "";
       html += "<div class='fm-readout-h'>Test point</div>";
-      html += rowHTML(config.xLabel || "x", formatSI(tx), xUnits);
-      html += rowHTML(config.yLabel || "y", formatSI(ty), yUnits);
+      html += rowHTML(config.xLabel || "x", formatFixed(tx, fmXExp), xUnits);
+      html += rowHTML(config.yLabel || "y", formatFixed(ty, fmYExp), yUnits);
       html += "<div class='fm-readout-h'>Field at point</div>";
-      html += rowHTML("V", formatSI(v), "J kg⁻¹", "fm-row-key");
-      html += rowHTML("|g|", formatSI(gv.gMag), "N kg⁻¹", "fm-row-key");
-      html += rowHTML("g_x", formatSI(gv.gx), "N kg⁻¹");
-      html += rowHTML("g_y", formatSI(gv.gy), "N kg⁻¹");
+      html += rowHTML("V", formatFixed(v, fmVExp), "J kg⁻¹", "fm-row-key");
+      html += rowHTML("|g|", formatFixed(gv.gMag, fmGExp), "N kg⁻¹", "fm-row-key");
+      html += rowHTML("g_x", formatFixed(gv.gx, fmGExp), "N kg⁻¹");
+      html += rowHTML("g_y", formatFixed(gv.gy, fmGExp), "N kg⁻¹");
       readout.innerHTML = html;
     }
 
@@ -414,7 +468,7 @@
         sketchGroup.append("text")
           .attr("class", "fm-sketch-label")
           .attr("x", px + 7).attr("y", py + 3)
-          .text(formatSI(p.V, 2));
+          .text(formatFixed(p.V, fmVExp, 2));
       });
 
       // Polyline through points (in click order)
@@ -433,15 +487,15 @@
       let html = "";
       html += "<div class='fm-readout-h'>Target</div>";
       if (typeof targetV === "number") {
-        html += rowHTML("V_target", formatSI(targetV), "J kg⁻¹", "fm-row-key");
-        html += rowHTML("± tolerance", "±" + formatSI(tol, 2), "J kg⁻¹");
+        html += rowHTML("V_target", formatFixed(targetV, fmVExp), "J kg⁻¹", "fm-row-key");
+        html += rowHTML("± tolerance", "±" + formatFixed(tol, fmVExp, 2), "J kg⁻¹");
       } else {
         html += "<div class='fm-row'><span class='fm-key'>(no target set)</span></div>";
       }
       html += "<div class='fm-readout-h'>Cursor</div>";
       if (hoverX != null && hoverY != null) {
-        html += rowHTML(config.xLabel || "x", formatSI(hoverX), xUnits);
-        html += rowHTML(config.yLabel || "y", formatSI(hoverY), yUnits);
+        html += rowHTML(config.xLabel || "x", formatFixed(hoverX, fmXExp), xUnits);
+        html += rowHTML(config.yLabel || "y", formatFixed(hoverY, fmYExp), yUnits);
       } else {
         html += "<div class='fm-row'><span class='fm-key'>(move mouse over plot)</span></div>";
       }
@@ -457,7 +511,7 @@
         const mean = sumV / sketchPoints.length;
         html += rowHTML("Placed", String(sketchPoints.length));
         html += rowHTML("Within tolerance", inTol + " / " + sketchPoints.length);
-        html += rowHTML("Mean V", formatSI(mean), "J kg⁻¹");
+        html += rowHTML("Mean V", formatFixed(mean, fmVExp), "J kg⁻¹");
       }
       readout.innerHTML = html;
     }
