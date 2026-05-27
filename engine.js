@@ -678,6 +678,29 @@
 
   function persist() {
     try {
+      // Safety guard: never let an empty in-memory store.attempts overwrite
+      // a non-empty saved one. Catches load-failure-then-write paths that
+      // would otherwise silently wipe history. The only legitimate way to
+      // wipe history is through clearProgress(), which sets a flag before
+      // persisting so this guard knows to allow the write.
+      if (!persist._allowEmptyOverwrite
+          && (!Array.isArray(store.attempts) || store.attempts.length === 0)) {
+        try {
+          const raw = localStorage.getItem(STORAGE_KEY);
+          if (raw) {
+            const prev = JSON.parse(raw);
+            if (Array.isArray(prev.attempts) && prev.attempts.length > 0) {
+              console.warn(
+                "persist(): refusing to overwrite",
+                prev.attempts.length,
+                "saved attempts with empty in-memory store. " +
+                "Reload the page; if attempts still don't appear, file a bug."
+              );
+              return;
+            }
+          }
+        } catch (e) { /* parse failed: fall through and write anyway */ }
+      }
       store.lastSeen = new Date().toISOString();
       localStorage.setItem(STORAGE_KEY, JSON.stringify(store));
     } catch (e) { console.warn("Could not write to localStorage:", e); }
@@ -691,7 +714,14 @@
     // source of truth either way.
     try { reportAttempt(rec); } catch (e) { /* never let reporting break the engine */ }
   }
-  function clearProgress()    { store = defaultStore(); persist(); }
+  function clearProgress() {
+    store = defaultStore();
+    // Bypass the persist() guard exactly once: this is the legitimate
+    // user-requested wipe path from Settings → Reset all progress.
+    persist._allowEmptyOverwrite = true;
+    try { persist(); }
+    finally { persist._allowEmptyOverwrite = false; }
+  }
 
   /* ──────────────────────────────────────────────────────────────────────────
      4b. Student identity, session, and teacher reporting
