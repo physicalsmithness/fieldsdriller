@@ -641,7 +641,7 @@
   const STORAGE_KEY = "smithics_fields_v0_1";
   const IDENTITY_KEY = "smithics_fields_identity_v1";
   const SESSION_KEY = "smithics_fields_session_v1";
-  const APP_VERSION = "v0.2.0";
+  const APP_VERSION = "v0.2.2";
   const TYPES = ["mcq", "short", "long", "numeric", "widget", "multi_select"];
 
   // Teacher reporting endpoint. Deploy teacher-setup.gs as a Google Apps
@@ -937,11 +937,92 @@
 
   function pickInstance(q) {
     const instances = Array.isArray(q.instances) ? q.instances : [];
-    if (instances.length === 0) return { question: q, instanceIndex: null, view: q };
-    const idx = Math.floor(Math.random() * (instances.length + 1));
-    if (idx === 0) return { question: q, instanceIndex: null, view: q };
-    const inst = instances[idx - 1];
-    return { question: q, instanceIndex: idx - 1, view: Object.assign({}, q, inst) };
+    let view, instanceIndex = null;
+    if (instances.length === 0) {
+      view = Object.assign({}, q);
+    } else {
+      const idx = Math.floor(Math.random() * (instances.length + 1));
+      if (idx === 0) {
+        view = Object.assign({}, q);
+      } else {
+        view = Object.assign({}, q, instances[idx - 1]);
+        instanceIndex = idx - 1;
+      }
+    }
+    // Shuffle MCQ choices and multi-select statements at render time so the
+    // position of the correct answer is never stable. Works on the view
+    // copy only; the underlying ALL_QUESTIONS entries stay untouched.
+    randomizeQuestionDisplay(view);
+    return { question: q, instanceIndex: instanceIndex, view: view };
+  }
+
+  // ── Display-order randomization helpers ──
+  function randPermutation(n) {
+    const arr = [];
+    for (let i = 0; i < n; i++) arr.push(i);
+    for (let i = n - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      const t = arr[i]; arr[i] = arr[j]; arr[j] = t;
+    }
+    return arr; // P[displayIndex] = originalIndex
+  }
+
+  // Shuffle MCQ choices in a view-like object, remapping answerIndex,
+  // distractorRationales (keyed by original index), and any misconceptions
+  // whose signature is a chosenIndex. Skips if there are no choices.
+  function randomizeMCQ(obj) {
+    if (!obj || !Array.isArray(obj.choices) || obj.choices.length < 2) return;
+    const P = randPermutation(obj.choices.length);
+    const Pinv = new Array(P.length);
+    for (let i = 0; i < P.length; i++) Pinv[P[i]] = i;
+    obj.choices = P.map(function (orig) { return obj.choices[orig]; });
+    if (typeof obj.answerIndex === "number" && obj.answerIndex >= 0 && obj.answerIndex < P.length) {
+      obj.answerIndex = Pinv[obj.answerIndex];
+    }
+    if (obj.distractorRationales && typeof obj.distractorRationales === "object") {
+      const remapped = {};
+      Object.keys(obj.distractorRationales).forEach(function (k) {
+        const orig = parseInt(k, 10);
+        if (!isNaN(orig) && orig >= 0 && orig < P.length) {
+          remapped[String(Pinv[orig])] = obj.distractorRationales[k];
+        }
+      });
+      obj.distractorRationales = remapped;
+    }
+    if (Array.isArray(obj.misconceptions)) {
+      obj.misconceptions = obj.misconceptions.map(function (m) {
+        if (m && typeof m.chosenIndex === "number" && m.chosenIndex >= 0 && m.chosenIndex < P.length) {
+          return Object.assign({}, m, { chosenIndex: Pinv[m.chosenIndex] });
+        }
+        return m;
+      });
+    }
+  }
+
+  // Shuffle multi-select statements in a view-like object. No index-based
+  // remap is needed because each statement carries its own correct flag,
+  // rationale, and misconception inline; they travel with the statement.
+  function randomizeMultiSelect(obj) {
+    if (!obj || !Array.isArray(obj.statements) || obj.statements.length < 2) return;
+    const P = randPermutation(obj.statements.length);
+    obj.statements = P.map(function (orig) { return obj.statements[orig]; });
+  }
+
+  // Apply randomization to a question view and to each of its phases (if
+  // phased). The view itself is a shallow copy; phases get shallow-copied
+  // here too so we don't mutate the phase objects in ALL_QUESTIONS.
+  function randomizeQuestionDisplay(view) {
+    if (!view) return;
+    if (view.type === "mcq") randomizeMCQ(view);
+    else if (view.type === "multi_select") randomizeMultiSelect(view);
+    if (Array.isArray(view.phases) && view.phases.length) {
+      view.phases = view.phases.map(function (ph) {
+        const phCopy = Object.assign({}, ph);
+        if (phCopy.kind === "mcq") randomizeMCQ(phCopy);
+        else if (phCopy.kind === "multi_select") randomizeMultiSelect(phCopy);
+        return phCopy;
+      });
+    }
   }
 
   // Build a stable, comparable key for the current pool scope. When this
@@ -1238,7 +1319,9 @@
       return;
     }
 
-    // Previous-attempt pill (shows last answered question, click to review)
+    // Previous-attempt pill — muted styling now, neutral background with a
+    // small status-coloured left border. Click Review to open the modal
+    // with the full per-statement / per-phase breakdown of that attempt.
     renderPreviousPill(card);
 
     const v = current.view;

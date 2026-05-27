@@ -393,7 +393,7 @@ window.FIELDS_D1_QUESTIONS = [
       }
     ],
     explanation: "Step 1: read each contribution at $x = 3.0 \\times 10^8$ m.\nEarth: $g_{1x} = -GM_E/x^2 \\approx -4.43 \\times 10^{-3}$ N kg⁻¹ (negative because Earth pulls toward $-x$).\nMoon: $g_{2x} = +GM_M/(D-x)^2 \\approx +6.95 \\times 10^{-4}$ N kg⁻¹ (positive because the Moon pulls toward $+x$).\nStep 2: net. $g_x = g_{1x} + g_{2x} \\approx -3.73 \\times 10^{-3}$ N kg⁻¹.\nStep 3: $F_x = mg_x = 100 \\times (-3.73 \\times 10^{-3}) \\approx -0.373$ N.\nNegative because at $x = 3.0 \\times 10^8$ m we haven't yet crossed the equilibrium near $x = 3.46 \\times 10^8$ m, so the Earth's pull still dominates.",
-    examinerNote: "The signed answer is the point of this question. If you read the magnitude correctly but dropped the sign, IB markschemes typically deduct one mark — and this Driller's marker is strict, so 'positive' answers are rejected outright. Move the probe past $x \\approx 3.46 \\times 10^8$ m and watch the net curve cross zero into positive territory: that's where the Moon takes over."
+    examinerNote: "Direction matters as well as magnitude. If you read the magnitude correctly but submitted a positive number, you've missed the sign. Move the probe past $x \\approx 3.46 \\times 10^8$ m and watch the net curve cross zero into positive territory: that's where the Moon takes over."
   },
 
   // ── D.1.H.6-A1: single-mass equipotentials ───────────────────────────────
@@ -595,7 +595,7 @@ window.FIELDS_D1_QUESTIONS = [
       }
     ],
     explanation: "Three discrete steps:\n\nStep 1: gravity provides the centripetal force.\n$\\dfrac{GMm}{r^2} = \\dfrac{mv^2}{r}$\nso $v^2 = \\dfrac{GM}{r}$.\n\nStep 2: $v = \\dfrac{2\\pi r}{T}$, so $v^2 = \\dfrac{4\\pi^2 r^2}{T^2}$.\n\nStep 3: equate and rearrange.\n$\\dfrac{4\\pi^2 r^2}{T^2} = \\dfrac{GM}{r}$, hence $T^2 = \\dfrac{4\\pi^2}{GM}\\,r^3$. So $T^2 \\propto r^3$.",
-    examinerNote: "Phased version of the canonical Kepler-3 derivation. Each phase tests one step; per-phase ✓/✗ tells the student exactly which step they fumbled.",
+    examinerNote: "In a real IB exam you would derive this end-to-end yourself; here the chain is broken into recognition steps. Common slip: writing $T \\propto r^3$ instead of $T \\propto r^{3/2}$.",
     sourcePack: "Refactored from long to phased per v2 brief rule 3."
   },
 
@@ -942,7 +942,7 @@ window.FIELDS_D1_QUESTIONS = [
       }
     ],
     explanation: "Three steps:\n\nStep 1: gravity provides centripetal force. $\\dfrac{GMm}{r^2} = \\dfrac{mv^2}{r}$.\n\nStep 2: cancel $m$ and one factor of $r$. $v^2 = \\dfrac{GM}{r}$.\n\nStep 3: take the square root. $v = \\sqrt{\\dfrac{GM}{r}}$.\n\nThe orbiting body's mass $m$ cancels — every satellite at the same $r$ around the same central body orbits at the same speed, regardless of its own mass.",
-    examinerNote: "Phased version replaces the substring-matched 'long' derivation. Three MCQ phases drill the three discrete algebraic steps; each phase tells the student which step they got right or wrong.",
+    examinerNote: "In a real IB exam you would derive this end-to-end yourself. The orbiting body's mass cancels: every satellite at a given $r$ around the same central mass has the same orbital speed, regardless of its own mass.",
     sourcePack: "Refactored from long to phased per v2 brief rule 3."
   },
 
@@ -1060,7 +1060,7 @@ window.FIELDS_D1_QUESTIONS = [
       }
     ],
     explanation: "The paradox: drag opposes motion at each instant, yet over many orbits the satellite speeds up. Resolution in three steps:\n\n1. Drag does negative work → satellite's total mechanical energy $E$ decreases (becomes more negative).\n2. For a circular orbit, $E = -GMm/(2r)$. More negative $E$ means smaller $r$.\n3. For a circular orbit, $v = \\sqrt{GM/r}$. Smaller $r$ means larger $v$.\n\nNet: drag → energy out → smaller orbit → higher speed.\n\nWhere does the extra KE come from? The drop in $r$ liberates potential energy — $\\Delta E_p < 0$ — and that drop is bigger than what drag removes, so KE rises by the difference.",
-    examinerNote: "Four phases of diagnostic feedback. A student who passes phases 1 and 2 but fails phase 3 has the energy logic but stumbles on the (intuitively wrong) speed direction — the most important misconception to surface. A student who passes phase 4 (summary) without passing phase 3 may have memorised the result without understanding the chain.",
+    examinerNote: "In a real IB exam you'd explain this paradox end-to-end in prose. The chain to nail: drag → mechanical energy out → smaller orbit → faster orbital speed. The intuitive trap is treating drag as ordinary friction; in orbit the system response to energy loss is to drop into a lower (and faster) orbit, not to slow down.",
     sourcePack: "Refactored from long to phased per v2 brief rule 3."
   },
 
@@ -1136,7 +1136,7 @@ window.FIELDS_D1_QUESTIONS = [
       }
     ],
     explanation: "Kepler's third law follows from gravity providing the centripetal force for a circular orbit: $GMm/r^2 = m\\omega^2 r$, with $\\omega = 2\\pi/T$. Rearranging gives $T^2 = (4\\pi^2/GM) r^3$, so $T^2/r^3$ depends only on the central mass.\n\nFor Mars's two moons: $(T_D/T_P)^2 = (r_D/r_P)^3$, so $r_D = r_P\\,(T_D/T_P)^{2/3} = 9376 \\times (30.35/7.66)^{2/3} \\approx 23\\,460$ km.",
-    examinerNote: "The phased version separates 'pick the method' from 'do the calculation' from 'know why it works.' Each is its own mark. In a real IB markscheme, these would also be discrete markpoints — the calculation alone doesn't get full marks if you can't justify why the law applies."
+    examinerNote: "In a real IB markscheme, picking the right method, doing the calculation, and stating why the law applies are typically separate markpoints. The calculation alone doesn't earn full marks if you can't justify why Kepler 3 applies."
   },
 
   // ════════════════════════════════════════════════════════════════════════
@@ -1402,7 +1402,7 @@ window.FIELDS_D1_QUESTIONS = [
       }
     ],
     explanation: "The chain that establishes the negative sign of GPE:\n\n1. Convention: $E_p = 0$ at infinite separation.\n2. Gravity is attractive: as masses approach, gravity does POSITIVE work.\n3. Positive work by gravity decreases $E_p$: $\\Delta E_p = -W_{\\text{gravity}}$. Starting at zero and decreasing gives negative.\n\nFormally: $E_p = -Gm_1m_2/r$, which is negative for all real positive $r$.\n\nThe sign is physically meaningful: it tells you the system is BOUND. To unbind it (separate to infinity) you'd have to supply $|E_p|$ of external energy. This is the escape-energy condition.",
-    examinerNote: "Refactored from a substring-matched long-form explanation. The phased version surfaces exactly which link of the chain a student is missing: do they know the convention? Do they get the work direction? Do they then read the sign correctly?",
+    examinerNote: "In a real IB exam you would write the three-step explanation out yourself. The chain to nail: (i) convention $E_p = 0$ at infinity; (ii) gravity is attractive, so it does positive work as the masses approach; (iii) positive work by gravity lowers $E_p$, so starting from zero it becomes negative.",
     sourcePack: "Refactored from long to phased per v2 brief rule 3."
   },
 
@@ -1593,7 +1593,7 @@ window.FIELDS_D1_QUESTIONS = [
       }
     ],
     explanation: "For a free circular orbit, $v_{\\text{orb}} = \\sqrt{GM/r}$ and $\\omega = \\sqrt{GM/r^3}$. Smaller $r$ gives larger natural $\\omega$ — the inner satellite would naturally orbit faster than the outer.\n\nWhen the tether forces a shared $\\omega$ between the two natural values:\n• Inner satellite: shared $\\omega$ < natural $\\omega$. Gravity at $r_1$ exceeds the centripetal $\\omega^2 r_1$, so the tether must pull it OUTWARD (away from Earth).\n• Outer satellite: shared $\\omega$ > natural $\\omega$. Centripetal $\\omega^2 r_2$ exceeds gravity at $r_2$, so the tether must pull it INWARD.\n\nNet: tether in tension; inner pulled out, outer pulled in. Without the tether, the configuration would fall apart — the inner would speed up to a lower orbit and the outer would slow down to a higher orbit.",
-    examinerNote: "Refactored from long to phased. The three claims (different natural periods → tether must act → each satellite is off its natural speed) become three MCQs whose ✓/✗ pattern diagnoses exactly which link breaks.\n\nObserved in Pack D. Underlies real engineering of space elevators and rotating tethers.",
+    examinerNote: "In a real IB exam you'd write the three claims out yourself: (i) the two free orbits would have different natural periods (Kepler 3); (ii) the tether must therefore exert force on each satellite to share a common angular velocity; (iii) the inner satellite is below its natural orbital speed at $r_1$, the outer above its natural at $r_2$, so the tether is in tension. Observed in Pack D — underlies space-elevator and rotating-tether engineering.",
     sourcePack: "Pack D. Refactored from long to phased per v2 brief rule 3."
   },
 
@@ -1640,7 +1640,7 @@ window.FIELDS_D1_QUESTIONS = [
       }
     ],
     explanation: "Kepler's third law: $T^2 = \\dfrac{4\\pi^2 r^3}{GM}$, so $r = \\left(\\dfrac{GMT^2}{4\\pi^2}\\right)^{1/3}$.\n\nWith $T = 86400$ s: $r = ((6.674\\times10^{-11})(5.97\\times10^{24})(86400)^2/(4\\pi^2))^{1/3} \\approx 4.22\\times10^7$ m.\n\nAltitude: $h = r - R = 4.22\\times10^7 - 6.37\\times10^6 \\approx 3.59\\times10^7$ m $\\approx 35\\,900$ km.\n\nA strictly-correct geostationary period is the sidereal day ($86\\,164$ s) rather than the solar day, which gives $r \\approx 4.216\\times10^7$ m. The 24-hour approximation lands within 0.2% and is fine at the level of this question.",
-    examinerNote: "Caveat: geostationary orbits are discussed in the new D.1 syllabus but typically appear in IB papers as qualitative descriptions, not as full Kepler-3 calculations. This phased version is a plausible extension; the physics is correct and useful.\n\nPhase 1 forces explicit identification of Kepler 3 as the right tool; phase 2 is the calculation; phase 3 surfaces the centre-vs-surface trap (subtract R to get altitude).\n\nCommon slip: reporting $4.22\\times10^7$ m as the altitude — the question asked for altitude, which is centre-to-centre distance minus Earth's radius. Differs by 6370 km.",
+    examinerNote: "Caveat: geostationary orbits typically appear in IB papers as qualitative descriptions rather than full Kepler-3 calculations. The physics here is correct and useful but the calculation style is less typical.\n\nCommon slip: reporting $4.22\\times10^7$ m as the altitude — that's the centre-to-centre distance, not the altitude. Altitude is $r - R$. Differs by 6370 km.",
     sourcePack: "original (plausible — new syllabus)"
   },
 
@@ -1705,7 +1705,7 @@ window.FIELDS_D1_QUESTIONS = [
       }
     ],
     explanation: "Scenario A (kick at one point). The satellite's position $r$ is unchanged at the kick, but its speed drops. It can no longer move in a circle at that $r$ (the speed is now too low). The new orbit is an ellipse with the kick point as the APOAPSIS — the satellite then swings inward to a closer perihelion on the opposite side before returning, repeating the same elliptical orbit.\n\nScenario B (distributed drag). Each individual orbit is approximately circular; the radius decreases slowly over many orbits. There's no eccentricity build-up because the energy loss is symmetric around the orbit.\n\nThe principle: LOCALISED energy loss → eccentricity. DISTRIBUTED energy loss → circular spiral.",
-    examinerNote: "Three phases. Phase 1 tests the shape after a single-point energy removal (ellipse, kick point at apoapsis). Phase 2 tests the shape under distributed drag (circular spiral). Phase 3 tests the conceptual distinction (LOCALISED vs DISTRIBUTED). A student who passes phases 1 and 2 but flubs phase 3 has the empirical results but not the principle.",
+    examinerNote: "In a real IB exam you'd describe and contrast the two cases in prose. The key insight: a LOCALISED energy removal (the retro-burn) breaks the orbit's circular symmetry and turns it elliptical, with the kick point becoming the apoapsis. A DISTRIBUTED energy removal (drag) preserves the symmetry and produces a slow near-circular spiral.",
     sourcePack: "Pack D (asteroid-strike-style Q). Refactored from long to phased per v2 brief rule 3."
   },
 
@@ -2153,7 +2153,7 @@ window.FIELDS_D1_QUESTIONS = [
       }
     ],
     explanation: "Three steps:\n\nStep 1. $E = E_k + E_p$.\n\nStep 2. $E_k = \\tfrac{1}{2}mv^2$ and $v^2 = GM/r$ (from the orbital-speed derivation), so $E_k = GMm/(2r)$.\n\nStep 3. Combine: $E = \\dfrac{GMm}{2r} + \\left(-\\dfrac{GMm}{r}\\right) = \\dfrac{GMm}{2r} - \\dfrac{2GMm}{2r} = -\\dfrac{GMm}{2r}$.\n\nThree elegant consequences:\n• $|E_p| = 2 E_k$ for any circular orbit.\n• $E = -E_k$ (same magnitude, opposite sign).\n• $E$ is negative, confirming the orbit is bound.",
-    examinerNote: "Phased version of the derivation. Each step is a discrete MCQ; per-step diagnostic.",
+    examinerNote: "In a real IB exam you'd derive this end-to-end yourself. Key relations for a circular orbit, worth memorising: $E_k = +GMm/(2r)$, $E_p = -GMm/r = -2 E_k$, total $E = -GMm/(2r) = -E_k$.",
     sourcePack: "Refactored from long to phased per v2 brief rule 3."
   },
 
@@ -2174,7 +2174,7 @@ window.FIELDS_D1_QUESTIONS = [
     tolerance: 5e4,
     unitHint: "J kg⁻¹",
     explanation: "Start from $g = GM/r^2$ at the surface: $GM = g_0 R^2$.\n\nGravitational potential at radial distance $r$: $V = -GM/r = -g_0 R^2/r$.\n\nAt $r = R + h$: $V = -g_0 R^2/(R + h) = -(9.81)(6.37\\times10^6)^2/(6.37\\times10^6 + 1.00\\times10^7)$.\n\nNumerator: $9.81 \\times 4.06\\times10^{13} \\approx 3.98 \\times 10^{14}$.\nDenominator: $1.637 \\times 10^7$.\nResult: $V \\approx -2.43\\times10^7$ J kg⁻¹.\n\nCross-check with $V = -GM/r$ directly using $M = 5.97\\times10^{24}$ kg: $V = -(6.674\\times10^{-11})(5.97\\times10^{24})/(1.637\\times10^7) \\approx -2.43\\times10^7$ J kg⁻¹. ✓",
-    examinerNote: "The point of this question is the bridge $GM = g_0 R^2$. It lets you write potential, escape speed, and orbital speed in terms of surface gravity rather than $G$ and $M$ — useful when those quantities are easier to obtain or remember.\n\nCommon slips: using $g_0 \\cdot h$ (treating it as a flat-earth $mgh$); forgetting to square $R$; getting the sign wrong (writing $V = +g_0 R^2/r$). Sanity: any HL gravitational potential is large and negative; the answer should be $\\sim -10^7$ J kg⁻¹ for an orbit-altitude problem.",
+    examinerNote: "The key relation is the bridge $GM = g_0 R^2$. It lets you write potential, escape speed, and orbital speed in terms of surface gravity rather than $G$ and $M$ — useful when those quantities are easier to obtain or remember.\n\nCommon slips: using $g_0 \\cdot h$ (treating it as a flat-earth $mgh$); forgetting to square $R$; getting the sign wrong (writing $V = +g_0 R^2/r$). Sanity: any HL gravitational potential is large and negative; the answer should be $\\sim -10^7$ J kg⁻¹ for an orbit-altitude problem.",
     sourcePack: "Pack B/D V-from-g questions"
   },
 
@@ -2344,7 +2344,7 @@ window.FIELDS_D1_QUESTIONS = [
       }
     ],
     explanation: "Weight in the everyday sense is the contact force (normal force from a chair, floor, etc.) that opposes gravity. In orbit, gravity is still strong — but the ISS and everyone inside are all in free-fall toward Earth at the same rate. The station is moving sideways fast enough that it 'falls past' Earth indefinitely; that's what an orbit is.\n\nBecause the astronaut and the station share the same gravitational acceleration, the astronaut doesn't push against any surface and no surface pushes back. The contact force is zero. No contact force, no sensation of weight — even though the gravitational force is still doing its thing.\n\nThis is the equivalence principle: gravity and uniformly accelerating reference frames are locally indistinguishable.",
-    examinerNote: "The brief's canonical example for the new 'no free-form explanations' rule. Four phases, four pieces of diagnostic feedback: (1) gravity is NOT zero at LEO altitude; (2) everyday weight sensation is the contact/normal force; (3) what's true and what's not for the astronaut; (4) the one-line summary.\n\nA student who fails the multi-select but passes the rest knows the conceptual chain but tripped on one definition. A student who passes the value-range MCQ but bombs the summary knows the numbers without understanding the principle. The diagnostic richness is the point.",
+    examinerNote: "In a real IB exam you'd write this out in prose. The key chain: gravity at LEO is still about $8.7$ N kg⁻¹ (NOT zero); the everyday 'feeling of weight' is the contact (normal) force on you; in orbit, the astronaut and station share the same $g$ and so fall together, eliminating the contact force; no contact force means no felt weight, even though gravitational weight is still present.",
     sourcePack: "Refactored from long to phased per v2 brief rule 3 (canonical example)."
   },
 
@@ -2429,7 +2429,7 @@ window.FIELDS_D1_QUESTIONS = [
     tolerance: 5e4,
     unitHint: "m",
     explanation: "Newton's law of gravitation uses the centre-to-centre distance between two point-mass-like bodies, not the height above the surface. So $r = R + h = 6.37\\times10^6 + 2.0\\times10^7 \\approx 2.64\\times10^7$ m.\n\nThe atom D.1.3-B (use centre-to-centre separation) is critical for orbital problems, where 'altitude' and 'orbital radius' differ by exactly $R$. Mixing them is the most common single error in $g$-at-altitude problems.",
-    examinerNote: "Trivial if you remember the rule, easy to mess up if you don't. The pedagogical purpose is to drill the substitution $r = R + h$ explicitly, separate from any numerical calculation, so the student internalises the distinction.\n\nSanity: $r$ should be larger than $R$, and much larger than $R$ for high altitudes. $2.64\\times10^7$ is about $4R$ — checks out for $h = R + 3R \\approx 4R$ from centre.",
+    examinerNote: "Trivial if you remember the rule, easy to mess up if you don't. Sanity: $r$ should be larger than $R$, and much larger than $R$ for high altitudes. $2.64\\times10^7$ is about $4R$ — checks out for $h = R + 3R \\approx 4R$ from centre.",
     sourcePack: "original (foundational drill)"
   },
 
@@ -2715,7 +2715,7 @@ window.FIELDS_D1_QUESTIONS = [
       }
     ],
     explanation: "Phase 1. $r = R + h = 6.37\\times10^6 + 6.00\\times10^5 = 6.97\\times10^6$ m.\n$g = GM/r^2 = (6.674\\times10^{-11})(5.97\\times10^{24})/(6.97\\times10^6)^2 \\approx 8.20$ N kg⁻¹.\n\nPhase 2. In circular orbit, $g$ provides the centripetal acceleration: $g = v^2/r$, so $v = \\sqrt{gr} = \\sqrt{8.20 \\times 6.97\\times10^6} \\approx 7561$ m s⁻¹.\n\nPhase 3. $T = 2\\pi r/v = 2\\pi (6.97\\times10^6)/7561 \\approx 5790$ s ≈ 96.5 minutes.\n\nThis is the canonical low-Earth-orbit time of about 90-100 minutes, which gives you ~16 orbits per day. Many real spy and Earth-imaging satellites operate at this altitude for that reason: enough that you cover the whole Earth each day, low enough that the ground resolution is good.",
-    examinerNote: "Three phases drilling the orbital chain. The point of phasing this question: each step is one mark in an IB markscheme, and a student can score partially even if they get an early phase wrong. With phased scoring, getting phase 1 wrong doesn't cost you phase 2 (which uses your own answer from phase 1 as input).\n\nCommon slips: phase 1 — using $r = R$ (gives surface $g$); phase 2 — forgetting the square root; phase 3 — using $T = 2\\pi v/r$ (inverted).",
+    examinerNote: "In an IB exam each step here is typically one mark. Common slips: phase 1 — using $r = R$ instead of $r = R + h$ (gives surface $g$); phase 2 — forgetting the square root in $v = \\sqrt{gr}$; phase 3 — using $T = 2\\pi v/r$ (inverted).",
     sourcePack: "original (textbook orbital chain)"
   },
 
@@ -2884,7 +2884,7 @@ window.FIELDS_D1_QUESTIONS = [
       }
     ],
     explanation: "Two equivalent ways to see that gravity does no work over a full circular orbit:\n\n1. **Force perpendicular to motion**. In a circular orbit, gravity points radially inward and the satellite's velocity is tangential. $\\vec F \\cdot \\vec v = 0$ at every point, so the instantaneous power is zero. Integrating gives total work zero.\n\n2. **Closed loop, conservative force**. Gravity is conservative, so $W = -\\Delta E_p$. A full orbit returns the satellite to its starting position, so $\\Delta E_p = 0$, and therefore $W = 0$. (Equivalently: a circular orbit lies on an equipotential surface, so $\\Delta V = 0$.)\n\nBoth arguments are valid; the first is the more elementary one.",
-    examinerNote: "Refactored from short to phased (numeric + mcq pick-best). The numeric phase forces an unambiguous answer for the work value; the MCQ phase tests the reasoning. A student who gets the numeric right but picks distractor (b) knows the answer but not why.",
+    examinerNote: "In a real IB exam you'd state both the zero value and give a physical reason. Either reason scores: 'force perpendicular to motion gives zero power throughout' OR 'gravity is conservative and the path is closed'.",
     sourcePack: "Refactored from short to phased per v2 brief rule 3."
   },
 
@@ -2957,7 +2957,7 @@ window.FIELDS_D1_QUESTIONS = [
       }
     ],
     explanation: "Both speeds depend on the same orbital radius $r = R + h = 6.77\\times10^6$ m:\n• $v_{\\text{orb}} = \\sqrt{GM/r} \\approx 7455$ m s⁻¹\n• $v_{\\text{esc}} = \\sqrt{2GM/r} = \\sqrt{2} \\cdot v_{\\text{orb}} \\approx 10\\,542$ m s⁻¹\n\n$\\Delta v = v_{\\text{esc}} - v_{\\text{orb}} = (\\sqrt{2} - 1) v_{\\text{orb}} \\approx 0.414 \\cdot 7455 \\approx 3088$ m s⁻¹.\n\nThe payoff of being in orbit is huge: from the surface you'd need $\\sim 11\\,200$ m s⁻¹ for escape, but from orbit you 'only' need an extra 3 km/s of $\\Delta v$ because the orbital motion has already paid for $\\sim 7.5$ km/s and the escape requirement is only $\\sqrt{2}$ times the orbital requirement at any $r$.\n\nThis is why real space missions almost never launch directly to escape — they stage: launch to LEO, then apply $\\Delta v$ from there. The total $\\Delta v$ budget for an interplanetary mission is much smaller when staged.",
-    examinerNote: "The point of the question is the relation $v_{\\text{esc}}/v_{\\text{orb}} = \\sqrt{2}$ at any given $r$. Once you spot that, the answer is $(\\sqrt{2}-1) v_{\\text{orb}} \\approx 3.09$ km/s.\n\nCommon slip: computing $v_{\\text{esc}}$ at the surface (11.2 km/s) and subtracting the orbital speed at altitude (gives the wrong $\\Delta v$).",
+    examinerNote: "The key relation is $v_{\\text{esc}}/v_{\\text{orb}} = \\sqrt{2}$ at any given $r$. Once you spot that, the answer is $(\\sqrt{2}-1) v_{\\text{orb}} \\approx 3.09$ km/s.\n\nCommon slip: computing $v_{\\text{esc}}$ at the surface (11.2 km/s) and subtracting the orbital speed at altitude (gives the wrong $\\Delta v$).",
     sourcePack: "Pack D (escape from orbit)"
   },
 
@@ -3762,6 +3762,120 @@ window.FIELDS_D1_QUESTIONS = [
     explanation: "For a circular orbit, the three energies are linked by simple ratios:\n• $E_p = -GMm/r$ — negative, magnitude shrinks as r grows.\n• $E_k = +GMm/(2r)$ — positive, magnitude shrinks as r grows (half the magnitude of E_p).\n• $E = E_k + E_p = -GMm/(2r) = -E_k$ — negative, magnitude shrinks as r grows.\n\nThe key relation: $|E_p| = 2|E_k|$ at every $r$. So as $r$ grows:\n• $E_k$ falls (by some amount $\\Delta$).\n• $E_p$ rises (becomes less negative) by $2\\Delta$.\n• Net: $E = E_k + E_p$ rises by $-\\Delta + 2\\Delta = +\\Delta$.\n\nSo when you push a satellite to a higher orbit, you pay for it with engine work that goes into raising the total energy — the satellite ends up MORE energetic overall, even though it's slower.",
     examinerNote: "This is the trap behind every drag-induced-orbital-speed-up question (D.1.H.10) and every move-to-higher-orbit work question (D.1.H.5-D). The widget makes it visual instead of algebraic. Common authoring tip from the bank: students who think 'higher = more energetic' are right (about total E) AND wrong (about KE) AND right (about speed being slower); only the visual makes all three coherent.",
     sourcePack: "original (widget-led, addresses the famous PE-up-equals-everything-up trap)"
+  },
+
+  // ════════════════════════════════════════════════════════════════════════
+  // Field-vs-potential confusion lures. Three new variants on D.1.4-E1
+  // (zero-field point) and D.1.H.3-E2 (V max between two masses), built
+  // around the common student error of conflating "where V = 0" or "where
+  // V is most negative" with "where the field is zero", and the related
+  // mistake of using a linear mass ratio instead of √-ratio for the
+  // field-zero position.
+  // ════════════════════════════════════════════════════════════════════════
+
+  // ── D.1.4-E1.003: clean ratio, M1 = 25 M2 ───────────────────────────────
+  {
+    id: "D.1.4-E1.003",
+    level: "SL",
+    tags: ["D.1.4", "D.1.4-E1"],
+    type: "numeric",
+    marks: 2,
+    prompt: "Two point masses are placed at the ends of a line of length $D$. The mass on the left is $25$ times the mass on the right. Along the line between them, at what fraction of $D$ from the LEFT mass is the gravitational field zero?",
+    expectedNumeric: 0.833,
+    tolerance: 0.005,
+    unitHint: "× D",
+    misconceptions: [
+      {
+        id: "linear_mass_ratio_for_field_zero",
+        label: "You divided by the linear mass ratio (took $x = 25D/26 \\approx 0.962$). The correct ratio uses $\\sqrt{M_1/M_2}$, not $M_1/M_2$, because gravity goes as $1/r^2$.",
+        expectedNumeric: 0.962,
+        tolerance: 0.005,
+        severity: "common"
+      },
+      {
+        id: "midpoint_assumed_for_field_zero",
+        label: "You assumed the midpoint ($x = D/2$). That's correct only when the two masses are equal. For unequal masses the field-zero point shifts toward the SMALLER mass.",
+        expectedNumeric: 0.5,
+        tolerance: 0.01,
+        severity: "common"
+      },
+      {
+        id: "wrong_side_of_balance_point",
+        label: "You placed the balance point CLOSER to the larger mass (at $\\sim D/6$). Intuition flip: the smaller mass needs to be closer to amplify its $1/r^2$ pull enough to match the larger mass's pull at greater distance. So the field-zero point is closer to the SMALLER mass.",
+        expectedNumeric: 0.167,
+        tolerance: 0.01,
+        severity: "common"
+      }
+    ],
+    explanation: "Set the field magnitudes equal: $\\dfrac{GM_1}{x^2} = \\dfrac{GM_2}{(D-x)^2}$.\n\nWith $M_1 = 25 M_2$: $\\dfrac{25}{x^2} = \\dfrac{1}{(D-x)^2}$, so $\\dfrac{5}{x} = \\dfrac{1}{D-x}$ (positive root), giving $x = \\dfrac{5D}{6} \\approx 0.833\\, D$.\n\nIn general: $x = \\dfrac{\\sqrt{M_1}}{\\sqrt{M_1} + \\sqrt{M_2}}\\, D$ from the side with mass $M_1$. The ratio is $\\sqrt{M_1}:\\sqrt{M_2}$, NOT $M_1:M_2$.\n\nThe field-zero point sits closer to the smaller mass — counter to many students' first intuition. (The smaller mass needs to be closer for its weaker pull to be amplified by a smaller $r^2$ in the denominator until it matches the larger mass's pull from a greater distance.)",
+    examinerNote: "Two common errors share the bank's misconception id taxonomy: `linear_mass_ratio_for_field_zero` (using $M_1:M_2$ linearly) and `midpoint_assumed_for_field_zero` (treating it like a centre-of-mass calculation). The square root is doing the work.",
+    sourcePack: "original (ratio drill exploiting the √M_1:√M_2 vs M_1:M_2 confusion)"
+  },
+
+  // ── D.1.4-E1.004: clean ratio variant, M1 = 9 M2 ────────────────────────
+  {
+    id: "D.1.4-E1.004",
+    level: "SL",
+    tags: ["D.1.4", "D.1.4-E1"],
+    type: "numeric",
+    marks: 1,
+    prompt: "Two point masses are placed at the ends of a line of length $D$. The mass on the left is $9$ times the mass on the right. Along the line between them, at what fraction of $D$ from the LEFT mass is the gravitational field zero?",
+    expectedNumeric: 0.75,
+    tolerance: 0.005,
+    unitHint: "× D",
+    misconceptions: [
+      {
+        id: "linear_mass_ratio_for_field_zero",
+        label: "You divided by the linear mass ratio (took $x = 9D/10 = 0.9$). The correct ratio uses $\\sqrt{M_1/M_2}$, not $M_1/M_2$.",
+        expectedNumeric: 0.9,
+        tolerance: 0.005,
+        severity: "common"
+      }
+    ],
+    explanation: "$\\dfrac{M_1}{x^2} = \\dfrac{M_2}{(D-x)^2}$, so $\\dfrac{\\sqrt{M_1}}{x} = \\dfrac{\\sqrt{M_2}}{D-x}$, giving $x = \\dfrac{\\sqrt{M_1}}{\\sqrt{M_1}+\\sqrt{M_2}}\\, D = \\dfrac{3}{4}\\, D$ for a $9:1$ mass ratio.",
+    sourcePack: "original (ratio drill)"
+  },
+
+  // ── D.1.H.3-E2.002: V-graph trap (mcq pick-best) ────────────────────────
+  {
+    id: "D.1.H.3-E2.002",
+    level: "HL",
+    tags: ["D.1.H.3", "D.1.H.3-E2"],
+    type: "mcq",
+    marks: 1,
+    prompt: "Two point masses lie on a line, separated by distance $D$. The mass on the left is $4$ times the mass on the right. A graph of gravitational potential $V$ against position along the line between them would be plotted. At which position on this line is the gravitational FIELD STRENGTH zero?",
+    choices: [
+      "At the point where $V = 0$ on the graph.",
+      "At the midpoint of the line, $D/2$ from each mass.",
+      "At the LOCAL MAXIMUM of $V$ on the line, located $2D/3$ from the left mass.",
+      "At the point closest to the larger mass, where the linear mass ratio $M_1/(M_1+M_2) = 4/5$ of $D$ from the right mass."
+    ],
+    answerIndex: 2,
+    distractorRationales: {
+      "0": "$V$ is NEVER zero between two attractive masses on the line. Both contributions $-GM_1/r_1$ and $-GM_2/r_2$ are negative, so their sum is always negative. There IS no point where $V = 0$ on the inter-mass line.",
+      "1": "Midpoint is correct only for EQUAL masses. For unequal masses the field-zero point shifts toward the smaller mass.",
+      "3": "This uses the linear mass ratio $M_1:M_2 = 4:1$ rather than the correct $\\sqrt{M_1}:\\sqrt{M_2} = 2:1$ ratio. The $4/5$-of-$D$ position is wrong because gravity goes as $1/r^2$, so the matching condition is on $\\sqrt{M}$, not on $M$."
+    },
+    misconceptions: [
+      {
+        id: "field_zero_vs_potential_zero",
+        chosenIndex: 0,
+        label: "You looked for $V = 0$. The field is the GRADIENT of $V$, so 'field zero' means 'V at a local extremum' (here, a local maximum on the line). $V$ itself never hits zero between two attractive masses."
+      },
+      {
+        id: "midpoint_assumed_for_field_zero",
+        chosenIndex: 1,
+        label: "Midpoint applies to equal masses only. With $M_1 = 4M_2$, the field-zero point is closer to the smaller mass (the right one), at $2D/3$ from the left."
+      },
+      {
+        id: "linear_mass_ratio_for_field_zero",
+        chosenIndex: 3,
+        label: "Linear mass ratio gives $4D/5$ from the right (or $D/5$ from the left). Correct uses square-root of mass ratio: with $M_1 = 4M_2$, $\\sqrt{M_1}/\\sqrt{M_2} = 2$, so the field-zero is $2D/3$ from the left and $D/3$ from the right."
+      }
+    ],
+    explanation: "Field is the gradient of $V$: $g = -dV/dr$. So 'field strength zero' means 'gradient of $V$ is zero', which means $V$ is at a stationary point — here, a LOCAL MAXIMUM along the line. (It's a maximum because $V \\to -\\infty$ as you approach either mass, so the in-between point is a maximum relative to nearby positions.)\n\nSetting field magnitudes equal: $GM_1/x^2 = GM_2/(D-x)^2$. With $M_1 = 4M_2$: $\\sqrt{M_1}:\\sqrt{M_2} = 2:1$, so $x = \\dfrac{2}{2+1}D = \\dfrac{2}{3}D \\approx 0.667\\,D$ from the left mass.\n\nThe square-root ratio is the key: gravity goes as $1/r^2$, so matching contributions of size $M_i/r_i^2$ leads to $r_1:r_2 = \\sqrt{M_1}:\\sqrt{M_2}$, not the linear $M_1:M_2$ that a centre-of-mass calculation would use.",
+    examinerNote: "Three traps drilled in one question: (1) confusing field-zero with V-zero; (2) assuming the midpoint regardless of mass; (3) using the linear mass ratio. Each fires a separate misconception with shared id.\n\nIB tip: when you see a V-vs-position graph for two masses, the field-zero point is exactly where the curve has its local max. It's NEVER where the curve crosses zero (because the curve doesn't cross zero between two attractive bodies — it stays negative throughout).",
+    sourcePack: "original (lure-trap exploiting V vs g confusion)"
   }
 
 ];

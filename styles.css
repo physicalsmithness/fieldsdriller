@@ -757,21 +757,21 @@ body {
 }
 
 /* ── Previous-attempt pill ─────────────────────────────────────────────── */
+/* Neutral cream background across all statuses so a full-marks pill doesn't
+   shout at the student while they're settling into the next question. The
+   only status hint is a thin coloured left border: green / amber / red. */
 .last-pill {
   display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
   font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-  padding: 7px 11px; margin-bottom: 12px;
-  background: #f6f1e3; border: 1px solid var(--line);
-  border-left: 4px solid var(--muted); border-radius: var(--radius-sm);
-  font-size: 12px;
+  padding: 6px 10px; margin-bottom: 12px;
+  background: var(--paper); border: 1px solid var(--line);
+  border-left: 3px solid var(--line-2);
+  border-radius: var(--radius-sm);
+  font-size: 12px; color: var(--ink-2);
 }
-.last-pill.lp-full {
-  border-left: 6px solid var(--ok); background: #ebf5ec;
-}
-.last-pill.lp-full .lp-eyebrow,
-.last-pill.lp-full .lp-score { color: #1f5a2d; font-weight: 600; }
-.last-pill.lp-partial { border-left: 5px solid var(--warn); background: #fbf5e3; }
-.last-pill.lp-none    { border-left: 5px solid var(--bad);  background: #fbecec; }
+.last-pill.lp-full    { border-left-color: var(--ok);   }
+.last-pill.lp-partial { border-left-color: var(--warn); }
+.last-pill.lp-none    { border-left-color: var(--bad);  }
 .lp-eyebrow { color: var(--muted); }
 .lp-id {
   font-family: ui-monospace, "SF Mono", Consolas, monospace;
@@ -780,10 +780,10 @@ body {
 }
 .lp-score { color: var(--ink-2); flex-grow: 1; }
 .lp-review-btn {
-  background: #fff; border: 1px solid var(--accent); color: var(--accent);
-  padding: 4px 10px; border-radius: var(--radius-sm); cursor: pointer; font-size: 11.5px;
+  background: transparent; border: 1px solid var(--line-2); color: var(--ink-2);
+  padding: 3px 9px; border-radius: var(--radius-sm); cursor: pointer; font-size: 11.5px;
 }
-.lp-review-btn:hover { background: var(--accent); color: #fff; }
+.lp-review-btn:hover { background: var(--accent); color: #fff; border-color: var(--accent); }
 
 /* ── Empty-input flash ─────────────────────────────────────────────────── */
 @keyframes empty-flash {
