@@ -158,6 +158,28 @@
     if (Math.abs(mantissa) < 1e-6) return "0";
     return mantissa.toPrecision(sig) + " × 10" + toSuperscript(exp);
   }
+  // Just the mantissa, for axis tick labels and on-axis probe labels.
+  // The exponent goes into the axis title once, not on every tick.
+  function formatMantissa(v, exp, sig) {
+    sig = sig || 2;
+    if (!isFinite(v)) return "";
+    if (v === 0) return "0";
+    if (!exp || exp === 0) return v.toPrecision(sig);
+    const m = v / Math.pow(10, exp);
+    if (Math.abs(m) < 1e-4) return "0";
+    // toPrecision can dump scientific notation on tiny mantissas; if so,
+    // fall back to toFixed.
+    const s = m.toPrecision(sig);
+    if (/e/i.test(s)) return m.toFixed(sig);
+    return s;
+  }
+  // Compose an axis title that bakes the exponent in once, e.g.
+  // "V / 10⁷ J kg⁻¹" or "r / 10⁸ m". When exp is 0 we fall back to the
+  // plain "V / J kg⁻¹" form.
+  function axisTitleWithExp(label, units, exp) {
+    if (!exp || exp === 0) return label + (units ? "  /  " + units : "");
+    return label + "  /  10" + toSuperscript(exp) + (units ? " " + units : "");
+  }
 
   // ── Factory ────────────────────────────────────────────────────────────────
   function curveProbe(host, config) {
@@ -309,24 +331,28 @@
     const xScale = d3.scaleLinear().domain(xDomain).range([0, innerW]);
     const yScale = d3.scaleLinear().domain([yMin, yMax]).range([innerH, 0]);
 
-    // Axes
-    const xAxis = d3.axisBottom(xScale).ticks(6).tickSizeOuter(0);
-    const yAxis = d3.axisLeft(yScale).ticks(6).tickSizeOuter(0);
+    // Axes. Tick labels show the mantissa only — the exponent is baked into
+    // the axis title once. So a domain of [0, 7e7] gets ticks "1, 2, 3 ..."
+    // with the title "V / 10⁷ J kg⁻¹".
+    const xAxis = d3.axisBottom(xScale).ticks(6).tickSizeOuter(0)
+                    .tickFormat(function (v) { return formatMantissa(v, xExp); });
+    const yAxis = d3.axisLeft(yScale).ticks(6).tickSizeOuter(0)
+                    .tickFormat(function (v) { return formatMantissa(v, yExp); });
 
     g.append("g").attr("class", "cp-axis cp-axis-x")
       .attr("transform", "translate(0," + innerH + ")").call(xAxis);
     g.append("g").attr("class", "cp-axis cp-axis-y").call(yAxis);
 
-    // Axis labels
+    // Axis labels (exponent baked in).
     g.append("text").attr("class", "cp-axlabel")
       .attr("x", innerW / 2).attr("y", innerH + 36)
       .attr("text-anchor", "middle")
-      .text((config.xLabel || "r") + (config.xUnits ? "  /  " + config.xUnits : ""));
+      .text(axisTitleWithExp(config.xLabel || "r", config.xUnits || "", xExp));
     g.append("text").attr("class", "cp-axlabel")
       .attr("transform", "rotate(-90)")
-      .attr("x", -innerH / 2).attr("y", -56)
+      .attr("x", -innerH / 2).attr("y", -42)
       .attr("text-anchor", "middle")
-      .text((config.yLabel || "f(r)") + (config.yUnits ? "  /  " + config.yUnits : ""));
+      .text(axisTitleWithExp(config.yLabel || "f(r)", config.yUnits || "", yExp));
 
     // Zero line (y=0) if it's inside view
     if (yMin < 0 && yMax > 0) {
@@ -368,6 +394,20 @@
     const probeLine2  = tg2.append("line").attr("class", "cp-probeline cp-probeline2");
     const probeDot2   = tg2.append("circle").attr("class", "cp-probedot cp-probedot2").attr("r", 6);
     if (!showSecondProbe) tg2.style("display", "none");
+
+    // On-axis probe value labels. These float at the axis where the
+    // crosshair lines meet, so the student reads the value off the graph
+    // rather than the side panel. Bold + coloured to distinguish from
+    // tick labels.
+    const probeXLabel = g.append("text").attr("class", "cp-probe-axislabel cp-probe-axislabel-x")
+      .attr("text-anchor", "middle");
+    const probeYLabel = g.append("text").attr("class", "cp-probe-axislabel cp-probe-axislabel-y")
+      .attr("text-anchor", "end").attr("dy", "0.32em");
+    const probeX2Label = g.append("text").attr("class", "cp-probe-axislabel cp-probe-axislabel-x cp-probe-axislabel-2")
+      .attr("text-anchor", "middle");
+    const probeY2Label = g.append("text").attr("class", "cp-probe-axislabel cp-probe-axislabel-y cp-probe-axislabel-2")
+      .attr("text-anchor", "end").attr("dy", "0.32em");
+    if (!showSecondProbe) { probeX2Label.style("display", "none"); probeY2Label.style("display", "none"); }
 
     // Drag handlers
     function dragX(setter) {
@@ -428,6 +468,12 @@
       probeLineH.attr("x1", 0).attr("x2", xScale(probeR))
                 .attr("y1", yScale(v)).attr("y2", yScale(v));
       probeDot.attr("cx", xScale(probeR)).attr("cy", yScale(v));
+      // On-axis probe value labels (primary probe). Bold red, placed where
+      // the crosshairs meet each axis.
+      probeXLabel.attr("x", xScale(probeR)).attr("y", innerH + 18)
+                 .text(formatMantissa(probeR, xExp));
+      probeYLabel.attr("x", -8).attr("y", yScale(v))
+                 .text(formatMantissa(v, yExp));
 
       // Tangent: length spans ~ 24% of inner width centred on probe
       const slope = gradAt(f, probeR);
@@ -448,6 +494,10 @@
         probeLine2H.attr("x1", 0).attr("x2", xScale(probe2R))
                    .attr("y1", yScale(v2here)).attr("y2", yScale(v2here));
         probeDot2.attr("cx", xScale(probe2R)).attr("cy", yScale(v2here));
+        probeX2Label.attr("x", xScale(probe2R)).attr("y", innerH + 18)
+                    .text(formatMantissa(probe2R, xExp));
+        probeY2Label.attr("x", -8).attr("y", yScale(v2here))
+                    .text(formatMantissa(v2here, yExp));
         const a = Math.min(probeR, probe2R), b = Math.max(probeR, probe2R);
         const polyPts = [[xScale(a), yScale(0)]];
         for (let i = 0; i <= 60; i++) {

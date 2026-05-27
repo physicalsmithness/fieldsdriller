@@ -1479,7 +1479,7 @@
             const div = el("div", { class: "fb-correct" });
             div.appendChild(document.createTextNode(String(target) + " "));
             if (v.unitHint) {
-              const u = el("span"); renderPromptText(v.unitHint, u); div.appendChild(u);
+              const u = el("span", { class: "fb-unit" }); renderPromptText(v.unitHint, u); div.appendChild(u);
             }
             return div;
           })()
@@ -2335,7 +2335,7 @@
           const expEl = el("span", { class: "phase-done-correct" });
           expEl.appendChild(document.createTextNode(String(target) + " "));
           if (ph.unitHint) {
-            const u = el("span"); renderPromptText(ph.unitHint, u); expEl.appendChild(u);
+            const u = el("span", { class: "fb-unit" }); renderPromptText(ph.unitHint, u); expEl.appendChild(u);
           }
           summary.appendChild(el("div", { class: "phase-done-row" }, [
             el("span", { class: "phase-done-key", text: "Expected: " }),

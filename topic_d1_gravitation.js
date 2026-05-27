@@ -534,51 +534,69 @@ window.FIELDS_D1_QUESTIONS = [
     explanation: "Equate gravity to centripetal force: $\\dfrac{GMm}{r^2} = \\dfrac{mv^2}{r}$, so $v^2 = \\dfrac{GM}{r}$.\n\nSubstitute $v = \\dfrac{2\\pi r}{T}$: $\\dfrac{4\\pi^2 r^2}{T^2} = \\dfrac{GM}{r}$, hence $T^2 = \\dfrac{4\\pi^2 r^3}{GM}$.\n\nNote that the orbiting mass $m$ cancels — Kepler's third law doesn't depend on the orbiting body. This is also why every satellite at a given $r$ around the same central mass has the same period."
   },
 
-  // ── D.1.1-B2: derive T² ∝ r³ ──────────────────────────────────────────────
+  // ── D.1.1-B2: derive T² ∝ r³ (PHASED) ─────────────────────────────────────
   {
-    id: "D.1.1-B2.001",
+    id: "D.1.1-B2.PHASED.001",
     level: "SL",
     tags: ["D.1.1", "D.1.1-B2"],
-    type: "long",
     marks: 3,
-    prompt: "A planet of mass $m$ moves in a circular orbit of radius $r$ around a star of mass $M$, with orbital period $T$. Show that $T^2 \\propto r^3$.",
-    hints: [
-      "What sort of motion is this, and what does it require?",
-      "Circular motion needs a centripetal force. What's the only force candidate here?",
-      "Equate gravity to the centripetal force expression: $\\dfrac{GMm}{r^2} = \\dfrac{mv^2}{r}$.",
-      "Now relate $v$ to $T$ using the orbital circumference: $v = 2\\pi r/T$. Substitute and rearrange."
+    prompt: "A planet of mass $m$ moves in a circular orbit of radius $r$ around a star of mass $M$, with orbital period $T$. Work through the derivation that establishes $T^2 \\propto r^3$.",
+    phases: [
+      {
+        kind: "mcq",
+        marks: 1,
+        prompt: "What is the correct force-balance equation for the planet in circular orbit?",
+        choices: [
+          "$\\dfrac{GMm}{r^2} = \\dfrac{mv^2}{r}$",
+          "$\\dfrac{GMm}{r^2} = mg$",
+          "$\\dfrac{GMm}{r} = mv^2$",
+          "$\\dfrac{GMm}{r^2} = mv$"
+        ],
+        answerIndex: 0,
+        distractorRationales: {
+          "1": "$mg$ is the weight near a surface — doesn't apply to orbital motion. The force needed for a circular orbit is centripetal, $mv^2/r$, not $mg$.",
+          "2": "Lost a factor of $r$ in the gravity term. Gravity is $GMm/r^2$ (inverse-square), not $GMm/r$.",
+          "3": "Lost the square in the centripetal term. Centripetal acceleration is $v^2/r$, not $v/r$."
+        }
+      },
+      {
+        kind: "mcq",
+        marks: 1,
+        prompt: "The orbital speed $v$ can be written in terms of $r$ and $T$ using the circumference of the orbit. Which substitution is correct?",
+        choices: [
+          "$v = 2\\pi r T$",
+          "$v = \\dfrac{2\\pi r}{T}$",
+          "$v = \\dfrac{r}{2\\pi T}$",
+          "$v = 2\\pi r^2 / T$"
+        ],
+        answerIndex: 1,
+        distractorRationales: {
+          "0": "Wrong functional form. Speed should DECREASE if the period is longer (slower orbit). $v = 2\\pi r T$ would mean faster speed for longer periods, which is backwards.",
+          "2": "Inverted. The distance travelled in one period is $2\\pi r$ (the circumference), so $v = $ distance/time = $2\\pi r / T$, not $r/(2\\pi T)$.",
+          "3": "Inserted an extra factor of $r$. The circumference is $2\\pi r$, not $2\\pi r^2$."
+        }
+      },
+      {
+        kind: "mcq",
+        marks: 1,
+        prompt: "Substituting $v = 2\\pi r/T$ into the force balance and rearranging, what is $T^2$ proportional to?",
+        choices: [
+          "$T^2 \\propto r$",
+          "$T^2 \\propto r^2$",
+          "$T^2 \\propto r^3$",
+          "$T^2 \\propto 1/r$"
+        ],
+        answerIndex: 2,
+        distractorRationales: {
+          "0": "Lost a factor of $r^2$ in the rearrangement.",
+          "1": "Lost a factor of $r$. The force balance has $r^2$ in the denominator on the left and $r$ in the denominator on the right; after substitution $v^2 = 4\\pi^2 r^2/T^2$, you get $T^2 = 4\\pi^2 r^3/(GM)$.",
+          "3": "Wrong direction. Bigger orbits have LONGER periods, not shorter. $T$ grows with $r$."
+        }
+      }
     ],
-    markPoints: [
-      { any: [
-        "gravitational force = centripetal", "gravity = centripetal",
-        "gravitational force is the centripetal", "gravity is the centripetal",
-        "gravitational force provides the centripetal", "gravity provides the centripetal",
-        "force of gravity equals the centripetal", "force of gravity = centripetal",
-        "gravitational force equates to the centripetal",
-        "newton's law of gravitation equals the centripetal",
-        "newton's law of gravitation = centripetal",
-        "gmm/r² = mv²/r", "gmm/r^2 = mv^2/r", "gmm/r2 = mv2/r",
-        "g m m / r² = m v² / r", "g m m / r^2 = m v^2 / r",
-        "gmm/r²=mv²/r", "gmm/r^2=mv^2/r"
-      ], credit: 1 },
-      { any: [
-        "v = 2πr/t", "v = 2 pi r / t", "v=2πr/t", "v=2pir/t",
-        "speed = 2πr/t", "speed = 2 pi r / t",
-        "circumference / t", "circumference over the period",
-        "circumference divided by the period", "circumference / period",
-        "2πr/t", "2 pi r / t", "2pir/t",
-        "ω = 2π/t", "omega = 2π/t", "omega = 2 pi / t", "ω=2π/t"
-      ], credit: 1 },
-      { any: [
-        "t² = 4π²r³", "t^2 = 4π²r³", "t^2 = 4 pi^2 r^3", "t² = 4 pi² r³",
-        "t² ∝ r³", "t^2 ∝ r^3", "t² proportional to r³", "t^2 proportional to r^3",
-        "t squared proportional to r cubed", "t squared is proportional to r cubed",
-        "t² is proportional to r³", "t^2 prop r^3",
-        "4π²r³/gm", "4 pi^2 r^3 / gm", "4π²r³/(gm)", "4 pi² r³ / gm"
-      ], credit: 1 }
-    ],
-    explanation: "Step 1: gravity provides the centripetal force.\n$$\\dfrac{GMm}{r^2} = \\dfrac{mv^2}{r}$$\nso $v^2 = \\dfrac{GM}{r}$. The mass $m$ of the orbiting body cancels.\n\nStep 2: relate $v$ to $T$ using the circumference. $v = \\dfrac{2\\pi r}{T}$, so $v^2 = \\dfrac{4\\pi^2 r^2}{T^2}$.\n\nStep 3: equate the two expressions for $v^2$ and rearrange.\n$\\dfrac{4\\pi^2 r^2}{T^2} = \\dfrac{GM}{r}$, hence $T^2 = \\dfrac{4\\pi^2}{GM}\\,r^3$. Since $4\\pi^2/(GM)$ is a constant for a given central mass, $T^2 \\propto r^3$.",
-    examinerNote: "Three marks, three discrete steps. IB rewards (i) the force balance, (ii) the v = 2πr/T (or ω = 2π/T) substitution, and (iii) arriving at $T^2$ on one side and $r^3$ on the other. A common failure is writing 'F = ma' with $a = v^2/r$ but never identifying F with the gravitational force — that's effectively the first markpoint left implicit, and IB will not award it. State the equality explicitly."
+    explanation: "Three discrete steps:\n\nStep 1: gravity provides the centripetal force.\n$\\dfrac{GMm}{r^2} = \\dfrac{mv^2}{r}$\nso $v^2 = \\dfrac{GM}{r}$.\n\nStep 2: $v = \\dfrac{2\\pi r}{T}$, so $v^2 = \\dfrac{4\\pi^2 r^2}{T^2}$.\n\nStep 3: equate and rearrange.\n$\\dfrac{4\\pi^2 r^2}{T^2} = \\dfrac{GM}{r}$, hence $T^2 = \\dfrac{4\\pi^2}{GM}\\,r^3$. So $T^2 \\propto r^3$.",
+    examinerNote: "Phased version of the canonical Kepler-3 derivation. Each phase tests one step; per-phase ✓/✗ tells the student exactly which step they fumbled.",
+    sourcePack: "Refactored from long to phased per v2 brief rule 3."
   },
 
   // ── D.1.2-C1: calculate F between two masses ──────────────────────────────
@@ -748,35 +766,52 @@ window.FIELDS_D1_QUESTIONS = [
     examinerNote: "Common slips: trying to add the two potentials as vectors (potential is a scalar, just a number); using the full separation $D = 4.22 \\times 10^8$ m as the distance to each mass instead of half of it. Also: don't forget the negative sign — bound systems have negative potential."
   },
 
-  // ── D.1.H.7-A1: state field ⊥ equipotentials ─────────────────────────────
+  // ── D.1.H.7-A1: field ⊥ equipotentials (PHASED) ─────────────────────────
   {
-    id: "D.1.H.7-A1.001",
+    id: "D.1.H.7-A1.PHASED.001",
     level: "HL",
-    tags: ["D.1.H.7", "D.1.H.7-A1", "definition"],
-    type: "short",
+    tags: ["D.1.H.7", "D.1.H.7-A1"],
     marks: 2,
-    prompt: "State the geometrical relationship between gravitational field lines and equipotential surfaces. Briefly justify it from the definition of work done by a gravitational force.",
-    markPoints: [
-      { any: [
-        "perpendicular", "normal to", "at right angles", "at 90", "at ninety",
-        "right angle", "orthogonal"
-      ], credit: 1 },
-      { any: [
-        "no work done along an equipotential", "no work along the equipotential",
-        "no work is done along the equipotential", "no work is done on a equipotential",
-        "no work along a equipotential", "zero work along the equipotential",
-        "zero work on the equipotential", "no work along an equipotential",
-        "w = mδv", "w = m δv", "δv = 0", "delta v = 0", "δv is zero", "delta v is zero",
-        "potential does not change", "potential is constant on an equipotential",
-        "potential is the same", "potential is the same everywhere on",
-        "force perpendicular to displacement does no work",
-        "force perpendicular to motion does no work",
-        "force is always perpendicular to the displacement",
-        "force is perpendicular to the displacement"
-      ], credit: 1 }
+    prompt: "Gravitational field lines and gravitational equipotential surfaces have a specific geometric relationship to each other. Work through the statement and its justification.",
+    phases: [
+      {
+        kind: "mcq",
+        marks: 1,
+        prompt: "What is the geometric relationship between a gravitational field line and the equipotential surfaces it crosses?",
+        choices: [
+          "Parallel",
+          "Perpendicular",
+          "Unrelated geometrically",
+          "At $45°$"
+        ],
+        answerIndex: 1,
+        distractorRationales: {
+          "0": "Parallel would mean moving ALONG a field line keeps you on the same equipotential. But moving along a field line is moving in the direction of strongest potential change — exactly the opposite.",
+          "2": "They're tightly linked geometrically. Each set of curves determines the other.",
+          "3": "Not a natural angle. The relationship is exact, not partial: 90°."
+        }
+      },
+      {
+        kind: "mcq",
+        marks: 1,
+        prompt: "Which is the BEST one-line justification for that geometric relationship, using the definition of work done by a gravitational force?",
+        choices: [
+          "Field lines are perpendicular to equipotentials by convention; no physics reason is needed.",
+          "Moving along an equipotential gives $\\Delta V = 0$, so $W = m\\Delta V = 0$. Since $W = \\vec F \\cdot \\vec s$ and the displacement is non-zero, the force (along the field line) must be perpendicular to the displacement.",
+          "The shell theorem requires it.",
+          "Gravity always points toward the centre of mass, which is always perpendicular."
+        ],
+        answerIndex: 1,
+        distractorRationales: {
+          "0": "It's a derived consequence, not a convention. There's a real physics reason.",
+          "2": "The shell theorem is about external fields of spherical mass distributions. It's not what establishes the field-equipotential perpendicularity (which holds for any geometry).",
+          "3": "True for a single point mass, but field lines being perpendicular to equipotentials holds generally — for example in a two-mass system, the equipotentials are not concentric with either mass and the field doesn't 'point to the centre'. The right justification is energy-based."
+        }
+      }
     ],
-    explanation: "Gravitational field lines are perpendicular (normal) to equipotential surfaces at every point.\n\nJustification: moving along an equipotential surface produces no change in potential ($\\Delta V = 0$), so the work done by gravity is $W = m\\Delta V = 0$. But $W = \\vec F \\cdot \\vec s$, so for the work to be zero on a non-zero displacement, the gravitational force (and therefore the field) must be perpendicular to the displacement, i.e. perpendicular to the equipotential.",
-    examinerNote: "Either justification scores the second mark: 'no work done along an equipotential' or 'potential doesn't change on an equipotential, and W = mΔV'. A statement like 'because they're perpendicular' isn't a justification — it just restates the claim. Look for an energy-based reason."
+    explanation: "Gravitational field lines are perpendicular (normal) to equipotential surfaces at every point.\n\nJustification: along an equipotential $\\Delta V = 0$, so $W = m\\Delta V = 0$. Since $W = \\vec F \\cdot \\vec s$ and $|\\vec s| \\neq 0$, the gravitational force (and therefore the field) must have zero component along the equipotential. That means the field is perpendicular to the equipotential.",
+    examinerNote: "Phase 1 tests the geometric statement (definition-style). Phase 2 tests the energy-based justification. Splitting them lets the engine diagnose whether the student knows the FACT but not the REASON.",
+    sourcePack: "Refactored from short to phased per v2 brief rule 3."
   },
 
   // ── D.1.H.7-A1: MCQ on the relationship ──────────────────────────────────
@@ -846,46 +881,69 @@ window.FIELDS_D1_QUESTIONS = [
     examinerNote: "The point of this question is the link $GM = gR^2$. Many students reach for $G$ and $M$ even when only $g$ and $R$ are given. Watch for: using just $\\sqrt{gR}$ (no factor of 2); using $\\sqrt{gR^2}$ or $\\sqrt{2g/R}$ (wrong substitution); plugging in $R = 6.37$ km by missing the $10^6$."
   },
 
-  // ── D.1.H.9-A1: derive orbital speed v = √(GM/r) ─────────────────────────
+  // ── D.1.H.9-A1: derive orbital speed v = √(GM/r) (PHASED) ────────────────
   {
-    id: "D.1.H.9-A1.001",
+    id: "D.1.H.9-A1.PHASED.001",
     level: "HL",
     tags: ["D.1.H.9", "D.1.H.9-A1"],
-    type: "long",
     marks: 3,
-    prompt: "A satellite of mass $m$ moves in a circular orbit of radius $r$ around a planet of mass $M$. Derive an expression for the satellite's orbital speed $v$ in terms of $G$, $M$, and $r$, showing your reasoning.",
-    hints: [
-      "What kind of motion is this, and what does that kind of motion require?",
-      "Circular motion requires a centripetal force pointing inward — and gravity, here, is the only candidate.",
-      "Set the gravitational force equal to the centripetal-force expression and see what cancels.",
-      "$\\dfrac{GMm}{r^2} = \\dfrac{mv^2}{r}$. The orbiting body's mass cancels; rearrange for $v$."
+    prompt: "A satellite of mass $m$ moves in a circular orbit of radius $r$ around a planet of mass $M$. Work through the derivation of the orbital speed $v$.",
+    phases: [
+      {
+        kind: "mcq",
+        marks: 1,
+        prompt: "Which equation correctly expresses the force balance for the satellite in its circular orbit?",
+        choices: [
+          "$\\dfrac{GMm}{r^2} = \\dfrac{mv^2}{r}$",
+          "$\\dfrac{GMm}{r^2} = \\dfrac{m^2 v}{r}$",
+          "$\\dfrac{GMm}{r} = mv^2$",
+          "$GMm = \\dfrac{mv^2}{r}$"
+        ],
+        answerIndex: 0,
+        distractorRationales: {
+          "1": "Centripetal force is $mv^2/r$, not $m^2 v/r$. The satellite's mass appears once (in $m$), and the speed appears squared (from $a = v^2/r$).",
+          "2": "Lost the $r^2$ in the gravity term. The inverse-square law gives $GMm/r^2$, not $GMm/r$.",
+          "3": "Lost the $r^2$ in gravity AND kept $r$ on the right. Two errors compounding."
+        }
+      },
+      {
+        kind: "mcq",
+        marks: 1,
+        prompt: "After cancelling $m$ from both sides of the force balance, what does $v^2$ equal?",
+        choices: [
+          "$v^2 = GMm/r$",
+          "$v^2 = GM/r$",
+          "$v^2 = GM/r^2$",
+          "$v^2 = GMm/r^2$"
+        ],
+        answerIndex: 1,
+        distractorRationales: {
+          "0": "$m$ should have cancelled. The satellite's mass appears on both sides of the force balance, so it drops out.",
+          "2": "Kept $r^2$ in the denominator. After cancelling $r$ from both sides (gravity has $r^2$, centripetal has $r$), only ONE factor of $r$ remains in the denominator.",
+          "3": "Neither $m$ nor one factor of $r$ cancelled. The result should have $GM/r$, not $GMm/r^2$."
+        }
+      },
+      {
+        kind: "mcq",
+        marks: 1,
+        prompt: "Therefore the orbital speed $v$ is:",
+        choices: [
+          "$v = GM/r$",
+          "$v = \\sqrt{GM/r}$",
+          "$v = GM/\\sqrt{r}$",
+          "$v = \\sqrt{GMm/r}$"
+        ],
+        answerIndex: 1,
+        distractorRationales: {
+          "0": "Forgot the square root. $v^2 = GM/r$, so $v$ is the square root of that, not $GM/r$ itself.",
+          "2": "Took the square root of $r$ only, not the whole expression. Should be $\\sqrt{GM/r}$, not $GM/\\sqrt{r}$.",
+          "3": "Kept the satellite mass $m$, which had already cancelled in the previous phase."
+        }
+      }
     ],
-    markPoints: [
-      { any: [
-        "newton's law of gravitation", "gravitational force", "f = gmm/r²", "f = g m m / r²",
-        "f = gmm/r^2", "f = g m m / r^2", "gravitational force is gmm/r",
-        "gmm/r²", "g m m / r²", "gmm/r^2", "g m m / r^2", "gravitational pull"
-      ], credit: 1 },
-      { any: [
-        "gravitational force = centripetal", "gravity = centripetal",
-        "gravitational force provides the centripetal", "gravity provides the centripetal",
-        "gravitational force is the centripetal", "gravity is the centripetal",
-        "force of gravity equals the centripetal", "force of gravity = centripetal",
-        "gmm/r² = mv²/r", "gmm/r^2 = mv^2/r", "gmm/r2 = mv2/r",
-        "g m m / r² = m v² / r", "g m m / r^2 = m v^2 / r",
-        "gmm/r²=mv²/r", "gmm/r^2=mv^2/r",
-        "set equal to mv²/r", "set equal to mv^2/r",
-        "equate to mv²/r", "equate to mv^2/r"
-      ], credit: 1 },
-      { any: [
-        "v = √(gm/r)", "v = sqrt(gm/r)", "v = sqrt gm/r", "v = root gm/r",
-        "v² = gm/r", "v^2 = gm/r", "v squared = gm/r",
-        "v=√(gm/r)", "v=sqrt(gm/r)", "v=sqrt gm/r",
-        "v = (gm/r)^(1/2)", "v = (gm/r)^0.5", "v = √gm/r"
-      ], credit: 1 }
-    ],
-    explanation: "Step 1: write Newton's law of gravitation for the satellite. The gravitational force on the satellite is $F = \\dfrac{GMm}{r^2}$, directed toward the planet.\n\nStep 2: identify this force as the centripetal force needed to keep the satellite in circular motion at speed $v$, radius $r$.\n$$\\dfrac{GMm}{r^2} = \\dfrac{mv^2}{r}$$\n\nStep 3: cancel $m$ and rearrange.\n$v^2 = \\dfrac{GM}{r}$, hence $v = \\sqrt{\\dfrac{GM}{r}}$.\n\nThe orbiting body's mass $m$ cancels — every satellite at the same $r$ around the same central body orbits at the same speed, regardless of its own mass.",
-    examinerNote: "Three discrete markpoints: (i) stating the gravitational force expression $GMm/r^2$, (ii) equating it to centripetal $mv^2/r$, (iii) arriving at $v = \\sqrt{GM/r}$. Students sometimes leap from $F = ma$ straight to $v = \\sqrt{GM/r}$ without showing the force balance — IB will not award the second markpoint unless the equation $GMm/r^2 = mv^2/r$ (or an equivalent statement) is present."
+    explanation: "Three steps:\n\nStep 1: gravity provides centripetal force. $\\dfrac{GMm}{r^2} = \\dfrac{mv^2}{r}$.\n\nStep 2: cancel $m$ and one factor of $r$. $v^2 = \\dfrac{GM}{r}$.\n\nStep 3: take the square root. $v = \\sqrt{\\dfrac{GM}{r}}$.\n\nThe orbiting body's mass $m$ cancels — every satellite at the same $r$ around the same central body orbits at the same speed, regardless of its own mass.",
+    examinerNote: "Phased version replaces the substring-matched 'long' derivation. Three MCQ phases drill the three discrete algebraic steps; each phase tells the student which step they got right or wrong.",
+    sourcePack: "Refactored from long to phased per v2 brief rule 3."
   },
 
   // ── D.1.H.9-A3: numerical orbital speed at LEO ───────────────────────────
@@ -932,10 +990,10 @@ window.FIELDS_D1_QUESTIONS = [
         marks: 1,
         prompt: "What does the drag force do to the satellite's total mechanical energy $E$ over time?",
         choices: [
-          "$E$ stays constant; drag only redistributes energy between KE and PE.",
-          "$E$ increases (becomes less negative) because drag transfers energy to the satellite.",
-          "$E$ decreases (becomes more negative) because drag dissipates the satellite's mechanical energy as heat.",
-          "$E$ remains zero throughout — orbits always have total energy zero."
+          "$E$ stays constant.",
+          "$E$ increases (becomes less negative).",
+          "$E$ decreases (becomes more negative).",
+          "$E$ remains zero throughout."
         ],
         answerIndex: 2,
         distractorRationales: {
@@ -949,9 +1007,9 @@ window.FIELDS_D1_QUESTIONS = [
         marks: 1,
         prompt: "Given that the satellite's total energy decreases over time, what happens to its orbital radius $r$? (Recall: for a circular orbit, $E = -GMm/(2r)$.)",
         choices: [
-          "$r$ increases — lower energy means the satellite drifts outward.",
-          "$r$ decreases — to make $E$ more negative, the denominator $2r$ must shrink.",
-          "$r$ stays constant — drag affects speed but not orbital radius.",
+          "$r$ increases.",
+          "$r$ decreases.",
+          "$r$ stays constant.",
           "$r$ first decreases, then increases as the satellite stabilises."
         ],
         answerIndex: 1,
@@ -966,10 +1024,10 @@ window.FIELDS_D1_QUESTIONS = [
         marks: 1,
         prompt: "Given that the orbital radius decreases, what happens to the orbital speed $v$? (Recall: for a circular orbit, $v = \\sqrt{GM/r}$.)",
         choices: [
-          "$v$ decreases — drag continuously opposes motion, so the satellite slows down.",
-          "$v$ stays the same — the satellite is in equilibrium.",
-          "$v$ increases — smaller $r$ in $v = \\sqrt{GM/r}$ means larger $v$.",
-          "$v$ is undefined — once drag starts, the orbit is no longer circular."
+          "$v$ decreases.",
+          "$v$ stays the same.",
+          "$v$ increases.",
+          "$v$ is undefined."
         ],
         answerIndex: 2,
         distractorRationales: {
@@ -1136,32 +1194,29 @@ window.FIELDS_D1_QUESTIONS = [
     sourcePack: "original (plausible — new syllabus)"
   },
 
-  // ── D.1.1-C3: circular orbit as special case of ellipse (short) ──────────
+  // ── D.1.1-C3: circular orbit as special case of ellipse (MCQ pick-best) ──
   {
     id: "D.1.1-C3.001",
     level: "SL",
-    tags: ["D.1.1", "D.1.1-C3", "definition"],
-    type: "short",
-    marks: 2,
-    prompt: "Many gravitation problems treat planetary orbits as circular. Explain how a circular orbit is consistent with Kepler's first law, and state one quantity that distinguishes a true circle from a general ellipse.",
-    markPoints: [
-      { any: [
-        "circle is a special case of ellipse", "circle is a special case of an ellipse",
-        "circle is an ellipse with", "circular orbit is a special case",
-        "a circle is the limiting case of an ellipse", "special case of the ellipse",
-        "circle is a degenerate ellipse", "circle is the limit of an ellipse"
-      ], credit: 1 },
-      { any: [
-        "eccentricity is zero", "eccentricity = 0", "eccentricity equals zero",
-        "zero eccentricity", "e = 0", "e equals 0",
-        "the two foci coincide", "two foci merge", "foci coincide at the centre",
-        "both foci are at the same point", "foci collapse to a single point",
-        "foci are coincident"
-      ], credit: 1 }
+    tags: ["D.1.1", "D.1.1-C3"],
+    type: "mcq",
+    marks: 1,
+    prompt: "Many gravitation problems treat planetary orbits as circular, even though Kepler's first law states that orbits are ellipses with the Sun at one focus. Which of the following is the BEST explanation of why circular orbits are consistent with Kepler's first law?",
+    choices: [
+      "A circle is the limiting case of an ellipse with eccentricity $e = 0$, in which the two foci merge into a single point at the centre.",
+      "A circle and an ellipse are different shapes; Kepler's first law is just an approximation that doesn't apply to circular orbits.",
+      "A circular orbit is not consistent with Kepler's first law, but it's a good enough approximation for most planets.",
+      "A circle is what you get when the orbiting body is heavy enough that gravity becomes radially symmetric."
     ],
-    explanation: "A circle is the limiting case of an ellipse where the eccentricity $e = 0$ and the two foci merge into a single point at the centre. So a circular orbit is a perfectly valid Kepler-1 ellipse; it just has the special property that the Sun sits at the geometric centre rather than off-centre at a focus.\n\nFor non-zero eccentricity ($0 < e < 1$) the foci are separated and the orbit has a distinct perihelion (closest point) and aphelion (furthest point). Earth's orbit has $e \\approx 0.017$, close to circular but not exactly.",
-    examinerNote: "Caveat: Kepler-1 detail isn't typically tested in past IB papers; this question is a plausible new-syllabus extension. It's not the most-tested atom under D.1.1, so don't worry if it feels unfamiliar.",
-    sourcePack: "original (plausible — new syllabus)"
+    answerIndex: 0,
+    distractorRationales: {
+      "1": "Kepler 1 absolutely applies to circles. The law says orbits are ellipses, and circles are a special case of ellipses (just with $e = 0$). No 'approximation' wiggle room needed.",
+      "2": "Not just an approximation. A circle IS an ellipse — a degenerate one with $e = 0$ where both foci coincide. So it's exactly consistent with Kepler 1.",
+      "3": "Gravity is always radially symmetric (it depends only on $r$ for a point mass). And the orbit shape depends on the orbiting body's energy and angular momentum, not on its mass."
+    },
+    explanation: "A circle is the limiting case of an ellipse where the eccentricity $e = 0$ and the two foci merge into a single point at the centre. So a circular orbit is a perfectly valid Kepler-1 ellipse; it just has the special property that the Sun sits at the geometric centre rather than off-centre at a focus.\n\nFor non-zero eccentricity ($0 < e < 1$) the foci are separated. Earth's orbit has $e \\approx 0.017$, close to but not exactly circular.",
+    examinerNote: "Caveat: Kepler-1 detail isn't typically tested in past IB papers; this question is a plausible new-syllabus extension. The conceptual point — that a circle is a special-case ellipse — is the key one.",
+    sourcePack: "Refactored from short to mcq pick-best per v2 brief rule 3."
   },
 
   // ── D.1.1-D1: state equal areas in equal times (MCQ) ─────────────────────
@@ -1300,9 +1355,9 @@ window.FIELDS_D1_QUESTIONS = [
         prompt: "What is the conventional value of the gravitational potential energy $E_p$ when the two masses are infinitely far apart?",
         choices: [
           "Equal to the sum of their kinetic energies.",
-          "Zero, by convention.",
-          "Infinite, because the distance is infinite.",
-          "Negative infinity, because the masses are unbound."
+          "Zero.",
+          "Infinite.",
+          "Negative infinity."
         ],
         answerIndex: 1,
         distractorRationales: {
@@ -1316,10 +1371,10 @@ window.FIELDS_D1_QUESTIONS = [
         marks: 1,
         prompt: "If you slowly bring the two masses together (from infinity to some finite separation $r$), what kind of work does GRAVITY do?",
         choices: [
-          "Positive work — gravity is attractive, so it pulls the masses in the direction they're moving.",
-          "Negative work — gravity opposes the motion.",
-          "Zero work — the masses are moved slowly, so there's no force.",
-          "Undefined — work has no meaning at infinity."
+          "Positive work.",
+          "Negative work.",
+          "Zero work.",
+          "Undefined."
         ],
         answerIndex: 0,
         distractorRationales: {
@@ -1333,9 +1388,9 @@ window.FIELDS_D1_QUESTIONS = [
         marks: 1,
         prompt: "Combine the previous two facts. As the masses come together, the system's $E_p$ goes from zero (at infinity) to a value at separation $r$. What sign is that value?",
         choices: [
-          "Positive, because gravity does positive work to bring them in.",
-          "Zero, because energy is conserved.",
-          "Negative, because the system has 'fallen' below the reference level.",
+          "Positive.",
+          "Zero.",
+          "Negative.",
           "Depends on the masses involved."
         ],
         answerIndex: 2,
@@ -1477,52 +1532,69 @@ window.FIELDS_D1_QUESTIONS = [
   // the instantaneous/atmospheric variants of D.1.H.10.
   // ════════════════════════════════════════════════════════════════════════
 
-  // ── D.1.H.9-G1: tethered/coupled satellites at different radii (long) ────
+  // ── D.1.H.9-G1: tethered/coupled satellites (PHASED) ─────────────────────
   {
-    id: "D.1.H.9-G1.001",
+    id: "D.1.H.9-G1.PHASED.001",
     level: "HL",
-    tags: ["D.1.H.9", "D.1.H.9-G1", "extended_writing"],
-    type: "long",
+    tags: ["D.1.H.9", "D.1.H.9-G1"],
     marks: 3,
-    prompt: "Two satellites of equal mass are connected by a long, rigid, light tether. The tether is aligned radially: one satellite is at orbital radius $r_1$ from Earth's centre, and the other at a larger radius $r_2 > r_1$, both moving with the same angular velocity around Earth. Explain why this configuration cannot persist in a free unforced orbit, and what would have to happen for it to be maintained.",
-    markPoints: [
-      { any: [
-        "different natural periods", "different orbital periods", "different periods",
-        "would have different periods", "have different natural periods",
-        "natural period at r1 is", "lower orbit has a shorter period",
-        "outer satellite has a longer period",
-        "outer would orbit more slowly", "inner would orbit more quickly",
-        "different orbital speeds naturally", "different natural orbital speeds",
-        "natural orbital speed at r1 ≠ natural at r2",
-        "inner one would naturally orbit faster"
-      ], credit: 1 },
-      { any: [
-        "tether must exert", "tether exerts a force", "tether tension",
-        "tether pulls", "tension in the tether",
-        "tether provides additional force", "tether constrains them to a common",
-        "tether forces them to share the same angular velocity",
-        "tether constrains the system to a common angular velocity",
-        "constrained by the tether"
-      ], credit: 1 },
-      { any: [
-        "inner satellite must move slower than its natural orbital speed",
-        "inner satellite is moving too slowly for its radius",
-        "inner satellite is going slower than free orbit",
-        "inner satellite has too little kinetic energy for free orbit",
-        "outer satellite must move faster than its natural orbital speed",
-        "outer satellite is moving faster than free orbit",
-        "outer satellite is going faster than its natural",
-        "outer satellite has too much kinetic energy for free orbit",
-        "neither is at its natural orbital speed",
-        "both are off their natural orbital speeds",
-        "tether is in tension because the outer wants to fly out",
-        "centrifugal mismatch", "the tether holds the inner in and the outer back",
-        "outer is held in by tension", "inner is dragged forward by tension"
-      ], credit: 1 }
+    prompt: "Two satellites of equal mass are connected by a long, rigid, light tether. The tether is aligned radially: one satellite is at orbital radius $r_1$ from Earth's centre, and the other at $r_2 > r_1$. Both are forced (by the tether) to move with the same angular velocity around Earth.",
+    phases: [
+      {
+        kind: "mcq",
+        marks: 1,
+        prompt: "If the two satellites were NOT tethered, how would their free-orbit periods compare?",
+        choices: [
+          "The same.",
+          "The inner one (at $r_1$) would have a shorter period; the outer one (at $r_2$) longer.",
+          "The inner one would have a longer period; the outer one shorter.",
+          "Both periods are infinite at this distance."
+        ],
+        answerIndex: 1,
+        distractorRationales: {
+          "0": "Kepler's third law: $T \\propto r^{3/2}$. The two satellites orbit the same planet, but at different $r$, so their natural periods are different.",
+          "2": "Wrong direction. Smaller $r$ means stronger gravity AND shorter circumference, both of which give a SHORTER period. Inner = faster.",
+          "3": "Both orbits are well-defined and have finite periods."
+        }
+      },
+      {
+        kind: "mcq",
+        marks: 1,
+        prompt: "Given that the tether forces them to share the SAME angular velocity $\\omega$, what must the tether do?",
+        choices: [
+          "Nothing.",
+          "Exert a force on each satellite.",
+          "Slowly heat up to dissipate energy.",
+          "Become rigid only at one end."
+        ],
+        answerIndex: 1,
+        distractorRationales: {
+          "0": "They DON'T naturally share $\\omega$ at different $r$. So if a common $\\omega$ is being imposed, something must impose it — that's the tether.",
+          "2": "Heat dissipation isn't relevant to the kinematics. The tether must EXERT FORCE, not absorb energy.",
+          "3": "Rigid at one end only would let the other satellite fly away. Both ends are mechanically coupled."
+        }
+      },
+      {
+        kind: "mcq",
+        marks: 1,
+        prompt: "At the shared angular velocity $\\omega$ (somewhere between the two natural angular velocities), which describes each satellite's motion?",
+        choices: [
+          "Both satellites are at their natural orbital speeds; the tether is slack.",
+          "The inner satellite is moving slower than its natural speed; the outer is moving faster than its natural speed. The tether is in tension.",
+          "The inner satellite is moving faster than its natural speed; the outer is moving slower than its natural speed.",
+          "Only the inner satellite is at its natural speed; the outer is being towed."
+        ],
+        answerIndex: 1,
+        distractorRationales: {
+          "0": "The natural orbital speeds differ at different $r$. They can't BOTH be at natural speed if they share $\\omega$.",
+          "2": "Backwards. The shared $\\omega$ is between the two natural angular velocities; the inner one's natural $\\omega$ is LARGER (Kepler 3 again), so the shared $\\omega$ is LESS than the inner's natural — i.e., the inner is moving too slowly. The outer's natural $\\omega$ is SMALLER, so the shared $\\omega$ is MORE than the outer's natural — i.e., the outer is moving too fast.",
+          "3": "Neither is at its natural speed; both are constrained by the tether."
+        }
+      }
     ],
-    explanation: "For a free, unforced circular orbit at radius $r$, $v_{\\text{orb}} = \\sqrt{GM/r}$. So the inner satellite at $r_1$ would naturally orbit faster than the outer one at $r_2$. Equivalently the period $T = 2\\pi r/v_{\\text{orb}} = 2\\pi\\sqrt{r^3/(GM)}$ is shorter for smaller $r$ (Kepler's third law).\n\nIf the two are tethered and forced to share the same angular velocity $\\omega$, then neither is at its natural orbital speed:\n• The inner satellite is moving too slowly for its radius (it would need to be going faster to stay in a free circular orbit at $r_1$). Gravity at $r_1$ exceeds the centripetal acceleration $\\omega^2 r_1$ needed; the tether must pull it outward.\n• The outer satellite is moving too fast for its radius (it would need to be going slower for a free circular orbit at $r_2$). Centripetal demand $\\omega^2 r_2$ exceeds gravity there; the tether must pull it inward.\n\nThe tether is therefore in tension. It exerts inward force on the outer satellite and outward force on the inner one. Without the tether the configuration falls apart: the inner satellite would speed up and drop to a lower orbit; the outer would slow down and rise to a higher orbit.",
-    examinerNote: "Three discrete markpoints reward (i) recognising that the two would naturally have different periods at their radii, (ii) saying the tether must therefore exert force, (iii) characterising what that force does to each satellite.\n\nThis question is observed in Pack D. The tethered/coupled satellite scenario sometimes appears in popular science as a 'space elevator' or 'rotating tether' application, where the system rotates at one global $\\omega$ and the engineering challenge is exactly the tension calculation here.",
-    sourcePack: "Pack D"
+    explanation: "For a free circular orbit, $v_{\\text{orb}} = \\sqrt{GM/r}$ and $\\omega = \\sqrt{GM/r^3}$. Smaller $r$ gives larger natural $\\omega$ — the inner satellite would naturally orbit faster than the outer.\n\nWhen the tether forces a shared $\\omega$ between the two natural values:\n• Inner satellite: shared $\\omega$ < natural $\\omega$. Gravity at $r_1$ exceeds the centripetal $\\omega^2 r_1$, so the tether must pull it OUTWARD (away from Earth).\n• Outer satellite: shared $\\omega$ > natural $\\omega$. Centripetal $\\omega^2 r_2$ exceeds gravity at $r_2$, so the tether must pull it INWARD.\n\nNet: tether in tension; inner pulled out, outer pulled in. Without the tether, the configuration would fall apart — the inner would speed up to a lower orbit and the outer would slow down to a higher orbit.",
+    examinerNote: "Refactored from long to phased. The three claims (different natural periods → tether must act → each satellite is off its natural speed) become three MCQs whose ✓/✗ pattern diagnoses exactly which link breaks.\n\nObserved in Pack D. Underlies real engineering of space elevators and rotating tethers.",
+    sourcePack: "Pack D. Refactored from long to phased per v2 brief rule 3."
   },
 
   // ── D.1.H.9-G2: geostationary orbit — phased ──────────────────────────────
@@ -1572,47 +1644,69 @@ window.FIELDS_D1_QUESTIONS = [
     sourcePack: "original (plausible — new syllabus)"
   },
 
-  // ── D.1.H.10-B1: sudden Δv contrasted with continuous drag (long) ────────
+  // ── D.1.H.10-B1: sudden Δv vs continuous drag (PHASED) ───────────────────
   {
-    id: "D.1.H.10-B1.001",
+    id: "D.1.H.10-B1.PHASED.001",
     level: "HL",
-    tags: ["D.1.H.10", "D.1.H.10-B1", "extended_writing"],
-    type: "long",
+    tags: ["D.1.H.10", "D.1.H.10-B1"],
     marks: 3,
-    prompt: "A satellite is in a circular orbit around Earth. A small retro-rocket fires briefly at one point of the orbit, instantaneously reducing the satellite's speed by a small amount $\\Delta v$ (its mass is unchanged). The thrust is purely along the direction of motion.\n\nExplain qualitatively what the new orbit looks like, and contrast this case with the case of gradual atmospheric drag, which removes the same amount of energy over many orbits.",
-    markPoints: [
-      { pattern: "(total\\s+(mechanical\\s+)?energy|mechanical\\s+energy|total\\s+e|e\\s+(total|tot)|energy\\s+of\\s+the\\s+satellite).{0,30}(decreas|reduc|fall|drop|lower|loss|lose|less|becom(es?)?\\s+more\\s+negative|more\\s+negative)",
-        credit: 1,
-        label: "total energy decreases (from instantaneous Δv)" },
-      { any: [
-        "orbit becomes elliptical", "orbit becomes an ellipse", "orbit is now elliptical",
-        "orbit is now an ellipse", "becomes an elliptical orbit", "new orbit is elliptical",
-        "new orbit is an ellipse", "orbit changes from circular to elliptical",
-        "circular orbit becomes an ellipse", "an elliptical orbit",
-        "the kick point becomes the apoapsis", "the kick point is the apoapsis",
-        "kick point is the highest point", "kick point is the furthest point",
-        "kick location becomes the apogee", "apogee at the kick point",
-        "apoapsis of the new orbit at the kick point"
-      ], credit: 1 },
-      { any: [
-        "drag is gradual", "drag is continuous", "drag is slow",
-        "drag over many orbits", "drag removes energy continuously",
-        "drag spirals", "drag makes the orbit spiral",
-        "spirals inward continuously", "near circular spiral",
-        "orbit stays approximately circular", "orbit remains roughly circular",
-        "remains approximately circular throughout",
-        "stays near circular as it shrinks", "stays nearly circular",
-        "always close to circular", "always approximately circular",
-        "slowly tightening", "slowly tightens",
-        "stays near circular while the radius slowly decreases",
-        "drag does not produce an ellipse", "no ellipse from drag",
-        "drag produces a spiral", "spiral rather than an ellipse",
-        "spiral instead of an ellipse", "spiral not an ellipse"
-      ], credit: 1 }
+    prompt: "A satellite is initially in a circular orbit around Earth. We compare two scenarios in which the same total mechanical energy is removed from the satellite:\n\n• Scenario A: a sudden retro-burn at ONE POINT of the orbit, instantly reducing the satellite's speed by $\\Delta v$.\n• Scenario B: gradual atmospheric drag, removing the same total energy continuously over many orbits.",
+    phases: [
+      {
+        kind: "mcq",
+        marks: 1,
+        prompt: "In Scenario A (the retro-burn), what is the SHAPE of the satellite's new orbit?",
+        choices: [
+          "Still a circle, at a smaller radius.",
+          "An ellipse, with the kick point as the apoapsis (highest point) of the new orbit.",
+          "An ellipse, with the kick point as the periapsis (lowest point) of the new orbit.",
+          "A parabola."
+        ],
+        answerIndex: 1,
+        distractorRationales: {
+          "0": "An instantaneous speed change at a single point breaks circular symmetry. The satellite is now moving slower than the circular-orbit speed at the kick point, so the orbit can't be circular at $r_{\\text{kick}}$.",
+          "2": "Wrong end. At the kick point, the satellite is too slow for circular orbit at that $r$ — so gravity pulls it inward; it swings closer to Earth on the other side. The kick point is the highest point of the new orbit, not the lowest.",
+          "3": "A parabolic orbit is the escape condition ($E = 0$). The satellite has LOST energy; it's more bound, not less. Still in a closed elliptical orbit."
+        }
+      },
+      {
+        kind: "mcq",
+        marks: 1,
+        prompt: "In Scenario B (gradual drag), what is the SHAPE of the satellite's orbit AT ANY MOMENT during the decay?",
+        choices: [
+          "Always approximately circular, but slowly shrinking.",
+          "Increasingly elliptical, with eccentricity growing over time.",
+          "Always perfectly circular at the original radius.",
+          "A spiral that's neither circular nor elliptical."
+        ],
+        answerIndex: 0,
+        distractorRationales: {
+          "1": "Drag is DISTRIBUTED around the orbit (not localised at one point), so it doesn't inject eccentricity. The orbit stays close to circular throughout the decay.",
+          "2": "Drag does remove energy and shrink the orbit. The orbit doesn't stay at the original radius.",
+          "3": "While the long-time trajectory is a spiral, each individual orbit is approximately a circle. The spiral is the slow drift of the circle's radius, not a separate shape."
+        }
+      },
+      {
+        kind: "mcq",
+        marks: 1,
+        prompt: "What is the KEY difference between Scenario A and Scenario B that explains the different orbit shapes?",
+        choices: [
+          "Scenario A removes more energy than Scenario B.",
+          "Scenario A removes energy at one point; Scenario B removes energy continuously around the orbit.",
+          "Scenario A is faster than Scenario B.",
+          "Scenario A changes the satellite's mass; Scenario B doesn't."
+        ],
+        answerIndex: 1,
+        distractorRationales: {
+          "0": "By construction, both scenarios remove the same total energy. The difference is HOW the energy is removed, not how much.",
+          "2": "Speed of energy removal isn't the conceptual point. A slow retro-burn would still produce an ellipse if applied at one point; a fast widespread drag would still keep the orbit circular.",
+          "3": "Neither scenario changes the mass. Mass cancels in orbital-speed formulas anyway."
+        }
+      }
     ],
-    explanation: "Instantaneous case (retro-burn). At the kick point the satellite's position $r$ is unchanged but its speed drops to $v - \\Delta v$. The total mechanical energy $E = \\tfrac{1}{2}mv^2 - GMm/r$ decreases (KE drops by $mv\\Delta v$ to first order). The orbit can no longer be circular at that $r$ — the speed is now below circular-orbit speed there.\n\nThe new orbit is an ellipse. The kick point becomes the apoapsis of the new ellipse (the highest point), because the satellite is moving too slowly for $r$ to be its natural orbital radius. The satellite then swings in to a closer perihelion on the opposite side of Earth before returning to the kick point, completing each new ellipse with the same period.\n\nDrag case. Atmospheric drag removes energy gradually over many orbits. Each individual orbit is approximately circular, but its radius slowly shrinks. There's no point of dramatic 'eccentricity injection' as with a kick: the orbit stays close to circular while it spirals inward. By the time the satellite has lost the same total energy as in the kick case, it has spiralled to a lower-altitude circular orbit, not become elliptical.\n\nThe key difference is the spatial localisation of the energy loss. A sudden kick at one point breaks the orbit's circular symmetry: only that one point keeps its old $r$, so the orbit becomes elongated. Distributed drag preserves symmetry: every part of the orbit loses energy more or less equally, so the orbit stays symmetrical (circular) while shrinking.",
-    examinerNote: "Three discrete markpoints. Markpoint 1 uses a `pattern` regex to catch many phrasings of 'total energy decreases'.\n\nThe killer insight is the asymmetry: a localised energy change produces ellipticity; a distributed energy change produces a near-circular spiral. Students who write 'drag also makes the orbit elliptical' miss the contrast that's being tested.",
-    sourcePack: "Pack D (asteroid-strike-style Q)"
+    explanation: "Scenario A (kick at one point). The satellite's position $r$ is unchanged at the kick, but its speed drops. It can no longer move in a circle at that $r$ (the speed is now too low). The new orbit is an ellipse with the kick point as the APOAPSIS — the satellite then swings inward to a closer perihelion on the opposite side before returning, repeating the same elliptical orbit.\n\nScenario B (distributed drag). Each individual orbit is approximately circular; the radius decreases slowly over many orbits. There's no eccentricity build-up because the energy loss is symmetric around the orbit.\n\nThe principle: LOCALISED energy loss → eccentricity. DISTRIBUTED energy loss → circular spiral.",
+    examinerNote: "Three phases. Phase 1 tests the shape after a single-point energy removal (ellipse, kick point at apoapsis). Phase 2 tests the shape under distributed drag (circular spiral). Phase 3 tests the conceptual distinction (LOCALISED vs DISTRIBUTED). A student who passes phases 1 and 2 but flubs phase 3 has the empirical results but not the principle.",
+    sourcePack: "Pack D (asteroid-strike-style Q). Refactored from long to phased per v2 brief rule 3."
   },
 
   // ── D.1.H.10-C1: atmospheric spiral inward (multi_select) ─────────────────
@@ -1998,49 +2092,69 @@ window.FIELDS_D1_QUESTIONS = [
     sourcePack: "Pack D (satellite at 2R)"
   },
 
-  // ── D.1.H.2-D1: derive total orbital energy E = -GMm/(2r) ───────────────
+  // ── D.1.H.2-D1: derive total orbital energy E = -GMm/(2r) (PHASED) ──────
   {
-    id: "D.1.H.2-D1.001",
+    id: "D.1.H.2-D1.PHASED.001",
     level: "HL",
-    tags: ["D.1.H.2", "D.1.H.2-D1", "extended_writing"],
-    type: "long",
+    tags: ["D.1.H.2", "D.1.H.2-D1"],
     marks: 3,
-    prompt: "A satellite of mass $m$ is in a circular orbit of radius $r$ around a planet of mass $M$. Show that the total mechanical energy of the satellite is $E = -\\dfrac{GMm}{2r}$.",
-    hints: [
-      "Total mechanical energy is the sum of two terms — which two?",
-      "$E = E_k + E_p$. You have an expression for $E_p$ already. What about $E_k$?",
-      "$E_k$ needs $v^2$. For a circular orbit, what is $v$? (You may have already derived this.)",
-      "$v^2 = GM/r$ in a circular orbit, so $E_k = \\tfrac{1}{2}m v^2 = GMm/(2r)$. Now combine with $E_p = -GMm/r$."
-    ],
-    markPoints: [
-      { pattern: "(e\\s*=|total\\s+e\\s*=|e\\s+is|total\\s+energy\\s+is)\\s*(e_?k|kinetic|ke|½\\s*m\\s*v|0\\.5\\s*m\\s*v|1/2\\s*m\\s*v).{0,12}\\+.{0,12}(e_?p|potential|pe|gmm/r|gmm/-r)",
-        any: [
-          "e = ek + ep", "e = e_k + e_p", "total = ke + pe",
-          "total energy is the sum of kinetic and potential",
-          "e = (1/2)mv² + ep", "e = ½mv² - gmm/r", "e = (1/2)mv² - gmm/r",
-          "kinetic plus potential", "ke plus pe", "ke + pe", "ek + ep",
-          "total energy = kinetic + potential"
+    prompt: "A satellite of mass $m$ is in a circular orbit of radius $r$ around a planet of mass $M$. Work through the derivation of the total mechanical energy.",
+    phases: [
+      {
+        kind: "mcq",
+        marks: 1,
+        prompt: "How is the total mechanical energy $E$ of the satellite-planet system related to its kinetic energy $E_k$ and gravitational potential energy $E_p$?",
+        choices: [
+          "$E = E_k + E_p$",
+          "$E = E_k - E_p$",
+          "$E = E_k \\times E_p$",
+          "$E = |E_k| + |E_p|$"
         ],
-        credit: 1,
-        label: "states E = KE + PE" },
-      { any: [
-        "ek = gmm/(2r)", "ek = gmm/2r", "kinetic energy is gmm/2r",
-        "e_k = gmm/(2r)", "1/2 mv² = gmm/2r", "(1/2) m v² = gmm/(2r)",
-        "ek = (1/2)gmm/r", "kinetic energy equals gmm/(2r)",
-        "ke = gmm/2r",
-        "ek = 1/2 m × gm/r", "1/2 × gm/r", "v² = gm/r",
-        "substitute v² = gm/r", "using v² = gm/r"
-      ], credit: 1 },
-      { any: [
-        "e = -gmm/(2r)", "e = -gmm/2r", "total energy = -gmm/(2r)",
-        "= -gmm/(2r)", "= -gmm/2r", "-gmm/(2r)", "-gmm/2r",
-        "e = -1/2 × gmm/r", "total e = -gmm/(2r)", "result e = -gmm/(2r)",
-        "= -ek", "equal to minus ek", "= -ke", "equal to minus the kinetic energy"
-      ], credit: 1 }
+        answerIndex: 0,
+        distractorRationales: {
+          "1": "Energy adds, with each term carrying its own sign. Don't subtract $E_p$; just include its (negative) value.",
+          "2": "Energies are added in mechanics, not multiplied.",
+          "3": "Magnitudes don't simply add. $E_p$ is genuinely negative, and that sign matters when you add it to $E_k$."
+        }
+      },
+      {
+        kind: "mcq",
+        marks: 1,
+        prompt: "For a satellite in a circular orbit at radius $r$, what is the kinetic energy $E_k$? (You may use the orbital-speed result $v = \\sqrt{GM/r}$ from D.1.H.9-A1.)",
+        choices: [
+          "$E_k = GMm/r$",
+          "$E_k = GMm/(2r)$",
+          "$E_k = \\dfrac{1}{2}GM/r$",
+          "$E_k = mGM/r^2$"
+        ],
+        answerIndex: 1,
+        distractorRationales: {
+          "0": "Forgot the factor of $\\tfrac{1}{2}$ from $E_k = \\tfrac{1}{2}mv^2$.",
+          "2": "Lost the factor of $m$. Kinetic energy depends on the body's mass: $E_k = \\tfrac{1}{2}mv^2$, not $\\tfrac{1}{2}v^2$.",
+          "3": "Wrong form. $E_k = \\tfrac{1}{2}m v^2$, and $v^2 = GM/r$, so $E_k = \\tfrac{1}{2}m \\cdot GM/r = GMm/(2r)$, not $mGM/r^2$."
+        }
+      },
+      {
+        kind: "mcq",
+        marks: 1,
+        prompt: "Adding the kinetic energy ($+GMm/(2r)$) and potential energy ($-GMm/r$), what is the total mechanical energy?",
+        choices: [
+          "$E = +GMm/(2r)$",
+          "$E = -GMm/(2r)$",
+          "$E = -GMm/r$",
+          "$E = 0$"
+        ],
+        answerIndex: 1,
+        distractorRationales: {
+          "0": "Sign error on $E_p$. The PE is negative ($E_p = -GMm/r$), so adding it REDUCES the total below $E_k$. The total is less than $E_k$, not equal to it.",
+          "2": "Forgot to add the KE term, kept only $E_p$. Adding $+GMm/(2r)$ to $-GMm/r$ gives $-GMm/(2r)$, not the full $E_p$.",
+          "3": "If KE and PE cancelled exactly, the satellite would be at the boundary of being bound (the escape condition). For a circular orbit, KE = $|E_p|/2$, so KE doesn't cancel PE."
+        }
+      }
     ],
-    explanation: "Step 1: write total energy as kinetic plus potential.\n$E = E_k + E_p = \\tfrac{1}{2}mv^2 + (-GMm/r) = \\tfrac{1}{2}mv^2 - GMm/r$.\n\nStep 2: use orbital speed $v = \\sqrt{GM/r}$, so $v^2 = GM/r$. Therefore:\n$E_k = \\tfrac{1}{2}mv^2 = \\tfrac{1}{2}m \\cdot GM/r = GMm/(2r)$.\n\nStep 3: combine.\n$E = E_k + E_p = \\dfrac{GMm}{2r} - \\dfrac{GMm}{r} = \\dfrac{GMm}{2r} - \\dfrac{2GMm}{2r} = -\\dfrac{GMm}{2r}$.\n\nThree clean observations:\n• $E_k = |E_p|/2$ for a circular orbit. KE is half the magnitude of PE.\n• $E = -E_k$. The total mechanical energy is exactly the negative of the kinetic energy.\n• Doubling $r$ halves $|E|$, so $|E|$ scales as $1/r$, just like $E_p$.",
-    examinerNote: "Three discrete markpoints reward (i) writing total energy as KE + PE, (ii) calculating $E_k$ using the orbital-speed result, (iii) arriving at the final form.\n\nThe pattern regex on markpoint 1 catches several phrasings (`E = KE + PE`, `total = ½mv² + Ep`, etc.). The `any[]` fallback handles substring matches if the regex misses.\n\nCommon slip: forgetting the sign of $E_p$ and getting $E = +3GMm/(2r)$ or similar. The sign of $E_p$ is critical here — $E_p$ is negative, so when you add it to $E_k$ (which is positive) the result is less than $E_k$.",
-    sourcePack: "Pack D/E orbital-energy questions"
+    explanation: "Three steps:\n\nStep 1. $E = E_k + E_p$.\n\nStep 2. $E_k = \\tfrac{1}{2}mv^2$ and $v^2 = GM/r$ (from the orbital-speed derivation), so $E_k = GMm/(2r)$.\n\nStep 3. Combine: $E = \\dfrac{GMm}{2r} + \\left(-\\dfrac{GMm}{r}\\right) = \\dfrac{GMm}{2r} - \\dfrac{2GMm}{2r} = -\\dfrac{GMm}{2r}$.\n\nThree elegant consequences:\n• $|E_p| = 2 E_k$ for any circular orbit.\n• $E = -E_k$ (same magnitude, opposite sign).\n• $E$ is negative, confirming the orbit is bound.",
+    examinerNote: "Phased version of the derivation. Each step is a discrete MCQ; per-step diagnostic.",
+    sourcePack: "Refactored from long to phased per v2 brief rule 3."
   },
 
   // ── D.1.H.3-D1: V = -g(R+h) bridge ──────────────────────────────────────
@@ -2154,9 +2268,9 @@ window.FIELDS_D1_QUESTIONS = [
         prompt: "Earth's surface gravitational field strength is $9.81$ N kg⁻¹. At ISS altitude (about $400$ km), what is the gravitational field strength most nearly equal to?",
         choices: [
           "approximately zero",
-          "about $1$ N kg⁻¹ (one tenth of surface)",
-          "about $8.7$ N kg⁻¹ (close to surface)",
-          "the same as at the surface, $9.81$ N kg⁻¹"
+          "about $1$ N kg⁻¹",
+          "about $8.7$ N kg⁻¹",
+          "$9.81$ N kg⁻¹"
         ],
         answerIndex: 2,
         distractorRationales: {
@@ -2463,7 +2577,7 @@ window.FIELDS_D1_QUESTIONS = [
     prompt: "At two points P and Q in a gravitational field, the gravitational field lines are bunched closer together at P than at Q. Compared with Q, the gravitational field strength at P is:",
     choices: [
       "weaker than at Q",
-      "the same as at Q (line spacing is irrelevant)",
+      "the same as at Q",
       "stronger than at Q",
       "indeterminate without more information"
     ],
@@ -2534,34 +2648,37 @@ window.FIELDS_D1_QUESTIONS = [
     sourcePack: "Refactored from short to multi_select per v2 brief rule 3."
   },
 
-  // ── D.1.5-D2: map field-line pattern from equipotentials (short) ────────
+  // ── D.1.5-D2: map field-line pattern from equipotentials (multi_select) ──
   {
     id: "D.1.5-D2.001",
     level: "SL",
     tags: ["D.1.5", "D.1.5-D2"],
-    type: "short",
-    marks: 2,
-    prompt: "Given a diagram of gravitational equipotential surfaces around a complicated mass distribution (such as a binary star system), state TWO rules you would use to construct the gravitational field-line pattern.",
-    markPoints: [
-      { any: [
-        "field lines are perpendicular", "perpendicular to the equipotential",
-        "field lines are normal to", "normal to the equipotential",
-        "at right angles to the equipotential", "at 90 to the equipotential",
-        "orthogonal to the equipotential", "perpendicular to each equipotential surface"
-      ], credit: 1 },
-      { any: [
-        "field lines point toward decreasing v", "toward more negative v",
-        "toward more negative potential", "toward decreasing potential",
-        "toward lower potential", "from high v to low v",
-        "from less negative to more negative", "field points downhill in v",
-        "in the direction of decreasing potential",
-        "toward smaller v", "toward the most negative v",
-        "toward lower (more negative) v", "toward decreasing values of v"
-      ], credit: 1 }
+    type: "multi_select",
+    marks: 4,
+    prompt: "You're given a diagram showing gravitational equipotential surfaces around a complicated mass distribution (such as a binary star system) and asked to construct the gravitational field-line pattern over the same region. Which of the following rules are correct to use? Tick all that apply.",
+    statements: [
+      { text: "Field lines cross each equipotential at right angles (perpendicular).",
+        correct: true,
+        rationale: "No work is done moving along an equipotential, so the force component along the surface is zero. This forces the field to be perpendicular." },
+      { text: "Field lines point in the direction of decreasing potential (toward more negative $V$).",
+        correct: true,
+        rationale: "Since $g = -dV/dr$, the field points in the direction of steepest decrease in $V$. A released mass accelerates that way." },
+      { text: "Field lines connect points of equal potential.",
+        correct: false,
+        rationale: "Points of equal potential lie ON the same equipotential SURFACE. Field lines CROSS equipotentials at right angles — they don't connect points along them.",
+        misconception: "field_lines_along_equipotentials" },
+      { text: "Field lines should be equally spaced everywhere.",
+        correct: false,
+        rationale: "Field-line density represents field STRENGTH. Lines bunch up where the field is strong (and equipotentials are closely packed) and spread out where it's weak. Equal spacing would only hold in a uniform field.",
+        misconception: "uniform_spacing_in_radial_field" },
+      { text: "Field lines point toward LESS negative (more positive) potential.",
+        correct: false,
+        rationale: "Direction is wrong. Field points 'downhill' in $V$ — from less negative to more negative, NOT the other way.",
+        misconception: "field_direction_inverted" }
     ],
-    explanation: "Two rules suffice to construct the field-line pattern from a set of equipotentials:\n\n1. Field lines are perpendicular (normal) to each equipotential surface at every point of intersection. This follows because no work is done moving along an equipotential ($\\Delta V = 0$), so the force component along the surface must be zero — hence the field is perpendicular to the surface.\n\n2. Field lines are directed toward decreasing potential, i.e., toward more negative $V$. This follows from $g = -dV/dr$: the gravitational field points in the direction of steepest decrease of $V$. A released mass accelerates in this direction.\n\nPractical method: start at any equipotential, draw a short arrow perpendicular to it, pointed toward the nearby equipotential with lower $V$. Then continue the line, always rotating to stay perpendicular to whichever equipotential it crosses. This sketches out a field line through the region.",
-    examinerNote: "Two markpoints: (i) perpendicular to equipotential; (ii) toward decreasing V. Either alone scores one of two.\n\nA common partial answer just says 'perpendicular to equipotential' and stops. That gives the line ORIENTATION but not its DIRECTION (there are two perpendicular directions; the law tells you which one). The rule that fixes the direction is 'toward more negative V'.",
-    sourcePack: "Pack C (mapping field from V)"
+    explanation: "Two rules suffice to construct the field-line pattern from a set of equipotentials:\n\n1. Perpendicular to each equipotential. (From the work-zero argument on an equipotential.)\n2. Toward more negative $V$. (From $g = -dV/dr$.)\n\nPractical method: start at any equipotential, draw a short arrow perpendicular to it, pointed toward the nearby equipotential with lower $V$. Continue along, rotating to stay perpendicular to each equipotential the line crosses.",
+    examinerNote: "Both true statements are needed for a full construction. Either alone fixes orientation OR direction but not both; you need both.",
+    sourcePack: "Pack C (mapping field from V). Refactored from short to multi_select per v2 brief rule 3."
   },
 
   // ── D.1.4-H2 PHASED: orbital g → speed → period ─────────────────────────
@@ -2926,9 +3043,9 @@ window.FIELDS_D1_QUESTIONS = [
         marks: 1,
         prompt: "How does the satellite's KINETIC energy change in moving from the inner to the outer orbit?",
         choices: [
-          "Increases (the satellite gains energy from the external agent)",
-          "Decreases (orbital speed is lower at larger orbital radius)",
-          "Stays the same (KE depends only on mass, not radius)",
+          "Increases",
+          "Decreases",
+          "Stays the same",
           "I'm not sure — show me"
         ],
         answerIndex: 1,
@@ -3295,7 +3412,7 @@ window.FIELDS_D1_QUESTIONS = [
       "At one of the two masses",
       "One third of the way along, closer to one mass",
       "At the midpoint, exactly halfway between them",
-      "There is no such point — the field is non-zero everywhere along the line"
+      "There is no such point"
     ],
     answerIndex: 2,
     distractorRationales: {

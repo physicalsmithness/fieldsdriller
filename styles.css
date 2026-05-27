@@ -143,7 +143,15 @@ body {
 .ans-textarea { min-height: 110px; resize: vertical; line-height: 1.5; }
 .ans-numwrap { display: flex; align-items: center; gap: 8px; }
 .ans-num { max-width: 240px; }
-.ans-unitlabel { color: var(--muted); font-size: 13px; }
+.ans-unitlabel {
+  color: var(--muted); font-size: 13px;
+  /* Sans-serif so Unicode superscripts (kg⁻¹, m⁻²) render cleanly. The body
+     serif renders them too small and off-baseline. */
+  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+.fb-unit {
+  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
 .ans-text:focus, .ans-num:focus, .ans-textarea:focus {
   outline: 2px solid var(--accent); outline-offset: -1px; border-color: var(--accent);
 }
@@ -824,6 +832,16 @@ body {
   fill: var(--bad); stroke: #fff; stroke-width: 2.5; cursor: grab;
 }
 .fm-probe-dot:active { cursor: grabbing; }
+.fm-probe-crosshair {
+  stroke: var(--muted); stroke-width: 1; stroke-dasharray: 2 3;
+  pointer-events: none; opacity: 0.85;
+}
+.fm-probe-axislabel {
+  fill: var(--bad); font-weight: 700; font-size: 12px;
+  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  pointer-events: none;
+  paint-order: stroke; stroke: #fff; stroke-width: 3.5px; stroke-linejoin: round;
+}
 .fm-readout {
   display: flex; flex-direction: column; gap: 4px; font-size: 12px;
   background: #fff; border: 1px solid var(--line); border-radius: var(--radius-sm);
@@ -912,6 +930,21 @@ body {
 .cp-probedot2 { fill: var(--warn); }
 .cp-probedot:active { cursor: grabbing; }
 .cp-area { fill: rgba(180, 117, 36, 0.18); stroke: none; }
+
+/* On-axis probe value labels. Coloured to match the probe dot, bold,
+   sans-serif so Unicode superscripts (kg⁻¹) render cleanly. */
+.cp-probe-axislabel {
+  fill: var(--bad);
+  font-weight: 700;
+  font-size: 12px;
+  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  pointer-events: none;
+  paint-order: stroke;
+  stroke: #fff;
+  stroke-width: 3.5px;
+  stroke-linejoin: round;
+}
+.cp-probe-axislabel-2 { fill: var(--warn); }
 
 .cp-readout {
   display: flex; flex-direction: column; gap: 6px; font-size: 12px;

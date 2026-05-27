@@ -88,6 +88,74 @@
     const xScale = d3.scaleLinear().domain(xDomain).range([0, innerW]);
     const yScale = d3.scaleLinear().domain(yDomain).range([innerH, 0]);
 
+    // ── Fixed-exponent helpers, hoisted so the axes can use them ──
+    // The student drags the test point and the readout values change quickly.
+    // Locking an exponent per quantity (x, y, V, |g|) keeps the displayed
+    // magnitudes legible across the drag, instead of the exponent jumping
+    // every few pixels. We pick exponents from the configured domain (for
+    // x/y) and from a 5×5 sample of V and |g| across the plane.
+    const SUP_MAP_FM = { "0":"⁰","1":"¹","2":"²","3":"³","4":"⁴","5":"⁵",
+                        "6":"⁶","7":"⁷","8":"⁸","9":"⁹","-":"⁻","+":"⁺" };
+    function fmToSuperscript(n) {
+      return String(n).split("").map(function (c) { return SUP_MAP_FM[c] || c; }).join("");
+    }
+    function fmPickExp(typicalMagnitude) {
+      if (!isFinite(typicalMagnitude) || typicalMagnitude === 0) return 0;
+      return Math.floor(Math.log10(Math.abs(typicalMagnitude)));
+    }
+    function formatFixed(v, exp, sig) {
+      sig = sig || 3;
+      if (!isFinite(v)) return "—";
+      if (v === 0) return "0";
+      if (!exp || exp === 0) return v.toPrecision(sig);
+      const mantissa = v / Math.pow(10, exp);
+      if (Math.abs(mantissa) < 1e-6) return "0";
+      return mantissa.toPrecision(sig) + " × 10" + fmToSuperscript(exp);
+    }
+    function fmFormatMantissa(v, exp, sig) {
+      sig = sig || 2;
+      if (!isFinite(v)) return "";
+      if (v === 0) return "0";
+      if (!exp || exp === 0) return v.toPrecision(sig);
+      const m = v / Math.pow(10, exp);
+      if (Math.abs(m) < 1e-4) return "0";
+      const s = m.toPrecision(sig);
+      if (/e/i.test(s)) return m.toFixed(sig);
+      return s;
+    }
+    function fmAxisTitleWithExp(label, units, exp) {
+      if (!exp || exp === 0) return label + (units ? "  /  " + units : "");
+      return label + "  /  10" + fmToSuperscript(exp) + (units ? " " + units : "");
+    }
+    // Sample V and |g| to find typical magnitudes. Skip points near a body.
+    const fmSampleVs = [];
+    const fmSampleGs = [];
+    for (let si = 0; si <= 4; si++) {
+      for (let sj = 0; sj <= 4; sj++) {
+        const sx = xDomain[0] + (xDomain[1] - xDomain[0]) * (si / 4);
+        const sy = yDomain[0] + (yDomain[1] - yDomain[0]) * (sj / 4);
+        let nearBody = false;
+        for (let bi = 0; bi < bodies.length; bi++) {
+          const ddx = sx - bodies[bi].x, ddy = sy - bodies[bi].y;
+          const span = Math.max(xDomain[1] - xDomain[0], yDomain[1] - yDomain[0]);
+          if (Math.sqrt(ddx*ddx + ddy*ddy) < span * 0.05) { nearBody = true; break; }
+        }
+        if (nearBody) continue;
+        const sv = V(sx, sy);
+        const sg = gVec(sx, sy);
+        if (isFinite(sv)) fmSampleVs.push(Math.abs(sv));
+        if (isFinite(sg.gMag)) fmSampleGs.push(sg.gMag);
+      }
+    }
+    const fmXExp = (typeof config.xExp === "number") ? config.xExp
+                 : fmPickExp(Math.max(Math.abs(xDomain[0]), Math.abs(xDomain[1])));
+    const fmYExp = (typeof config.yExp === "number") ? config.yExp
+                 : fmPickExp(Math.max(Math.abs(yDomain[0]), Math.abs(yDomain[1])));
+    const fmVExp = (typeof config.vExp === "number") ? config.vExp
+                 : fmPickExp(fmSampleVs.length ? d3.max(fmSampleVs) : 1);
+    const fmGExp = (typeof config.gExp === "number") ? config.gExp
+                 : fmPickExp(fmSampleGs.length ? d3.max(fmSampleGs) : 1);
+
     // ── DOM scaffold ──
     host.innerHTML = "";
     const wrap = document.createElement("div");
@@ -100,20 +168,24 @@
     const root = svg.append("g")
       .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-    // Axes
-    const xAxis = d3.axisBottom(xScale).ticks(6).tickSizeOuter(0);
-    const yAxis = d3.axisLeft(yScale).ticks(6).tickSizeOuter(0);
+    // Axes. Tick labels show the mantissa only; the exponent goes into the
+    // axis title once. So instead of "−2e+8 ... 5e+8" tick labels we get
+    // "−2 ... 5" with title "x / 10⁸ m".
+    const xAxis = d3.axisBottom(xScale).ticks(6).tickSizeOuter(0)
+                    .tickFormat(function (v) { return fmFormatMantissa(v, fmXExp); });
+    const yAxis = d3.axisLeft(yScale).ticks(6).tickSizeOuter(0)
+                    .tickFormat(function (v) { return fmFormatMantissa(v, fmYExp); });
     root.append("g").attr("class", "fm-axis").attr("transform", "translate(0," + innerH + ")").call(xAxis);
     root.append("g").attr("class", "fm-axis").call(yAxis);
     root.append("text").attr("class", "fm-axlabel")
       .attr("x", innerW / 2).attr("y", innerH + 36)
       .attr("text-anchor", "middle")
-      .text((config.xLabel || "x") + (config.xUnits ? "  /  " + config.xUnits : ""));
+      .text(fmAxisTitleWithExp(config.xLabel || "x", config.xUnits || "", fmXExp));
     root.append("text").attr("class", "fm-axlabel")
       .attr("transform", "rotate(-90)")
-      .attr("x", -innerH / 2).attr("y", -46)
+      .attr("x", -innerH / 2).attr("y", -42)
       .attr("text-anchor", "middle")
-      .text((config.yLabel || "y") + (config.yUnits ? "  /  " + config.yUnits : ""));
+      .text(fmAxisTitleWithExp(config.yLabel || "y", config.yUnits || "", fmYExp));
 
     // ── Compute V on a grid ──
     const gridN = 96;   // grid resolution; 96² = 9216 V-evaluations
@@ -240,6 +312,7 @@
 
     // Probe state (used only when !sketchMode)
     let tx, ty, probeGroup = null, fieldArrow = null, probeDot = null;
+    let probeXLine = null, probeYLine = null, probeXLabel = null, probeYLabel = null;
     if (!sketchMode) {
       if (typeof config.initialX === "number") tx = config.initialX;
       else tx = rand(xDomain[0] + (xDomain[1] - xDomain[0]) * 0.10,
@@ -249,8 +322,18 @@
                      yDomain[0] + (yDomain[1] - yDomain[0]) * 0.90);
 
       probeGroup = root.append("g").attr("class", "fm-probe-group");
+      // Crosshair lines from probe dot back to each axis. Non-interactive so
+      // they don't block clicks; drawn before the dot so the dot sits on top.
+      probeXLine = probeGroup.append("line").attr("class", "fm-probe-crosshair fm-probe-crosshair-x");
+      probeYLine = probeGroup.append("line").attr("class", "fm-probe-crosshair fm-probe-crosshair-y");
       fieldArrow = probeGroup.append("line").attr("class", "fm-field-arrow");
       probeDot = probeGroup.append("circle").attr("class", "fm-probe-dot").attr("r", 8);
+      // On-axis probe value labels (x at the bottom, y at the left). Same
+      // scheme as curve_probe.
+      probeXLabel = root.append("text").attr("class", "fm-probe-axislabel fm-probe-axislabel-x")
+        .attr("text-anchor", "middle");
+      probeYLabel = root.append("text").attr("class", "fm-probe-axislabel fm-probe-axislabel-y")
+        .attr("text-anchor", "end").attr("dy", "0.32em");
 
       probeDot.call(d3.drag().on("drag", function (event) {
         tx = xScale.invert(event.x); ty = yScale.invert(event.y);
@@ -331,60 +414,6 @@
       return v.toPrecision(sig);
     }
 
-    // ── Fixed-exponent readout, matched to curve_probe ──
-    // The student drags the test point and the readout values change quickly.
-    // Locking an exponent per quantity (x, y, V, |g|) keeps the displayed
-    // magnitudes legible across the drag, instead of the exponent jumping
-    // every few pixels. We pick exponents from the configured domain (for
-    // x/y) and from a 3×3 sample of V and |g| across the plane.
-    const SUP_MAP_FM = { "0":"⁰","1":"¹","2":"²","3":"³","4":"⁴","5":"⁵",
-                        "6":"⁶","7":"⁷","8":"⁸","9":"⁹","-":"⁻","+":"⁺" };
-    function fmToSuperscript(n) {
-      return String(n).split("").map(function (c) { return SUP_MAP_FM[c] || c; }).join("");
-    }
-    function fmPickExp(typicalMagnitude) {
-      if (!isFinite(typicalMagnitude) || typicalMagnitude === 0) return 0;
-      return Math.floor(Math.log10(Math.abs(typicalMagnitude)));
-    }
-    function formatFixed(v, exp, sig) {
-      sig = sig || 3;
-      if (!isFinite(v)) return "—";
-      if (v === 0) return "0";
-      if (!exp || exp === 0) return v.toPrecision(sig);
-      const mantissa = v / Math.pow(10, exp);
-      if (Math.abs(mantissa) < 1e-6) return "0";
-      return mantissa.toPrecision(sig) + " × 10" + fmToSuperscript(exp);
-    }
-    // Sample V and |g| across a coarse grid to find typical magnitudes.
-    // Skip points within 5% of a body (singularity).
-    const fmSampleVs = [];
-    const fmSampleGs = [];
-    for (let si = 0; si <= 4; si++) {
-      for (let sj = 0; sj <= 4; sj++) {
-        const sx = xDomain[0] + (xDomain[1] - xDomain[0]) * (si / 4);
-        const sy = yDomain[0] + (yDomain[1] - yDomain[0]) * (sj / 4);
-        let nearBody = false;
-        for (let bi = 0; bi < bodies.length; bi++) {
-          const dx = sx - bodies[bi].x, dy = sy - bodies[bi].y;
-          const span = Math.max(xDomain[1] - xDomain[0], yDomain[1] - yDomain[0]);
-          if (Math.sqrt(dx*dx + dy*dy) < span * 0.05) { nearBody = true; break; }
-        }
-        if (nearBody) continue;
-        const sv = V(sx, sy);
-        const sg = gVec(sx, sy);
-        if (isFinite(sv)) fmSampleVs.push(Math.abs(sv));
-        if (isFinite(sg.gMag)) fmSampleGs.push(sg.gMag);
-      }
-    }
-    const fmXExp = (typeof config.xExp === "number") ? config.xExp
-                 : fmPickExp(Math.max(Math.abs(xDomain[0]), Math.abs(xDomain[1])));
-    const fmYExp = (typeof config.yExp === "number") ? config.yExp
-                 : fmPickExp(Math.max(Math.abs(yDomain[0]), Math.abs(yDomain[1])));
-    const fmVExp = (typeof config.vExp === "number") ? config.vExp
-                 : fmPickExp(fmSampleVs.length ? d3.max(fmSampleVs) : 1);
-    const fmGExp = (typeof config.gExp === "number") ? config.gExp
-                 : fmPickExp(fmSampleGs.length ? d3.max(fmSampleGs) : 1);
-
     // ── Sketch-mode buttons (Undo / Clear) ──
     if (sketchMode) {
       const btnRow = document.createElement("div");
@@ -420,6 +449,14 @@
     function renderProbe() {
       const px = xScale(tx), py = yScale(ty);
       probeDot.attr("cx", px).attr("cy", py);
+      // Crosshairs from probe back to each axis.
+      probeXLine.attr("x1", px).attr("x2", px).attr("y1", py).attr("y2", innerH);
+      probeYLine.attr("x1", 0).attr("x2", px).attr("y1", py).attr("y2", py);
+      // On-axis labels of the probe's x and y values.
+      probeXLabel.attr("x", px).attr("y", innerH + 18)
+                 .text(fmFormatMantissa(tx, fmXExp));
+      probeYLabel.attr("x", -8).attr("y", py)
+                 .text(fmFormatMantissa(ty, fmYExp));
 
       const v = V(tx, ty);
       const gv = gVec(tx, ty);
@@ -444,8 +481,8 @@
       html += "<div class='fm-readout-h'>Field at point</div>";
       html += rowHTML("V", formatFixed(v, fmVExp), "J kg⁻¹", "fm-row-key");
       html += rowHTML("|g|", formatFixed(gv.gMag, fmGExp), "N kg⁻¹", "fm-row-key");
-      html += rowHTML("g_x", formatFixed(gv.gx, fmGExp), "N kg⁻¹");
-      html += rowHTML("g_y", formatFixed(gv.gy, fmGExp), "N kg⁻¹");
+      html += rowHTML("g<sub>x</sub>", formatFixed(gv.gx, fmGExp), "N kg⁻¹");
+      html += rowHTML("g<sub>y</sub>", formatFixed(gv.gy, fmGExp), "N kg⁻¹");
       readout.innerHTML = html;
     }
 
@@ -487,7 +524,7 @@
       let html = "";
       html += "<div class='fm-readout-h'>Target</div>";
       if (typeof targetV === "number") {
-        html += rowHTML("V_target", formatFixed(targetV, fmVExp), "J kg⁻¹", "fm-row-key");
+        html += rowHTML("V<sub>target</sub>", formatFixed(targetV, fmVExp), "J kg⁻¹", "fm-row-key");
         html += rowHTML("± tolerance", "±" + formatFixed(tol, fmVExp, 2), "J kg⁻¹");
       } else {
         html += "<div class='fm-row'><span class='fm-key'>(no target set)</span></div>";
