@@ -212,6 +212,7 @@ window.FIELDS_D1_QUESTIONS = [
     misconceptions: [
       {
         id: "missed_negative_sign",
+        category: "sign_error",
         label: "You submitted the positive magnitude. Gravitational potential is negative for a bound system — V is defined as zero at infinity, so it's negative everywhere closer.",
         expectedNumeric: 2.66e7,
         tolerance: 4e5,
@@ -245,6 +246,16 @@ window.FIELDS_D1_QUESTIONS = [
     expectedNumeric: -5.98e10,
     tolerance: 6e8,
     unitHint: "J",
+    misconceptions: [
+      {
+        id: "swapped_V_for_Ep",
+        category: "value_vs_scaled_error",
+        label: "Submitted V (potential, J kg⁻¹) where Ep (potential energy, J) was asked. The two differ by a factor of the satellite mass: Ep = mV.",
+        expectedNumeric: -3.98e7,
+        tolerance: 1.2e6,
+        severity: "common"
+      }
+    ],
     explanation: "At r = 1.0 × 10⁷ m, V = -GM/r ≈ -3.98 × 10⁷ J kg⁻¹. Ep = mV = 1500 × (-3.98 × 10⁷) ≈ -5.98 × 10¹⁰ J. Negative because the satellite is bound.",
     examinerNote: "Two atoms in this question: D.1.H.3-C (read V from the graph) and D.1.H.2-A (combine with mass to get Ep). The widget gives you V; you do the multiplication."
   },
@@ -275,6 +286,7 @@ window.FIELDS_D1_QUESTIONS = [
     misconceptions: [
       {
         id: "confused_V_with_W",
+        category: "value_vs_scaled_error",
         label: "You submitted ΔV directly (a number around 2 × 10⁷ J kg⁻¹). That's the potential difference, not the work. To get work, multiply by the mass: W = mΔV.",
         expectedNumeric: 1.992e7,
         tolerance: 1e6,
@@ -282,6 +294,7 @@ window.FIELDS_D1_QUESTIONS = [
       },
       {
         id: "submitted_single_V_not_delta",
+        category: "value_vs_scaled_error",
         label: "Looks like you submitted V at one of the points (around 2 × 10⁷ or 4 × 10⁷ J kg⁻¹), not the difference ΔV. Work depends on the change in potential, not its value at a single point.",
         expectedNumeric: 3.984e7,
         tolerance: 2e6,
@@ -351,6 +364,16 @@ window.FIELDS_D1_QUESTIONS = [
     expectedNumeric: 0.981,
     tolerance: 0.05,
     unitHint: "N",
+    misconceptions: [
+      {
+        id: "swapped_F_for_g",
+        category: "value_vs_scaled_error",
+        label: "Submitted the net field strength |g| (N kg⁻¹) where the force |F| (N) was asked. F = m·g; you forgot to multiply by the 100 kg test mass.",
+        expectedNumeric: 9.81e-3,
+        tolerance: 5e-4,
+        severity: "common"
+      }
+    ],
     explanation: "Step 1: read off the contributions at $x = 2.0 \\times 10^8$ m.\n$g_1 = GM_E/x^2 = (6.674 \\times 10^{-11})(5.97 \\times 10^{24})/(4.0 \\times 10^{16}) \\approx 9.96 \\times 10^{-3}$ N kg⁻¹ (toward Earth).\n$g_2 = GM_M/(D-x)^2$ with $D - x = 1.84 \\times 10^8$ m: $g_2 \\approx 1.45 \\times 10^{-4}$ N kg⁻¹ (toward the Moon).\nStep 2: take the net. They point in opposite directions, so $|g_{\\text{net}}| = g_1 - g_2 \\approx 9.81 \\times 10^{-3}$ N kg⁻¹.\nStep 3: multiply by the test mass. $F = m\\,g_{\\text{net}} = 100 \\times 9.81 \\times 10^{-3} \\approx 0.981$ N.",
     examinerNote: "Common slips: adding $g_1$ and $g_2$ as if they pointed the same way (gives a slightly bigger answer); reading the dashed contributions but forgetting which way each points; forgetting to multiply by the test mass (gives an answer in N kg⁻¹, not N)."
   },
@@ -386,9 +409,18 @@ window.FIELDS_D1_QUESTIONS = [
     misconceptions: [
       {
         id: "magnitude_when_signed_expected",
+        category: "sign_error",
         label: "Right magnitude, wrong sign. The prompt asked for a signed answer with $+x$ pointing toward the Moon. At this $x$, Earth still dominates, so the force is in $-x$ (negative).",
         expectedNumeric: 0.373,
         tolerance: 0.02,
+        severity: "common"
+      },
+      {
+        id: "swapped_F_for_g",
+        category: "value_vs_scaled_error",
+        label: "Submitted the field $g_x$ (N kg⁻¹) where the force $F_x$ (N) was asked. F = m·g; you forgot to multiply by the 100 kg test mass.",
+        expectedNumeric: -3.73e-3,
+        tolerance: 2e-4,
         severity: "common"
       }
     ],
@@ -423,6 +455,7 @@ window.FIELDS_D1_QUESTIONS = [
     misconceptions: [
       {
         id: "missed_negative_sign",
+        category: "sign_error",
         label: "You submitted the positive magnitude. Gravitational potential is negative for a bound system — taking V to be zero at infinity makes V < 0 anywhere closer.",
         expectedNumeric: 3.984e7,
         tolerance: 1e6,
@@ -685,6 +718,7 @@ window.FIELDS_D1_QUESTIONS = [
     misconceptions: [
       {
         id: "radius_offset_forgotten",
+        category: "centre_vs_surface_error",
         label: "Used $h$ instead of $r = R + h$. The gravitational field formula needs distance from Earth's centre, not altitude above the surface.",
         expectedNumeric: 622,
         tolerance: 5,
@@ -732,6 +766,7 @@ window.FIELDS_D1_QUESTIONS = [
     misconceptions: [
       {
         id: "forgot_factor_half",
+        category: "wrong_curve_read_error",
         label: "Used $g = d/t^2$. The kinematic formula from rest is $d = \\tfrac{1}{2}gt^2$, so $g = 2d/t^2$. You're missing the factor of 2.",
         expectedNumeric: 1.067,
         tolerance: 0.02,
@@ -756,6 +791,7 @@ window.FIELDS_D1_QUESTIONS = [
     misconceptions: [
       {
         id: "missed_negative_sign",
+        category: "sign_error",
         label: "Right magnitude, wrong sign. Gravitational potential is negative for any bound system (zero is taken at infinity).",
         expectedNumeric: 6.00e8,
         tolerance: 1e7,
@@ -851,6 +887,7 @@ window.FIELDS_D1_QUESTIONS = [
     misconceptions: [
       {
         id: "confused_v_orb_with_v_esc",
+        category: "method_error",
         label: "Used $v = \\sqrt{GM/R}$ — that's orbital speed at the surface, not escape speed. Escape needs the factor of 2: $v_{\\text{esc}} = \\sqrt{2GM/R}$.",
         expectedNumeric: 3554,
         tolerance: 20,
@@ -960,6 +997,7 @@ window.FIELDS_D1_QUESTIONS = [
     misconceptions: [
       {
         id: "confused_v_orb_with_v_esc",
+        category: "method_error",
         label: "Used $\\sqrt{2GM/r}$ — that's escape speed at this radius, not orbital. Orbital speed is $\\sqrt{GM/r}$, smaller by $\\sqrt{2}$.",
         expectedNumeric: 10542,
         tolerance: 40,
@@ -967,6 +1005,7 @@ window.FIELDS_D1_QUESTIONS = [
       },
       {
         id: "radius_offset_forgotten",
+        category: "centre_vs_surface_error",
         label: "Used $h$ instead of $r = R + h$ in $v = \\sqrt{GM/r}$. Use the centre-to-centre distance.",
         expectedNumeric: 22326,
         tolerance: 100,
@@ -1037,6 +1076,7 @@ window.FIELDS_D1_QUESTIONS = [
         },
         misconceptions: [
           { id: "drag_decelerates_in_orbit",
+            category: "method_error",
             chosenIndex: 0,
             label: "You treated drag like friction on the ground — opposing motion, so slowing it. In orbit the rule is different: drag → energy out → smaller r → faster orbital speed." }
         ]
@@ -1420,9 +1460,18 @@ window.FIELDS_D1_QUESTIONS = [
     misconceptions: [
       {
         id: "missed_negative_sign",
+        category: "sign_error",
         label: "Computed $E_p = -GMm/r$ but reported the signed value. Work BY the external agent against gravity is positive; the sign flip from $E_p$ matters.",
-        expectedNumeric: -5.885e10,
+        expectedNumeric: -5.89e10,
         tolerance: 1e8,
+        severity: "common"
+      },
+      {
+        id: "swapped_V_for_Ep",
+        category: "value_vs_scaled_error",
+        label: "Submitted |V| (potential, J kg⁻¹) where the work in J was asked. The two differ by a factor of the object mass: W = m|V|.",
+        expectedNumeric: 5.89e7,
+        tolerance: 1.5e6,
         severity: "common"
       }
     ],
@@ -1755,6 +1804,7 @@ window.FIELDS_D1_QUESTIONS = [
     misconceptions: [
       {
         id: "reported_value_not_difference",
+        category: "value_vs_scaled_error",
         label: "Reported the orbital speed at the lower altitude rather than the INCREASE. The question asks for $\\Delta v = v_2 - v_1$, not just $v_2$.",
         expectedNumeric: 7787,
         tolerance: 20,
@@ -1818,6 +1868,7 @@ window.FIELDS_D1_QUESTIONS = [
     misconceptions: [
       {
         id: "radius_offset_forgotten",
+        category: "centre_vs_surface_error",
         label: "Solved for $r$ (centre-to-centre distance) and reported that, but didn't subtract $R$ to convert to altitude.",
         expectedNumeric: 1.996e7,
         tolerance: 5e4,
@@ -1827,6 +1878,7 @@ window.FIELDS_D1_QUESTIONS = [
     misconceptions: [
       {
         id: "radius_offset_forgotten",
+        category: "centre_vs_surface_error",
         label: "Looks like r = R + h was solved for r (≈ 2.00 × 10⁷ m), but R wasn't subtracted to convert centre-to-centre distance into altitude.",
         expectedNumeric: 1.996e7,
         tolerance: 1e5,
@@ -1986,6 +2038,7 @@ window.FIELDS_D1_QUESTIONS = [
     misconceptions: [
       {
         id: "forgot_to_square_R",
+        category: "method_error",
         label: "Wrote $M = gR/G$ instead of $M = gR^2/G$. The surface-gravity formula $g = GM/R^2$ has $R$ squared in the denominator, so $R^2$ moves to the numerator when you rearrange.",
         expectedNumeric: 1.885e17,
         tolerance: 2e15,
@@ -2087,6 +2140,16 @@ window.FIELDS_D1_QUESTIONS = [
     expectedNumeric: -3.13e10,
     tolerance: 1e8,
     unitHint: "J",
+    misconceptions: [
+      {
+        id: "swapped_V_for_Ep",
+        category: "value_vs_scaled_error",
+        label: "Submitted V (potential, J kg⁻¹) where Ep (potential energy, J) was asked. The two differ by a factor of the satellite mass: Ep = mV.",
+        expectedNumeric: -3.13e7,
+        tolerance: 1e6,
+        severity: "common"
+      }
+    ],
     explanation: "At $r = 2R$: $E_p = -GMm/r = -GMm/(2R)$.\n\nNumerically: $E_p = -(6.674\\times10^{-11})(5.97\\times10^{24})(1000)/(2 \\times 6.37\\times10^6) \\approx -3.13 \\times 10^{10}$ J.\n\nNote the relationship between weight and $E_p$ at this orbit:\n• Weight = $mg(2R) = m \\cdot GM/(2R)^2 = GMm/(4R^2) \\approx 2455$ N (a quarter of the satellite's surface weight).\n• $|E_p| = GMm/(2R) \\approx 3.13\\times10^{10}$ J (half the magnitude of $|E_p|$ at the surface).\n\nThe weight scales as $1/r^2$ (so at $2R$ it's $1/4$ of surface), but the PE scales as $1/r$ (so at $2R$ it's $1/2$ of surface). The factor-of-2 difference between weight scaling and PE scaling is exactly the one-power-of-$r$ shift.",
     examinerNote: "Common slips: using $r = R$ (giving twice the magnitude); using $r = 2$ (forgetting to multiply by $R$); confusing PE with PE/mass (potential $V$).\n\nThe deeper point: this question is testing the recognition that as you go further away, weight drops faster than PE magnitude. Students who claim 'both halve' or 'both quarter' have applied the wrong scaling to one of them.",
     sourcePack: "Pack D (satellite at 2R)"
@@ -2280,6 +2343,7 @@ window.FIELDS_D1_QUESTIONS = [
         },
         misconceptions: [
           { id: "gravity_negligible_in_orbit",
+            category: "method_error",
             chosenIndex: 0,
             label: "You believed gravity at ISS altitude is approximately zero. It's actually about $8.7$ N kg⁻¹ — close to surface. The astronaut feeling weightless is not because gravity is gone." }
         ]
@@ -2412,6 +2476,16 @@ window.FIELDS_D1_QUESTIONS = [
     expectedNumeric: 652,
     tolerance: 3,
     unitHint: "N",
+    misconceptions: [
+      {
+        id: "swapped_F_for_g",
+        category: "value_vs_scaled_error",
+        label: "Submitted g (field strength, N kg⁻¹) where F (force, N) was asked. The two differ by a factor of the test mass: F = mg.",
+        expectedNumeric: 8.69,
+        tolerance: 0.05,
+        severity: "common"
+      }
+    ],
     explanation: "Step 1: find $g$ at the relevant altitude. $g = GM/(R+h)^2$ at $h = 4.00\\times10^5$ m, so $r = 6.77\\times10^6$ m. $g = (6.674\\times10^{-11})(5.97\\times10^{24})/(6.77\\times10^6)^2 \\approx 8.69$ N kg⁻¹.\n\nStep 2: apply $F = mg$. $F = 75 \\times 8.69 \\approx 652$ N.\n\nFor comparison, the astronaut's surface weight would be $75 \\times 9.81 = 736$ N. At LEO altitude they weigh about 88% of their surface weight, despite feeling weightless in orbit (because they and the station fall together, see D.1.H.9-D3).",
     examinerNote: "Two-step problem testing both 'g at altitude' (D.1.4-C2) and 'F = mg' (D.1.2-C2). Common slips: confusing weight with mass (gives 75 N — orders of magnitude off); using surface $g$ instead of altitude $g$ (gives 736 N — slightly too high but plausible-looking); forgetting that weight in 'orbit' is still nonzero even though the astronaut feels weightless.",
     sourcePack: "Pack questions on F=mg at altitude"
@@ -2761,6 +2835,16 @@ window.FIELDS_D1_QUESTIONS = [
     expectedNumeric: -7.61e9,
     tolerance: 5e7,
     unitHint: "J",
+    misconceptions: [
+      {
+        id: "swapped_V_for_Ep",
+        category: "value_vs_scaled_error",
+        label: "Submitted ΔV (potential difference, J kg⁻¹) where ΔEp (PE difference, J) was asked. The two differ by a factor of the satellite mass: ΔEp = m·ΔV.",
+        expectedNumeric: -5.07e6,
+        tolerance: 1.5e5,
+        severity: "common"
+      }
+    ],
     explanation: "$\\Delta E_p = -GMm/r_2 - (-GMm/r_1) = GMm(1/r_1 - 1/r_2)$.\n\n$r_1 = 7.17\\times10^6$ m, $r_2 = 6.57\\times10^6$ m.\n\n$E_p(r_1) = -(6.674\\times10^{-11})(5.97\\times10^{24})(1500)/(7.17\\times10^6) \\approx -8.34\\times10^{10}$ J.\n$E_p(r_2) = -(6.674\\times10^{-11})(5.97\\times10^{24})(1500)/(6.57\\times10^6) \\approx -9.10\\times10^{10}$ J.\n\n$\\Delta E_p = E_p(r_2) - E_p(r_1) \\approx -7.61 \\times 10^9$ J.\n\nThe sign is NEGATIVE because moving to a smaller orbit makes the potential energy MORE negative (you've fallen into a deeper well).",
     examinerNote: "The sign is the whole point of this question. Many students:\n• Compute $|E_p(r_2)| - |E_p(r_1)|$ and report a positive answer (gives $+7.6 \\times 10^9$, wrong sign);\n• Confuse '$E_p$ decreased' (i.e., became more negative, so $\\Delta E_p < 0$) with 'magnitude decreased' (which it didn't — magnitude INCREASED).\n\nSanity: dropping to a lower orbit releases gravitational PE; that energy has gone somewhere (KE has increased, drag has dissipated it, etc.). The negative $\\Delta E_p$ reflects this release.",
     sourcePack: "Pack questions on ΔEp"
@@ -2902,6 +2986,7 @@ window.FIELDS_D1_QUESTIONS = [
     misconceptions: [
       {
         id: "forgot_orbital_KE_change",
+        category: "method_error",
         label: "Computed only $\\Delta E_p = GMm/(2R)$, treating this as 'object at rest moves up the hill'. But both endpoints are CIRCULAR ORBITS, so kinetic energy changes too — and it DECREASES (slower orbit at bigger r). The external work is the change in TOTAL mechanical energy, which is half of $\\Delta E_p$.",
         expectedNumeric: 4.69e10,
         tolerance: 5e8,
@@ -2909,6 +2994,7 @@ window.FIELDS_D1_QUESTIONS = [
       },
       {
         id: "computed_full_Ep_magnitude",
+        category: "value_vs_scaled_error",
         label: "Computed $|E_p(R)| = GMm/R$ — that's the magnitude of the PE at the lower orbit, not a work or an energy change.",
         expectedNumeric: 9.38e10,
         tolerance: 1e9,
@@ -2950,6 +3036,7 @@ window.FIELDS_D1_QUESTIONS = [
     misconceptions: [
       {
         id: "reported_value_not_difference",
+        category: "value_vs_scaled_error",
         label: "Reported $v_{\\text{esc}}$ itself, not $\\Delta v = v_{\\text{esc}} - v_{\\text{orb}}$. The spacecraft is already moving at $v_{\\text{orb}}$; you only need to add the difference.",
         expectedNumeric: 10542,
         tolerance: 30,
@@ -3012,6 +3099,7 @@ window.FIELDS_D1_QUESTIONS = [
     misconceptions: [
       {
         id: "computed_PE_not_KE",
+        category: "wrong_curve_read_error",
         label: "Computed the magnitude of $E_p$ ($GMm/r$) — that's the potential energy magnitude, not the kinetic energy. For a circular orbit, $E_k = |E_p|/2$, half the magnitude.",
         expectedNumeric: 3.984e10,
         tolerance: 5e7,
@@ -3019,6 +3107,7 @@ window.FIELDS_D1_QUESTIONS = [
       },
       {
         id: "missed_negative_sign",
+        category: "sign_error",
         label: "Right magnitude but reported as negative. Kinetic energy is always positive — it's $\\tfrac{1}{2}mv^2$ with $v^2 > 0$.",
         expectedNumeric: -1.992e10,
         tolerance: 3e7,
@@ -3110,7 +3199,7 @@ window.FIELDS_D1_QUESTIONS = [
     tolerance: 0.05,
     unitHint: "× T_X",
     misconceptions: [
-      { id: "inverted_kepler_ratio", label: "Used the wrong exponent. $T \\propto r^{3/2}$ gives 4^{3/2} = 8, not 4^{2/3} ≈ 2.52.", expectedNumeric: 2.52, tolerance: 0.1, severity: "common" },
+      { id: "inverted_kepler_ratio", category: "kepler_ratio_error", label: "Used the wrong exponent. $T \\propto r^{3/2}$ gives 4^{3/2} = 8, not 4^{2/3} ≈ 2.52.", expectedNumeric: 2.52, tolerance: 0.1, severity: "common" },
       { id: "cubed_instead_of_3_2", label: "Cubed the ratio. $T \\propto r^{3/2}$, not $T \\propto r^3$. Answer would be 4^3 = 64.", expectedNumeric: 64, tolerance: 1, severity: "common" }
     ],
     explanation: "$T \\propto r^{3/2}$, so $T_Y/T_X = 4^{3/2} = (\\sqrt{4})^3 = 2^3 = 8$.",
@@ -3129,7 +3218,7 @@ window.FIELDS_D1_QUESTIONS = [
     tolerance: 0.1,
     unitHint: "× T_X",
     misconceptions: [
-      { id: "inverted_kepler_ratio", label: "Used 9^{2/3} = 4.33 instead of 9^{3/2} = 27. Watch the exponent direction.", expectedNumeric: 4.33, tolerance: 0.1, severity: "common" }
+      { id: "inverted_kepler_ratio", category: "kepler_ratio_error", label: "Used 9^{2/3} = 4.33 instead of 9^{3/2} = 27. Watch the exponent direction.", expectedNumeric: 4.33, tolerance: 0.1, severity: "common" }
     ],
     explanation: "$T_Y/T_X = 9^{3/2} = (\\sqrt{9})^3 = 3^3 = 27$.",
     sourcePack: "original (ratio drill)"
@@ -3147,7 +3236,7 @@ window.FIELDS_D1_QUESTIONS = [
     tolerance: 0.05,
     unitHint: "× r_X",
     misconceptions: [
-      { id: "inverted_kepler_ratio", label: "Cubed instead of raising to 2/3. $r \\propto T^{2/3}$, so $r_Y/r_X = 8^{2/3} = 4$, not $8^{3/2} \\approx 22.6$.", expectedNumeric: 22.6, tolerance: 0.5, severity: "common" }
+      { id: "inverted_kepler_ratio", category: "kepler_ratio_error", label: "Cubed instead of raising to 2/3. $r \\propto T^{2/3}$, so $r_Y/r_X = 8^{2/3} = 4$, not $8^{3/2} \\approx 22.6$.", expectedNumeric: 22.6, tolerance: 0.5, severity: "common" }
     ],
     explanation: "$r \\propto T^{2/3}$, so $r_Y/r_X = 8^{2/3} = (\\sqrt[3]{8})^2 = 2^2 = 4$.",
     sourcePack: "original (ratio drill)"
@@ -3460,7 +3549,7 @@ window.FIELDS_D1_QUESTIONS = [
     tolerance: 0.005,
     unitHint: "× g_Earth",
     misconceptions: [
-      { id: "forgot_to_square_R_ratio", label: "Used $g \\propto M/R$ instead of $g \\propto M/R^2$. Gives $2/3 \\approx 0.667$.", expectedNumeric: 0.667, tolerance: 0.01, severity: "common" }
+      { id: "forgot_to_square_R_ratio", category: "method_error", label: "Used $g \\propto M/R$ instead of $g \\propto M/R^2$. Gives $2/3 \\approx 0.667$.", expectedNumeric: 0.667, tolerance: 0.01, severity: "common" }
     ],
     explanation: "$g \\propto M/R^2$. So $g_X/g_E = (M_X/M_E)/(R_X/R_E)^2 = 2/9 \\approx 0.222$.\n\nDouble the mass means double the gravity; three times the radius means nine times less. Net: 2/9.",
     sourcePack: "original (ratio drill)"
@@ -3502,7 +3591,7 @@ window.FIELDS_D1_QUESTIONS = [
     tolerance: 0.02,
     unitHint: "$\\times v_{\\text{esc}}(\\text{Earth})$",
     misconceptions: [
-      { id: "forgot_sqrt_in_escape_ratio", label: "Used $9/4 = 2.25$ directly. The escape speed has a $\\sqrt{}$, so the ratio is $\\sqrt{9/4} = 3/2$.", expectedNumeric: 2.25, tolerance: 0.05, severity: "common" }
+      { id: "forgot_sqrt_in_escape_ratio", category: "escape_ratio_error", label: "Used $9/4 = 2.25$ directly. The escape speed has a $\\sqrt{}$, so the ratio is $\\sqrt{9/4} = 3/2$.", expectedNumeric: 2.25, tolerance: 0.05, severity: "common" }
     ],
     explanation: "$v_{\\text{esc}} = \\sqrt{2GM/R}$, so $v_{\\text{esc}} \\propto \\sqrt{M/R}$.\n\n$v_{\\text{esc},X}/v_{\\text{esc},E} = \\sqrt{(9M)/(4R) \\cdot R/M} = \\sqrt{9/4} = 3/2 = 1.5$.",
     sourcePack: "original (ratio drill)"
@@ -3705,6 +3794,7 @@ window.FIELDS_D1_QUESTIONS = [
         misconceptions: [
           {
             id: "pe_up_means_all_up",
+            category: "method_error",
             chosenIndex: 0,
             label: "You read 'PE rises with r' as 'everything rises with r'. The trap is that PE and KE go in opposite directions: KE shrinks as r grows because v = √(GM/r) shrinks. The widget's three curves show this directly."
           }
@@ -3720,6 +3810,7 @@ window.FIELDS_D1_QUESTIONS = [
         misconceptions: [
           {
             id: "submitted_pe_not_total",
+            category: "wrong_curve_read_error",
             label: "You submitted $E_p$ (the deeper negative curve) instead of $E$ (the solid curve halfway up). $E_p = -GMm/r$; $E = -GMm/(2r)$.",
             expectedNumeric: -1.992e10,
             tolerance: 1e8,
@@ -3727,6 +3818,7 @@ window.FIELDS_D1_QUESTIONS = [
           },
           {
             id: "submitted_ek_not_total",
+            category: "wrong_curve_read_error",
             label: "You submitted $E_k$ (the positive dashed curve) instead of $E$ (which is negative).",
             expectedNumeric: 9.96e9,
             tolerance: 1e8,
@@ -3787,6 +3879,7 @@ window.FIELDS_D1_QUESTIONS = [
     misconceptions: [
       {
         id: "linear_mass_ratio_for_field_zero",
+        category: "method_error",
         label: "You divided by the linear mass ratio (took $x = 25D/26 \\approx 0.962$). The correct ratio uses $\\sqrt{M_1/M_2}$, not $M_1/M_2$, because gravity goes as $1/r^2$.",
         expectedNumeric: 0.962,
         tolerance: 0.005,
@@ -3794,6 +3887,7 @@ window.FIELDS_D1_QUESTIONS = [
       },
       {
         id: "midpoint_assumed_for_field_zero",
+        category: "method_error",
         label: "You assumed the midpoint ($x = D/2$). That's correct only when the two masses are equal. For unequal masses the field-zero point shifts toward the SMALLER mass.",
         expectedNumeric: 0.5,
         tolerance: 0.01,
@@ -3801,6 +3895,7 @@ window.FIELDS_D1_QUESTIONS = [
       },
       {
         id: "wrong_side_of_balance_point",
+        category: "sign_error",
         label: "You placed the balance point CLOSER to the larger mass (at $\\sim D/6$). Intuition flip: the smaller mass needs to be closer to amplify its $1/r^2$ pull enough to match the larger mass's pull at greater distance. So the field-zero point is closer to the SMALLER mass.",
         expectedNumeric: 0.167,
         tolerance: 0.01,
@@ -3826,6 +3921,7 @@ window.FIELDS_D1_QUESTIONS = [
     misconceptions: [
       {
         id: "linear_mass_ratio_for_field_zero",
+        category: "method_error",
         label: "You divided by the linear mass ratio (took $x = 9D/10 = 0.9$). The correct ratio uses $\\sqrt{M_1/M_2}$, not $M_1/M_2$.",
         expectedNumeric: 0.9,
         tolerance: 0.005,
@@ -3859,16 +3955,19 @@ window.FIELDS_D1_QUESTIONS = [
     misconceptions: [
       {
         id: "field_zero_vs_potential_zero",
+        category: "method_error",
         chosenIndex: 0,
         label: "You looked for $V = 0$. The field is the GRADIENT of $V$, so 'field zero' means 'V at a local extremum' (here, a local maximum on the line). $V$ itself never hits zero between two attractive masses."
       },
       {
         id: "midpoint_assumed_for_field_zero",
+        category: "method_error",
         chosenIndex: 1,
         label: "Midpoint applies to equal masses only. With $M_1 = 4M_2$, the field-zero point is closer to the smaller mass (the right one), at $2D/3$ from the left."
       },
       {
         id: "linear_mass_ratio_for_field_zero",
+        category: "method_error",
         chosenIndex: 3,
         label: "Linear mass ratio gives $4D/5$ from the right (or $D/5$ from the left). Correct uses square-root of mass ratio: with $M_1 = 4M_2$, $\\sqrt{M_1}/\\sqrt{M_2} = 2$, so the field-zero is $2D/3$ from the left and $D/3$ from the right."
       }

@@ -11,6 +11,15 @@
 AUTHORING_BRIEF.md
 SUBCHAT_*.md
 
+# Inter-chat coordination protocol and threads (2026-06-03 onward).
+# The protocol file plus everything in the inter_chat/ folder.
+INTER_CHAT_PROTOCOL.md
+inter_chat/
+
+# State snapshots for the super-architect (may appear at this root in
+# future even though the primary STATE doc lives at OneDrive).
+STATE_*.md
+
 # Internal audit, feedback, and flag docs (any *_FEEDBACK.md, *_AUDIT_*.md,
 # FLAG_*.md). The pattern keeps future docs of this shape auto-ignored.
 *_FEEDBACK.md
