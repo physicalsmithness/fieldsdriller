@@ -531,7 +531,24 @@
     "submitted_single_V_not_delta":  "value_vs_scaled_error",
     "submitted_pe_not_total":        "wrong_curve_read_error",
     "submitted_ek_not_total":        "wrong_curve_read_error",
-    "pe_up_means_all_up":            "method_error"
+    "pe_up_means_all_up":            "method_error",
+
+    // Added 2026-07-09 per Authoring's v2 reply on the misconception_coverage
+    // thread. These ids fire from multi-select statements where the
+    // misconception field is a bare-string schema slot (no inline category);
+    // without these defaults they bucket into other_error.
+    "absolute_vs_relative_distance": "distance_geometry_error",
+    "period_grows_with_decay":       "method_error",
+    "weight_vs_apparent_weight":     "method_error",
+    "uniform_spacing_in_radial_field":"wrong_curve_read_error",
+    "over_literal_radial_field":     "wrong_curve_read_error",
+    "wrong_field_direction":         "sign_error",
+    "field_lines_along_equipotentials":"method_error",
+    "field_direction_inverted":      "sign_error",
+    "drag_decelerates_in_orbit":     "method_error",
+    "gravity_negligible_in_orbit":   "method_error"
+    // irrelevant_property_invoked and rotation_red_herring are deliberately
+    // left in other_error; both are one-off oddities without a natural home.
   };
 
   // Tree of misconception categories. Each entry has a label and an optional
@@ -551,6 +568,7 @@
     sign_error:               { label: "Sign mistakes",                 parent: "calculation_error" },
     magnitude_error:          { label: "Wrong magnitude / factor",      parent: "calculation_error" },
     centre_vs_surface_error:  { label: "Centre-vs-surface mix-ups",     parent: "setup_error" },
+    distance_geometry_error:  { label: "Distance / geometry mix-ups",   parent: "setup_error" },
     method_error:             { label: "Wrong method picked",           parent: "setup_error" },
     value_vs_scaled_error:    { label: "Value vs scaled-by-mass mix-ups", parent: "interpretation_error" },
     wrong_curve_read_error:   { label: "Read the wrong curve",          parent: "interpretation_error" },
@@ -641,7 +659,7 @@
   const STORAGE_KEY = "smithics_fields_v0_1";
   const IDENTITY_KEY = "smithics_fields_identity_v1";
   const SESSION_KEY = "smithics_fields_session_v1";
-  const APP_VERSION = "v0.2.2";
+  const APP_VERSION = "v0.2.3";
   const TYPES = ["mcq", "short", "long", "numeric", "widget", "multi_select"];
 
   // Teacher reporting endpoint. Deploy teacher-setup.gs as a Google Apps
@@ -1780,7 +1798,14 @@
           el("div", { class: "fb-h", text: "Expected value" }),
           (function () {
             const div = el("div", { class: "fb-correct" });
-            div.appendChild(document.createTextNode(String(target) + " "));
+            // Optional displayPrecision: when set, render the expected value
+            // with the requested sig-fig count (preserves trailing zeros the
+            // question's "to N s.f." wording requires). The marker is
+            // untouched; tolerance still gates the pass/fail.
+            const targetText = (typeof v.displayPrecision === "number" && v.displayPrecision > 0)
+              ? Number(target).toPrecision(v.displayPrecision)
+              : String(target);
+            div.appendChild(document.createTextNode(targetText + " "));
             if (v.unitHint) {
               const u = el("span", { class: "fb-unit" }); renderPromptText(v.unitHint, u); div.appendChild(u);
             }
@@ -2817,7 +2842,13 @@
         const target = (typeof ph.expectedNumeric === "number") ? ph.expectedNumeric : ph.answer;
         if (target != null) {
           const expEl = el("span", { class: "phase-done-correct" });
-          expEl.appendChild(document.createTextNode(String(target) + " "));
+          // Same displayPrecision opt-in as top-level numeric: renders the
+          // expected value with the requested sig-fig count if the phase
+          // declares it, preserving trailing zeros.
+          const targetText = (typeof ph.displayPrecision === "number" && ph.displayPrecision > 0)
+            ? Number(target).toPrecision(ph.displayPrecision)
+            : String(target);
+          expEl.appendChild(document.createTextNode(targetText + " "));
           if (ph.unitHint) {
             const u = el("span", { class: "fb-unit" }); renderPromptText(ph.unitHint, u); expEl.appendChild(u);
           }
