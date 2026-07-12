@@ -528,9 +528,15 @@
     "missed_negative_sign":          "sign_error",
     "magnitude_when_signed_expected":"sign_error",
     "confused_V_with_W":             "value_vs_scaled_error",
-    "submitted_single_V_not_delta":  "value_vs_scaled_error",
-    "submitted_pe_not_total":        "wrong_curve_read_error",
-    "submitted_ek_not_total":        "wrong_curve_read_error",
+    // Under h017 (Harmonisation ratification 2026-06-08, adopting Fields'
+    // v2 push-back 3): the four "picked the wrong related quantity" ids
+    // move out of value_vs_scaled_error / wrong_curve_read_error into
+    // their own mid-tier. value_vs_scaled_error now cleanly holds only
+    // the off-by-factor-of-m slugs (confused_V_with_W plus the two swaps).
+    "submitted_single_V_not_delta":  "wrong_related_quantity",
+    "submitted_pe_not_total":        "wrong_related_quantity",
+    "submitted_ek_not_total":        "wrong_related_quantity",
+    "reported_value_not_difference": "wrong_related_quantity",
     "pe_up_means_all_up":            "method_error",
 
     // Added 2026-07-09 per Authoring's v2 reply on the misconception_coverage
@@ -541,7 +547,11 @@
     "period_grows_with_decay":       "method_error",
     "weight_vs_apparent_weight":     "method_error",
     "uniform_spacing_in_radial_field":"wrong_curve_read_error",
-    "over_literal_radial_field":     "wrong_curve_read_error",
+    // 2026-07-12: nub audit addendum flags over_literal_radial_field as
+    // "refusing a legitimate idealisation" (learner will not accept the
+    // local-uniform approximation), not a curve-read error. Modelling
+    // territory. Moved out of wrong_curve_read_error accordingly.
+    "over_literal_radial_field":     "method_error",
     "wrong_field_direction":         "sign_error",
     "field_lines_along_equipotentials":"method_error",
     "field_direction_inverted":      "sign_error",
@@ -571,6 +581,7 @@
     distance_geometry_error:  { label: "Distance / geometry mix-ups",   parent: "setup_error" },
     method_error:             { label: "Wrong method picked",           parent: "setup_error" },
     value_vs_scaled_error:    { label: "Value vs scaled-by-mass mix-ups", parent: "interpretation_error" },
+    wrong_related_quantity:   { label: "Picked the wrong related quantity", parent: "interpretation_error" },
     wrong_curve_read_error:   { label: "Read the wrong curve",          parent: "interpretation_error" },
 
     // Sub-mid tier (added as the bank justifies them)
@@ -659,7 +670,7 @@
   const STORAGE_KEY = "smithics_fields_v0_1";
   const IDENTITY_KEY = "smithics_fields_identity_v1";
   const SESSION_KEY = "smithics_fields_session_v1";
-  const APP_VERSION = "v0.2.3";
+  const APP_VERSION = "v0.2.4";
   const TYPES = ["mcq", "short", "long", "numeric", "widget", "multi_select"];
 
   // Teacher reporting endpoint. Deploy teacher-setup.gs as a Google Apps
