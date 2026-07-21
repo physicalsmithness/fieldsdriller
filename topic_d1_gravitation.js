@@ -2177,7 +2177,7 @@ window.FIELDS_D1_QUESTIONS = [
         distractorRationales: {
           "1": "Energy adds, with each term carrying its own sign. Don't subtract $E_p$; just include its (negative) value.",
           "2": "Energies are added in mechanics, not multiplied.",
-          "3": "Magnitudes don't simply add. $E_p$ is genuinely negative, and that sign matters when you add it to $E_k$."
+          "3": "Magnitudes don't simply add. $E_p$ is negative, and that sign matters when you add it to $E_k$."
         }
       },
       {
